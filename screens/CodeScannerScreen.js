@@ -2,9 +2,6 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { Text, View, StyleSheet, Button, Image, Platform } from 'react-native';
-import { Constants, Notifications } from 'expo';
-import * as Permissions from 'expo-permissions';
-import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as SecureStore from 'expo-secure-store';
 
 import BasicButton from '../components/BasicButton';
@@ -13,11 +10,8 @@ import i18n from '../constants/Strings';
 import mS from '../constants/masterStyle';
 
 import forge from 'node-forge';
-import * as Localization from 'expo-localization';
 
 import { SECURE_STORAGE_USER_ACCOUNT } from '../redux/constants';
-
-//redux
 import { setAccount, signupUser_DB } from '../redux/actions';
 
 class CodeScannerScreen extends React.Component {
@@ -33,51 +27,6 @@ class CodeScannerScreen extends React.Component {
       status: '',
     }
 
-  }
-
-  async UNSAFE_componentWillMount() {
-
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === 'granted' });
-  
-  }
-
-  signup_DB = async (uuid) => {
-
-    const { dispatch } = this.props;
-    
-    const { status: existingStatus } = await Permissions.getAsync(
-      Permissions.NOTIFICATIONS
-    );
-    
-    const userData = {
-      uuid,
-    };
-
-    //get the language here
-    userData.language = Localization.locale;
-    if (__DEV__) console.log(userData.language)
-
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== 'granted') {
-      const { status } = await Permissions.askAsync(
-        Permissions.NOTIFICATIONS
-      );
-      finalStatus = status;
-    }
-
-    if (finalStatus !== 'granted') {
-      dispatch(signupUser_DB(userData));
-      return;
-    }
-
-    // Get the token that uniquely identifies this device
-    let token = await Notifications.getExpoPushTokenAsync();
-    userData.device_token = token;
-
-    //this sends data to the remote database
-    dispatch(signupUser_DB(userData));
   }
 
   handleBarCodeScanned = async ({ type, data }) => {
@@ -147,12 +96,6 @@ class CodeScannerScreen extends React.Component {
         this.props.dispatch(setAccount(newAccount));
         //at this point, there is a UUID availible to all etc.
 
-        //The order of these calls matters!
-        //this transmits language and device token
-        this.signup_DB(UUID);
-        //NOTE - IF THIS CALL FAILS, then there will be no notifications for this user, ever
-        //Should make this more fault tolerant
-
         //this one allows the user to move forward to the login step
         this.props.onScanSuccess({UUID});
 
@@ -173,12 +116,49 @@ class CodeScannerScreen extends React.Component {
     });}
   };
 
-  handleBarCodeScannedSim = () => {
+handleBarCodeScannedSim = () => {
 
-    this.setState({
-      status: '',
-    });
+let dataStringFromQRCodeScan = 'fba1b3c7564745b9284e7dfc73cf\
+136dd4ee9d7931c934690b7d7efb439935ae2897730316ac44816187d0d66299\
+70f49c72b528bc7e8e4a8519555da095326be635dfba5eee3131ad82e25113a1\
+1bd8679441e9962f6a8c881db713d874bc78bef72e7532fd7e45';
 
+
+
+    const password = 'elliptic31415926newAES';
+
+    var bytes = forge.util.hexToBytes(dataStringFromQRCodeScan);
+    var cipherText = forge.util.createBuffer(bytes, 'raw');
+
+    var salt = cipherText.getBytes(8);
+    var keySize = 32;
+    var ivSize = 16;
+
+    var derivedBytes = forge.pbe.opensslDeriveBytes(password, salt, keySize + ivSize);
+    var buffer = forge.util.createBuffer(derivedBytes);
+    var key = buffer.getBytes(keySize);
+    var iv = buffer.getBytes(ivSize);
+
+    var decipher = forge.cipher.createDecipher('AES-CBC', key);
+    decipher.start({iv: iv});
+    decipher.update(cipherText);
+    decipher.finish();
+
+    try {
+      var decodedQR = forge.util.decodeUtf8(decipher.output);
+      console.log(decodedQR);
+    } 
+    catch {
+      colsole.log('CodeScannerScreen: QR code error');
+    }
+
+
+/*
+
+fba1b3c7564745b9284e7dfc73cf136dd4ee9d7931c934690b7d7efb439935ae2897730316ac44816187d0d6629970f49c72b528bc7e8e4a8519555da095326be635dfba5eee3131ad82e25113a11bd8679441e9962f6a8c881db713d874bc78bef72e7532fd7e45
+blockdoc_v001_f4a86a1a1515fa48_9c1616229f6984165463cdba68480da4643f7885334de15dd729877434710fe7
+
+*/
     var decodedQR = 'blockdoc_v001_dd5ff46f70aed2ee_7528f4951c651095b016ffa124fb88f3f8bb397523bed842ecc02d10c699e439';
     var VERSION = decodedQR.substring(9, 13);
     var UUID = decodedQR.substring(14, 30);
@@ -205,62 +185,28 @@ class CodeScannerScreen extends React.Component {
     this.props.dispatch(setAccount(newAccount));
     //at this point, there is a UUID availible to all etc.
 
-    //The order of these calls matters!
-    //this transmits language and device token
-    this.signup_DB(UUID);
-    //NOTE - IF THIS CALL FAILS, then there will be no notifications for this user, ever
-    //Should make this more fault tolerant
-
     //this one allows the user to move forward to the login step
     this.props.onScanSuccess({UUID});
 
   };
 
   render() {
-    
-    const { hasCameraPermission, scanned, passed, status } = this.state;
-    
-    let simulator = false; //true;
-
-    let statusColor = styles.scannerBorderColor;
-    
-    if (scanned) {
-      statusColor = passed ? styles.successBorderColor : styles.errorBorderColor;
-    }
 
     return (
 
       <View style={mS.containerCenter}>
         
-        <View style={[styles.scannerContainer, statusColor]}>
-          {hasCameraPermission === null && <Text>{i18n.t('code_request_camera')}</Text>}
-          {hasCameraPermission === false && <Text>{i18n.t('code_no_access')}</Text>}
-          {!!hasCameraPermission && !simulator &&
-            <BarCodeScanner
-              onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
-              style={Platform.OS === 'ios' ? StyleSheet.absoluteFillObject : { height: 600, width: 600, alignSelf: 'center'}}
-            />
-          }
-          {!!hasCameraPermission && simulator &&
-            <BasicButton 
-              text={SimScan} 
-              onClick={() => { this.handleBarCodeScannedSim() }} 
-            />
-          }
-        </View>
-        
         <View style={mS.msgBoxVP}>
-          <Text style={mS.titleTextVP}>{i18n.t('code_please_scan')}</Text>
-          <Text style={mS.tagTextVP}>{status}</Text>
+          <Text style={mS.titleTextVP}>{'Please scan your\nQR code card'}</Text>
         </View>
 
-        {!scanned && <View style={{height: 42}}/>}
-        {scanned && passed && <View style={{height: 42}}/>}
-        {scanned && !passed && <BasicButton 
-            text={i18n.t('code_tap_to_scan')} 
-            onClick={() => { this.setState({ scanned: false }); }} 
+        <View>
+          <BasicButton 
+            text={'Simulate Good Scan'}
+            onClick={() => { this.handleBarCodeScannedSim() }} 
           />
-        }
+        </View>
+        
 
       </View>
     );
@@ -285,23 +231,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold', 
     fontSize: 40,
   },
-  tagText: {
-    alignItems: 'center',
-    fontWeight: 'normal',
-    marginTop: 15, 
-    fontSize: 20,
-  },
-  smallTagText: {
-    alignItems: 'center',
-    fontWeight: 'normal',
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 15,
-    marginBottom: 15,
-    fontSize: 18,
-    lineHeight: 22,
-    textAlign: 'center',
-  },
   scanContainer: {
     alignItems: 'center',
   },
@@ -313,28 +242,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     borderWidth: 5,
     borderStyle: 'solid',
-  },
-  scannerBorderColor: {
-    borderColor: '#000000',
-  },
-  successBorderColor: {
-    borderColor: colors.green,
-  },
-  errorBorderColor: {
-    borderColor: colors.red,
-  },
-  slider: {
-    display: 'flex',
-    marginBottom: 15,
-    flexDirection: 'row',
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginLeft: 5,
-    marginRight: 5,
-    backgroundColor: colors.lightGray,
   },
 });
 

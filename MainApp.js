@@ -2,13 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Platform, StatusBar, View } from 'react-native';
 
-import { Notifications } from 'expo';
-
 import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
 
 import AppNavigator from './navigation/AppNavigator';
-
 import LoginScreen from './screens/LoginScreen';
 import CodeScannerScreen from './screens/CodeScannerScreen';
 import AccountDeletedScreen from './screens/AccountDeletedScreen';
@@ -16,19 +13,12 @@ import AccountDeleteScreen from './screens/AccountDeleteScreen';
 
 import appRoutes from "./AppRoutes";
 
-import {
-  SENDBIRD_APP_ID,
-  MY_IP_ADDRESS,
-  TEST_MODE,
-  SECURE_PRS_CHANNEL_3,
-} from './settings';
-
 //redux
 import { 
   setAccount,
   getResults,
-  getStatus, /*check whitelist table in DB*/
-  circulateStatus, /*circulate stored value of the status variable*/
+  getStatus,
+  circulateStatus,
   resetError,
   receiveNotification,
   setUnreadCount,
@@ -44,39 +34,6 @@ import {
 
 const pdfStore = `${FileSystem.documentDirectory}User/PDFs`;
 
-const SMC_ServerTest = async input_json => {
-  try { key =  await fetch(SECURE_PRS_CHANNEL_3 + 'uuid-whitelist', 
-        {
-          method:'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(input_json)
-        }
-      )
-    return { status:key.status }
-  }
-  catch ( error ) { 
-    return error 
-  }
-}
-
-/*
-ServerTest({uuid:'ServerConnectTest'}).then((server) => {
-          if (__DEV__) console.log('Server connection info: ' + (server.status == 201 ? 'connected' : 'error'))
-          this.props.dispatch(internetStatus({
-            internet_connected: true,
-            servers_reachable: server.status == 201,
-          }));
-        })
-      } else {
-        this.props.dispatch(internetStatus({
-          internet_connected: false,
-          servers_reachable: false,
-        }));
-*/
-
 class MainApp extends React.Component {
 
   constructor (props) {
@@ -84,29 +41,11 @@ class MainApp extends React.Component {
   }
 
   async componentDidMount() {
-
-    const { dispatch } = this.props;
-
-    dispatch(resetError());
-    
-    if (Platform.OS === 'android') {
-      Notifications.createChannelAndroidAsync('default', {
-        name: 'default',
-        sound: true,
-      });
-    }
-
-    Notifications.addListener(this._handleNotification);
-
+    this.props.dispatch(resetError());
+    this.props.dispatch(getResults(user.account.UUID));
   }
 
   UNSAFE_componentWillMount() {
-
-    //if (__DEV__) {
-    //  console.log('We are in DEV mode')
-    //} else {
-    //  console.log('We are in PRODUCTION mode')
-    //}
 
     FileSystem.getInfoAsync(pdfStore).then(({ exists }) => {
       if( !exists ) {
@@ -168,71 +107,11 @@ class MainApp extends React.Component {
 
   }
 
-  _handleNotification = async (notification) => {
-    
-    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-    
-    const { dispatch, user } = this.props;
-
-    //deal with badge numbers
-    //for example, if a notification just came in, it will say 1
-    //this is needed to set the badge number in the App icon
- 
-    let badgeNumber = 0;
-
-    if (status === 'granted' && notification && notification.data) {
-      if ( Platform.OS === 'ios' ) {
-        badgeNumber = await Notifications.getBadgeNumberAsync();
-        if (__DEV__) console.log('Current badge number:', badgeNumber)
-        badgeNumber = badgeNumber || 0;
-      }
-      else if ( Platform.OS === 'android' ) {
-        //
-      }
-      if (__DEV__) console.log('Received some sort of notification:', notification.data)
-      switch (notification.data.type) {
-        case 'HAVE_NEW_FILE':
-          if (__DEV__) console.log('Received notification:', notification.data.type)
-          badgeNumber = badgeNumber + 1;
-          break;
-        case 'HAVE_NEW_STATUS':
-          if (__DEV__) console.log('Received notification:', notification.data.type)
-          badgeNumber = badgeNumber + 1;
-          break;
-      }
-
-      dispatch(receiveNotification((user.notificationCount || 0) + 1));
-
-      if ( Platform.OS === 'ios' ) {
-        Notifications.setBadgeNumberAsync( badgeNumber || 0 );
-      }
-      else if ( Platform.OS === 'android' ) {
-        //
-      }
-
-    }
-    
-    //Yes - there is a new result of some sort - let's connect to our servers to check!
-    //The badge will be reset once the user clicks 'Check Status or View Result'
-    if (notification && notification.data) {
-      if (__DEV__) console.log('firing getResults based on notification')
-      switch (notification.data.type) {
-        //at this point, we check in with the database and update lots of stuff
-        case 'HAVE_NEW_FILE':
-          dispatch(getResults(user.account.UUID));
-          break;
-        case 'HAVE_NEW_STATUS':
-          dispatch(getResults(user.account.UUID));
-          break;
-        default:
-      }
-    }
-  };
-
-  
   render() {
 
     const { account, loginToken } = this.props.user;
+
+    return <CodeScannerScreen onScanSuccess={this.handleScanSuccess} />
 
     if ( this.props.user.deleted ) {
       return <AccountDeletedScreen onWipeOut={this.props.onWipeOut}/>
@@ -242,7 +121,7 @@ class MainApp extends React.Component {
       return null;
     }
     else if ( !account.UUID ) {
-      if (__DEV__) console.log('Need to set up new account - first, scan the QR code')
+      if (__DEV__) console.log('Need to set up new account - scan the QR code')
       return <CodeScannerScreen onScanSuccess={this.handleScanSuccess} />
     }
     else if ( (!loginToken || !loginToken.valid) && !account.password ) {
