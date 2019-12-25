@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import store from './redux/configureStore';
 
-import { Icon, AppLoading, SplashScreen } from 'expo';
+import { Icon, AppLoading } from 'expo';
 
 import { Animated, Dimensions, Image, Text, View, TouchableOpacity, 
   StyleSheet, ActivityIndicator, Platform } from 'react-native';
@@ -33,7 +33,6 @@ const Slider = (props) => (
 export default class App extends React.Component {
 
   state = {
-    isSplashReady: false,
     isAppReady: false,
     active: 0,
     isLoaded: false,
@@ -60,17 +59,9 @@ export default class App extends React.Component {
 
   }
 
-  componentDidMount() {
-
-    SplashScreen.preventAutoHide();
-
-  }
-
   moveOn = () => {
 
-    this.setState({ 
-      active : this.state.active + 1, 
-    });
+    this.setState({ active : this.state.active + 1 });
 
   }
 
@@ -80,7 +71,7 @@ export default class App extends React.Component {
       velocityThreshold: 0.1,
       directionalOffsetThreshold: 100
     };
-    
+
     if (active === 0) {
       return (
         <GestureRecognizer 
@@ -195,59 +186,15 @@ export default class App extends React.Component {
   
   render() {
 
-    const { active, isSplashReady, isAppReady } = this.state;
-
-    if (!isSplashReady) {
-      return (
-        <AppLoading
-          startAsync={this._cacheSplashResourcesAsync}
-          onFinish={() => {
-            this.setState({ isSplashReady: true });
-            this._cacheResourcesAsync();
-          }}
-          onError={console.warn}
-          autoHideSplash={false}
-        />
-      );
-    }
-
     return (
       <View style={{flex: 1}}>
-        {Platform.OS === 'ios' && 
-          <SplashLoader
-            isLoaded={isAppReady && isSplashReady}
-            imageSource={require('./assets/images/logo.png')}
-            backgroundStyle={styles.loadingBackgroundStyle}
-          >
-            {this.renderApp(active)}
-          </SplashLoader>
-        }
-        {Platform.OS === 'android' && 
-          <View 
-            style={{ flex: 1}}
-          >
-            {this.renderApp(active)}
-          </View>
-        }
+        {this.renderApp(this.state.active)}
       </View>
     );
   }
 
-  _cacheSplashResourcesAsync = async () => {
-
-    await Font.loadAsync({
-      'montserratSB': require('./assets/fonts/Montserrat-SemiBold.ttf'),
-    });
-
-    const png = require('./assets/images/logo.png');
-
-    return Asset.fromModule(png).downloadAsync()
-  }
-
   _cacheResourcesAsync = async () => {
 
-    SplashScreen.hide();
-    
     const images = [
       require('./assets/images/logo.png'),
       require('./assets/images/valueProp1.png'),
@@ -272,6 +219,7 @@ export default class App extends React.Component {
       'roboto': require('./assets/fonts/RobotoMono-Regular.ttf'),
       'montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
       'montserratB': require('./assets/fonts/Montserrat-Bold.ttf'),
+      'montserratSB': require('./assets/fonts/Montserrat-SemiBold.ttf')
     });
 
     const cacheImages = images.map((image) => {
@@ -279,6 +227,7 @@ export default class App extends React.Component {
     });
 
     await Promise.all(cacheImages);
+
     this.setState({ isAppReady: true });
   }
 

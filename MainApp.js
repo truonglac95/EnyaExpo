@@ -41,8 +41,13 @@ class MainApp extends React.Component {
   }
 
   async componentDidMount() {
+    
+    //not sure what this does... need to check
+    //still relevant?????
     this.props.dispatch(resetError());
-    this.props.dispatch(getResults(user.account.UUID));
+
+    //once we login, we check for results
+    this.props.dispatch(getResults(this.props.user.account.UUID));
   }
 
   UNSAFE_componentWillMount() {
@@ -84,14 +89,10 @@ class MainApp extends React.Component {
     SecureStore.getItemAsync(SECURE_STORAGE_USER_STATUS).then(result => {
       if (result) {
         const status = result ? JSON.parse(result) : {};
-        //console.log('MainApp: Previous status settings found:');
-        //console.log(status);
-        //console.log('MainApp: Circulating status');
         this.props.dispatch(circulateStatus(status));
       } else {
         //need to set up status
         if (__DEV__) console.log('MainApp: No status settings found - need to set up.');
-        //console.log(this.props.user.account.UUID);
         if(!this.props.user.account.UUID) {
           //too early to do anything
           //need to wait until login
@@ -111,8 +112,6 @@ class MainApp extends React.Component {
 
     const { account, loginToken } = this.props.user;
 
-    return <CodeScannerScreen onScanSuccess={this.handleScanSuccess} />
-
     if ( this.props.user.deleted ) {
       return <AccountDeletedScreen onWipeOut={this.props.onWipeOut}/>
     }
@@ -121,8 +120,8 @@ class MainApp extends React.Component {
       return null;
     }
     else if ( !account.UUID ) {
-      if (__DEV__) console.log('Need to set up new account - scan the QR code')
-      return <CodeScannerScreen onScanSuccess={this.handleScanSuccess} />
+      //if (__DEV__) console.log('Need to set up new account - scan the QR code')
+      return <CodeScannerScreen />
     }
     else if ( (!loginToken || !loginToken.valid) && !account.password ) {
       return <LoginScreen login = {false}/>
