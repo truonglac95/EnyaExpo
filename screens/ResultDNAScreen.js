@@ -28,7 +28,7 @@ import {
 
 //crypto
 var forge = require('node-forge');
-var ecies = require('../components/ECIES.js');
+var ecies = require('../EnyaSDK/ECIES.js');
 var Buffer = require('buffer/').Buffer;
 var decrypted64 = null;
 

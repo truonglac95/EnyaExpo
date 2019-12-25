@@ -1,5 +1,4 @@
 import * as SecureStore from 'expo-secure-store'
-import NetInfo from "@react-native-community/netinfo";
 
 import {
 	//basic ops
@@ -26,11 +25,11 @@ import {
 	NumGoodAnswersBasic, 
 	NumGoodAnswersCardio,
   tenYearRiskLabel,
-} from '../../components/ComputeRiskLocal';
+} from '../../EnyaSDK/ComputeRiskLocal';
 
 import { 
 	ComputeRiskSecure, 
-} from '../../components/ComputeRiskSecure';
+} from '../../EnyaSDK/ComputeRiskSecure';
 
 export const getAnswersBegin   = data  => ({ type: GET_ANSWERS });
 export const getAnswersSuccess = data  => ({ type: GET_ANSWERS_SUCCESS, payload: data });
@@ -71,11 +70,7 @@ export const getAnswers = () => (dispatch) => {
 
 	dispatch(getAnswersBegin());
 
-  //for testing
-  //SecureStore.deleteItemAsync(SECURE_STORAGE_ANSWERS_FRS).then(() => {}).catch(() => {});
-
 	SecureStore.getItemAsync(SECURE_STORAGE_ANSWERS).then(result => {
-	  //if (__DEV__) console.log('getAnswers:',result)
 	  if (result) {
         if (__DEV__) console.log('Answers: Previous answers found.');
         const data = JSON.parse(result);
@@ -87,28 +82,25 @@ export const getAnswers = () => (dispatch) => {
       }
     }).catch(err => {
       if (__DEV__) console.log(err);
-  });
+    });
 
   SecureStore.getItemAsync(SECURE_STORAGE_FRS).then(result => {
-    //if (__DEV__) console.log('getAnswers:',result)
     if (result) {
-        if (__DEV__) console.log('Answers: Previous FRS found.');
+        if (__DEV__) console.log('Answers: Previous Secure Score found.');
         const data = JSON.parse(result);
         dispatch(getFRSSuccess(data));
       } else {
         //create the file structure
-        if (__DEV__) console.log('Answers: No previous FRS found.');
+        if (__DEV__) console.log('Answers: No previous Secure Score found.');
         SecureStore.setItemAsync(SECURE_STORAGE_FRS, JSON.stringify(frsL));
       }
     }).catch(err => {
       if (__DEV__) console.log(err);
-  });
+    });
 
 }
 
 export const giveAnswer = (answer) => (dispatch) => {
-	
-	//if (__DEV__) console.log('giveAnswer: New answer:',answer)
 
 	dispatch(giveAnswerBegin());
 
@@ -118,18 +110,12 @@ export const giveAnswer = (answer) => (dispatch) => {
 
       let data = JSON.parse(res1);
 
-      //if (__DEV__) console.log('length:',answer.length)
-
-      //answers can either have one or three rows
-      //one row is standard user input
-      //three rows is when we send the three lab values
-      //there is always at least one answer....
       answer.forEach(ans => {data[ans.question_id] = ans.answer});
 
       let updatedData = { ...data, };
 
       SecureStore.setItemAsync(SECURE_STORAGE_ANSWERS, JSON.stringify(updatedData));
-      //if (__DEV__) console.log('giveAnswer: writing to local storage:',updatedData)
+
       dispatch( giveAnswerSuccess(updatedData) );
 
       var goodAnswersBasic = NumGoodAnswersBasic( data );
@@ -167,7 +153,9 @@ export const giveAnswer = (answer) => (dispatch) => {
 
 };
 
-export const calculateRiskScoreBegin = () => ({type: CALCULATE_RISK_SCORE});
+export const calculateRiskScoreBegin = () => ({
+  type: CALCULATE_RISK_SCORE
+});
 
 export const calculateRiskScoreSuccess = (data) => ({
 	type: CALCULATE_RISK_SCORE_SUCCESS,
@@ -194,16 +182,6 @@ export const calculateRiskScore = (data, gene, UUID, id) => async (dispatch) => 
     })
   );
 
-  //if (__DEV__) console.log(data);
-  //let's use mid range values, assuming that the patient will have current lab results soon
-  
-  if (data.cholesterol === 0) { data.cholesterol = 6; };
-  if (data.bloodpressure === 0) { data.bloodpressure = 7; };
-  if (data.hdlc === 0) { data.hdlc = 4; };
-
-  //if (__DEV__) console.log(data);
-  //if (__DEV__) console.log('Computing FRS for user ID:', id);
-
   var frsScore_ab = 0.0;
   var frsScore_r = 0.0;
   var frsLabel_lifestyle = 'unknown';
@@ -215,16 +193,6 @@ export const calculateRiskScore = (data, gene, UUID, id) => async (dispatch) => 
 	if ( CanComputeRisk( data ) ) {
 		
 		if (__DEV__) console.log('Yes, there are enough data to compute the risk ');
-    
-    //return if not connected
-    //in theory, you should never get to this point if not connected to internet, but...
-    NetInfo.fetch().then(state => {
-      if(!state.isConnected){
-        if (__DEV__) console.log("calculateRiskScore no internet");
-        dispatch( calculateRiskScoreFailure({ error: 'No internet connectivity'}));
-        return
-      }
-    });
 
     APIStatus = await ComputeRiskSecure(data, UUID, id, dispatch); 
 
@@ -278,11 +246,14 @@ export const calculateRiskScore = (data, gene, UUID, id) => async (dispatch) => 
     
     } else {
 
-    	dispatch( calculateRiskScoreFailure({ error: 'Not enough data to compute FRS'}));
-    
+    	dispatch( calculateRiskScoreFailure({ 
+          error: 'Not enough data to compute FRS'
+        })
+      );
+
     }
 
-    });
+  });
 
 }
 
