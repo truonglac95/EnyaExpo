@@ -1,0 +1,225 @@
+import React from 'react';
+import { connect } from 'react-redux';
+
+import { Platform, View, Text, StyleSheet, Image } from 'react-native';
+
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator, HeaderBackButton } from 'react-navigation-stack';
+
+import colors from '../constants/Colors';
+import i18n from '../constants/Strings';
+
+/* App overview */
+import HomeScreen from '../screens/HomeScreen';
+
+/* Collect data */
+import QuestionnaireBasicScreen from '../screens/QuestionnaireScreenBasic';
+import QuestionnaireCardioScreen from '../screens/QuestionnaireScreenCardio';
+import QuestionnaireCardioScreenDemo from '../screens/QuestionnaireScreenCardioDemo';
+
+/* Results */
+import ResultFRSScreen from '../screens/ResultFRSScreen';
+import ResultDNAScreen from '../screens/ResultDNAScreen';
+import ResultDNAShareScreen from '../screens/ResultDNAShareScreen';
+import ResultPreportScreen from '../screens/ResultPreportScreen';
+
+/* User actions */
+import AccountScreen from '../screens/AccountScreen';
+import AccountDeleteScreen from '../screens/AccountDeleteScreen';
+import AccountDeletedScreen from '../screens/AccountDeletedScreen';
+import PasswordChangeScreen from '../screens/PasswordChangeScreen';
+import PasswordForgotScreen from '../screens/PasswordForgotScreen';
+
+/* Chat */
+import ChatScreen from '../screens/ChatScreen';
+
+const Label = (props) => (
+  <Text style={
+    [styles.tabText, 
+      { 
+        color: (props.focused ? colors.headerFontColor : colors.gray),
+      }
+    ]
+  }>
+    {props.text}
+  </Text>
+);
+
+const TabImage = (props) => (
+  <Image 
+    style={{
+      width: 28, 
+      height: 28, 
+      marginTop: (Platform.OS === 'android') ? 10 : 0,
+      marginBottom: 0,
+      paddingBottom: 0,
+      marginLeft: 'auto', 
+      marginRight: 'auto'
+    }} 
+      source={props.image}
+  />
+);
+
+const HomeStack = createStackNavigator(
+  {
+    Home: HomeScreen,
+    Qbasic: QuestionnaireBasicScreen,
+    Qcardio: QuestionnaireCardioScreen,
+    QcardioDemo: QuestionnaireCardioScreenDemo,
+    ResultFRS: ResultFRSScreen,
+    ResultDNA: ResultDNAScreen,
+    ResultDNAShare: ResultDNAShareScreen,
+    ResultPreport: ResultPreportScreen,
+  }, 
+  {
+    defaultNavigationOptions: {
+      headerTintColor: colors.headerFontColor, //this is the back arrow color
+    },
+  }
+);
+
+HomeStack.navigationOptions = ({ navigation }) => {
+  
+  let tabBarVisible = true;
+  
+  //console.log(navigation.state.index)
+  
+  const { routeName } = navigation.state.routes[navigation.state.index];
+
+  if (routeName === 'ResultDNA') {
+    tabBarVisible = false;
+  } else if (routeName === 'ResultFRS') {
+    tabBarVisible = false;
+  }
+
+  return {
+    tabBarLabel: ({ focused }) => <Label text={i18n.t('tab_home')} focused={focused} />,
+    tabBarIcon: ({ focused }) => (
+      <TabImage 
+        image={!focused ? require('../assets/images/nav/nav_home_g.png') : require('../assets/images/nav/nav_home_b.png')}
+      />
+    ),
+    tabBarOnPress: (event) => {
+      const { navigation } = event;
+      event.defaultHandler();
+      //when we press tab bar we want the home screen to have clean appearance
+      //not sure where this is being used....
+      //this used to do something, and could be useful in the future
+      if (navigation.state.routes[0].params && navigation.state.routes[0].params.scrollToTop) {
+        //navigation.state.routes[0].params.scrollToTop();
+      }
+    },
+    tabBarVisible,
+  };
+};
+
+const DNAStack = createStackNavigator(
+{
+  ResultDNA: {
+    screen: ResultDNAScreen,
+    navigationOptions: ({navigation}) => ({ //don't forget parentheses around the object notation
+      headerLeft: 
+        <HeaderBackButton 
+          tintColor={colors.headerFontColor}
+          backTitleVisible={true}
+          onPress={() => navigation.goBack(null)} 
+        />
+    })
+  },
+}, 
+{
+  defaultNavigationOptions: {
+    headerTintColor: colors.headerFontColor, //this is the back arrow color
+  },
+});
+
+DNAStack.navigationOptions = ({ navigation }) => {
+  
+  let tabBarVisible = true;
+
+  const { routeName } = navigation.state.routes[navigation.state.index];
+
+  if (routeName === 'ResultDNA') {
+    tabBarVisible = false;
+  }
+
+  return {
+    tabBarLabel: ({ focused }) => <Label text={i18n.t('tab_genes')} focused={focused} />,
+    tabBarIcon: ({ focused }) => (
+      <TabImage 
+        image={!focused ? require('../assets/images/nav/nav_genes_g.png') : require('../assets/images/nav/nav_genes_b.png')}
+      />),
+    tabBarVisible,
+  };
+};
+
+const AccountStack = createStackNavigator(
+{
+  Account: {
+    screen: AccountScreen,
+    navigationOptions: ({navigation}) => ({
+      headerLeft: 
+        <HeaderBackButton 
+          tintColor={colors.headerFontColor}
+          backTitleVisible={true}
+          onPress={() => navigation.goBack(null)} 
+        />
+    })
+  },
+  Chat: ChatScreen,
+  PasswordChange: PasswordChangeScreen,
+  PasswordForgot: PasswordForgotScreen,
+  AccountDelete: AccountDeleteScreen,
+  AccountDeleted: AccountDeletedScreen,
+},
+{
+  defaultNavigationOptions: {
+    headerTintColor: colors.headerFontColor, //this is the back arrow color
+  },
+});
+
+AccountStack.navigationOptions = ({ navigation }) => {
+  
+  let tabBarVisible = true;
+  
+  console.log(navigation.state.index)
+  const { routeName } = navigation.state.routes[navigation.state.index];
+
+  if (routeName === 'Chat') {
+    tabBarVisible = false;
+  }
+
+  return {
+    tabBarLabel: ({ focused }) => <Label text={i18n.t('tab_settings')} focused={focused} />,
+    tabBarIcon: ({ focused }) => (
+      <TabImage 
+        image={!focused ? require('../assets/images/nav/nav_me_g.png') : require('../assets/images/nav/nav_me_b.png')}
+      />),
+    tabBarVisible,
+  };
+};
+
+const styles = StyleSheet.create({
+  tabText: {
+    fontSize: 12,
+    fontFamily: colors.tabFont,
+    marginLeft: 'auto', 
+    marginRight: 'auto'
+  },
+});
+
+export default createBottomTabNavigator(
+  {
+    HomeStack,
+    DNAStack,
+    AccountStack,
+  }, 
+  {
+  resetOnBlur: true,
+  }
+);
+
+const mapStateToProps = state => ({
+  user: state.user,
+  answer: state.answer,
+});

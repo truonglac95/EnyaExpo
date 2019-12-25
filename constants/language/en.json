@@ -1,0 +1,4 @@
+{
+  "NSCameraUsageDescription": "This app uses the camera to scan the QR code on your key card.",
+  "NSFaceIDUsageDescription": "This app uses FaceID for authentication."
+}

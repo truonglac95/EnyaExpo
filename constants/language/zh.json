@@ -1,0 +1,4 @@
+{
+  "NSCameraUsageDescription": "此应用使用相机扫描钥匙卡上的QR码。",
+  "NSFaceIDUsageDescription": "這個應用程式使用FaceID進行驗證。"
+}
