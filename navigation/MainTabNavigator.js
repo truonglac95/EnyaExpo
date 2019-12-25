@@ -20,18 +20,11 @@ import QuestionnaireCardioScreenDemo from '../screens/QuestionnaireScreenCardioD
 /* Results */
 import ResultFRSScreen from '../screens/ResultFRSScreen';
 import ResultDNAScreen from '../screens/ResultDNAScreen';
-import ResultDNAShareScreen from '../screens/ResultDNAShareScreen';
-import ResultPreportScreen from '../screens/ResultPreportScreen';
 
 /* User actions */
 import AccountScreen from '../screens/AccountScreen';
 import AccountDeleteScreen from '../screens/AccountDeleteScreen';
 import AccountDeletedScreen from '../screens/AccountDeletedScreen';
-import PasswordChangeScreen from '../screens/PasswordChangeScreen';
-import PasswordForgotScreen from '../screens/PasswordForgotScreen';
-
-/* Chat */
-import ChatScreen from '../screens/ChatScreen';
 
 const Label = (props) => (
   <Text style={
@@ -68,8 +61,6 @@ const HomeStack = createStackNavigator(
     QcardioDemo: QuestionnaireCardioScreenDemo,
     ResultFRS: ResultFRSScreen,
     ResultDNA: ResultDNAScreen,
-    ResultDNAShare: ResultDNAShareScreen,
-    ResultPreport: ResultPreportScreen,
   }, 
   {
     defaultNavigationOptions: {
@@ -81,9 +72,7 @@ const HomeStack = createStackNavigator(
 HomeStack.navigationOptions = ({ navigation }) => {
   
   let tabBarVisible = true;
-  
-  //console.log(navigation.state.index)
-  
+
   const { routeName } = navigation.state.routes[navigation.state.index];
 
   if (routeName === 'ResultDNA') {
@@ -103,8 +92,7 @@ HomeStack.navigationOptions = ({ navigation }) => {
       const { navigation } = event;
       event.defaultHandler();
       //when we press tab bar we want the home screen to have clean appearance
-      //not sure where this is being used....
-      //this used to do something, and could be useful in the future
+      //could be useful in the future
       if (navigation.state.routes[0].params && navigation.state.routes[0].params.scrollToTop) {
         //navigation.state.routes[0].params.scrollToTop();
       }
@@ -117,7 +105,7 @@ const DNAStack = createStackNavigator(
 {
   ResultDNA: {
     screen: ResultDNAScreen,
-    navigationOptions: ({navigation}) => ({ //don't forget parentheses around the object notation
+    navigationOptions: ({navigation}) => ({
       headerLeft: 
         <HeaderBackButton 
           tintColor={colors.headerFontColor}
@@ -166,9 +154,6 @@ const AccountStack = createStackNavigator(
         />
     })
   },
-  Chat: ChatScreen,
-  PasswordChange: PasswordChangeScreen,
-  PasswordForgot: PasswordForgotScreen,
   AccountDelete: AccountDeleteScreen,
   AccountDeleted: AccountDeletedScreen,
 },
@@ -181,13 +166,6 @@ const AccountStack = createStackNavigator(
 AccountStack.navigationOptions = ({ navigation }) => {
   
   let tabBarVisible = true;
-  
-  console.log(navigation.state.index)
-  const { routeName } = navigation.state.routes[navigation.state.index];
-
-  if (routeName === 'Chat') {
-    tabBarVisible = false;
-  }
 
   return {
     tabBarLabel: ({ focused }) => <Label text={i18n.t('tab_settings')} focused={focused} />,

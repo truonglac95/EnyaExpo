@@ -1,13 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import * as Localization from 'expo-localization';
+
+//Use local biometrics
 import * as LocalAuthentication from 'expo-local-authentication';
 
 import BasicButton from '../components/BasicButton';
 import PasswordInput from '../components/PasswordInput';
-import PasswordForgotScreen from './PasswordForgotScreen';
-import TermsAndConditionsScreen_en from './TermsAndConditionsScreen_en';
-import TermsAndConditionsScreen_zh from './TermsAndConditionsScreen_zh';
 
 import colors from '../constants/Colors';
 import mS from '../constants/masterStyle';
@@ -140,16 +138,7 @@ class LoginScreen extends React.Component {
   _checkDeviceForHardware = async () => {
 
     let haveBiometrics = await LocalAuthentication.hasHardwareAsync();
-    
-    //if (__DEV__) console.log('haveBiometrics:');
-    //if (__DEV__) console.log(haveBiometrics);
-    
-    this.setState({ haveBiometrics /*: false */ });
-    
-    //we do not want immediate autologin
-    //if( haveBiometrics && this.state.alreadySignedup ){
-    //  this.scanBiometrics();
-    //}
+    this.setState({ haveBiometrics });
 
   };
 
@@ -237,14 +226,12 @@ class LoginScreen extends React.Component {
         //do not signinTokenGen 
       });
 
-      //check for stored genetics data
+      //check for stored data
       SecureStore.getItemAsync(SECURE_STORAGE_USER_RESULT).then(result => {
         if (__DEV__) console.log('Login: local results check')
-        //if (__DEV__) console.log(result);
         if (result) {
           if (__DEV__) console.log('Login: local results and keys found.')
           const localResult = result ? JSON.parse(result) : {};
-          //if (__DEV__) console.log(localResult)
           //distribute crypto keys among other things
           this.props.dispatch(circulateLocalResults(localResult));
         } else {
@@ -326,13 +313,9 @@ class LoginScreen extends React.Component {
     const { dispatch } = this.props;
 
     dispatch(getAnswers());
-
     dispatch(getResults(uuid));
-    
-    //check for new value every time you login
     dispatch(getStatus(uuid));
 
-    //local token
     dispatch(signinTokenGen({
       id, 
       nickname, 
@@ -345,10 +328,6 @@ class LoginScreen extends React.Component {
     this.setState({
       [key]: value,
     });
-  }
-
-  handleForgot = () => {
-    this.props.navigation.navigate('PasswordForgot');
   }
 
   render () {
@@ -400,32 +379,6 @@ class LoginScreen extends React.Component {
       actionButton = i18n.t('login_Create_Account');
       description = i18n.t('login_Create_your_password');
     }
-    
-    if (!agreeTerms) {
-      if (Localization.locale.includes('en')) { //en
-        return <TermsAndConditionsScreen_en onBack={() => { this.setState({ agreeTerms: true });}} />
-      }
-      else {
-        return <TermsAndConditionsScreen_zh onBack={() => { this.setState({ agreeTerms: true });}} />
-      }
-    }
-
-    if (showForgotPassword) {
-      return <PasswordForgotScreen 
-        onBack={() => { this.setState({ showForgotPassword: false });}} 
-      />
-    }
-
-    //not sure this is ever called because everything is local now
-    /*
-    if (loading) {
-      return (<View style={styles.container}>
-        <View style={{height: 80, paddingTop: 30, marginBottom: 5}}> 
-          <ActivityIndicator size="large" color='#FB2E59' />
-        </View>
-      </View>);
-    }
-    */
 
     return (
 
@@ -445,7 +398,8 @@ class LoginScreen extends React.Component {
         </View>
       }
 
-      {/*the next (blank) line prevents stuff from jumping around if there is an error message*/}
+      {/*the next (blank) line prevents stuff from jumping 
+      around if there is an error message*/}
       {!errorMessage && 
         <View style={[mS.errorBox, keyboardUp ? {marginTop: 40} : {marginTop: 0 }]}>
           <Text style={mS.errorText}>{` `}</Text>
@@ -496,37 +450,7 @@ class LoginScreen extends React.Component {
           title={i18n.t('home_internet_title')}
         />
       </View>
-      
-      {alreadySignedup && 
-        <View style={mS.marTop20}>
-        <TouchableOpacity 
-          onPress={() => { this.setState({ showForgotPassword: true }); }}
-        >
-          <Text style={mS.forgot}>{i18n.t('login_Forgot_your_password')}</Text>
-        </TouchableOpacity>
-        </View>
-      }
 
-      {/*Terms and Conditions - we do this in two lines to make look nice*/}
-      {!alreadySignedup && 
-        <View style={[mS.errorBox, {height: 20}]}>
-          <Text style={mS.errorText}>{i18n.t('login_agree_term_1')}</Text>
-        </View>
-      }
-      {/*Terms and Conditions - we do this in two lines to make look nice*/}
-      {!alreadySignedup && 
-        <View style={[mS.errorBox, {marginTop: 5}]}>
-          <TouchableOpacity
-            onPress={() => { this.setState({ agreeTerms: false }); } }
-          >
-            <Text style={[
-              mS.errorText, {fontWeight: '600', 
-              color: colors.buttonColorText }
-              ]}>{i18n.t('login_agree_term_2')}</Text>
-          </TouchableOpacity>
-        </View>
-      }
-      
       </KeyboardAvoidingView>);
   }
 }
