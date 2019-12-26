@@ -70,6 +70,11 @@ const hdlcList = [
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+const getLabel = (list, value) => {
+  const listObj = list.find(item => item.value === parseInt(value));
+  return (listObj ? listObj.label : '');
+}
+
 class QuestionnaireScreenBasic extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
@@ -79,12 +84,12 @@ class QuestionnaireScreenBasic extends React.Component {
           fontSize: 19,
           color: colors.headerFontColor,
           fontFamily: colors.headerFont,
-          marginLeft: "auto", 
-          marginRight: "auto",
+          marginLeft: 'auto', 
+          marginRight: 'auto',
           textAlign: 'center',
           alignSelf: 'center',
         }}>
-          {i18n.t('form_basic_title')}
+          {'Secure Compute'}
         </Text>
       ),
       headerRight: (<View></View>),
@@ -99,7 +104,11 @@ class QuestionnaireScreenBasic extends React.Component {
     const { localResult } = this.props.result;
 
     this.state = {
+
+      percentAnswered: (frs.percentAnswered || 0),
+      numberAnswered: (frs.numberAnswered || 0),
       goodAnswersBasic: (frs.goodAnswersBasic || 0),
+
       birthyear: (answers.birthyear || 0),
       country: (answers.country || 0),
       gender:(answers.gender || 0),
@@ -107,6 +116,17 @@ class QuestionnaireScreenBasic extends React.Component {
       smoking: (answers.smoking || 0),
       weight: (answers.weight || 0),
       diabetes: (answers.diabetes || 0),
+      hdlc: (answers.hdlc || 0),
+
+      frsScore_ab: (frs.frsScore_ab || 0.0),
+      frsScore_r: (frs.frsScore_r || 0.0),
+      frsCurrent: (frs.frsCurrent || false),
+
+      FRScompute_progress: (this.props.answer.FRScompute_progress|| 0),
+      FRScomputing: (this.props.answer.FRScomputing || false),
+      
+      recalculating: false,
+
     };
     
     this.inputRefs = {
@@ -117,6 +137,7 @@ class QuestionnaireScreenBasic extends React.Component {
       smokingInput: null,
       weightInput: null,
       diabetesInput: null,
+      hdlcInput: null,
     };
 
   }
@@ -131,45 +152,98 @@ class QuestionnaireScreenBasic extends React.Component {
       smokingInput: null,
       weightInput: null,
       diabetesInput: null,
+      hdlcInput: null,
     };
 
   }
 
   handleSave = (key, value) => {
 
-    if ( key === 'country' ) { this.setState({ country : value });}
-    else if ( key === 'gender' ) { this.setState({ gender : value });}
-    else if ( key === 'smoking' ) { this.setState({ smoking : value });}
-    else if ( key === 'birthyear' ){ this.setState({ birthyear :value });}
-    else if ( key === 'height' ) { this.setState({ height : value });}
-    else if ( key === 'weight' ) { this.setState({ weight : value });}
-    else if ( key === 'diabetes' ) {this.setState({ diabetes : value });} 
+    const { dispatch } = this.props;
+
+    if ( key === 'country' ) { 
+      this.setState({ country : value })
+    }
+    else if ( key === 'gender' ) { 
+      this.setState({ gender : value })
+    }
+    else if ( key === 'smoking' ) { 
+      this.setState({ smoking : value })
+    }
+    else if ( key === 'birthyear' ){ 
+      this.setState({ birthyear :value })
+    }
+    else if ( key === 'height' ) { 
+      this.setState({ height : value })
+    }
+    else if ( key === 'weight' ) { 
+      this.setState({ weight : value })
+    }
+    else if ( key === 'diabetes' ) {
+      this.setState({ diabetes : value })
+    }
+    else if ( key === 'hdlc' ) {
+      this.setState({ hdlc : value })
+    }
 
     let newAnswer = [{ question_id : key, answer : value }];
 
-    //if (__DEV__) console.log(newAnswer); 
-    this.props.dispatch(giveAnswer(newAnswer));
+    if (__DEV__) console.log(newAnswer); 
+
+    dispatch(giveAnswer(newAnswer));
 
   };
 
-  handleContinue = () => {
-    this.props.navigation.navigate('Qcardio');
+  handleSeeResult = () => {
+    this.props.navigation.navigate('ResultFRS');
+  }
+
+  handleCalculate = () => {
+
+    const { dispatch } = this.props;
+    const { answers } = this.props.answer;
+    const { account } = this.props.user;
+    const { localResult } = this.props.result;
+
+    dispatch( calculateRiskScore(answers, localResult, account.UUID, account.id) );
+
+    this.setState({ recalculating: true });
+
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
 
     const { frs } = nextProps.answer;
+    const { localResult: nextLocalResult } = nextProps.result;
+    const { localResult } = this.props.result;
 
     this.setState({
+      percentAnswered: (frs.percentAnswered || 0),
+      numberAnswered: (frs.numberAnswered || 0),
+      frsScore_ab: (frs.frsScore_ab|| 0.0),
+      frsScore_r: (frs.frsScore_r|| 0.0),
+      frsCurrent: (frs.frsCurrent || false),
       goodAnswersBasic: (frs.goodAnswersBasic || 0),
+      FRScompute_progress: (nextProps.answer.FRScompute_progress || 0),
+      FRScomputing: (nextProps.answer.FRScomputing || false),
     });
+
+    //go to fresh result once calculation is done
+    if ( this.state.recalculating && nextProps.answer.FRScompute_progress === 100 ) {
+      this.setState({ recalculating : false });
+      this.props.navigation.navigate('ResultFRS');
+    }
 
   }
 
   render() {
     
+    const { localResult } = this.props.result;
+
     const { birthyear, country, gender, smoking, height, weight, 
-      diabetes, goodAnswersBasic } = this.state;
+            diabetes, hdlc, goodAnswersBasic, frsScore_ab, frsScore_r, 
+            frsCurrent, percentAnswered, numberAnswered, 
+            FRScomputing, FRScompute_progress } = this.state;
 
     const pickerStyle = {
       done: {
@@ -206,29 +280,52 @@ class QuestionnaireScreenBasic extends React.Component {
   ref={scrollView => this.scrollView = scrollView}
 >
 
-{(goodAnswersBasic < 7) && 
-  <View style={[styles.shadowBox, {height: 100, alignItems: 'center'}]}>
+{!FRScomputing && (goodAnswersBasic < 8) &&
+  <View style={[styles.shadowBox, {alignItems: 'center', marginTop: 13, fontSize: 20}]}>
     <Text style={styles.smallGray}>{i18n.t('form_cardio_info')}</Text>
   </View>
 }
 
-{(goodAnswersBasic >= 7) && 
-  <View style={styles.shadowBoxClear}>
-    <BasicButton
-      width={200}
-      text={i18n.t('form_basic_continue')} 
-      onClick={this.handleContinue}
-    />
+{(numberAnswered >= 8) && !frsCurrent && <View style={styles.shadowBoxClear}>
+  <BasicButton 
+    width={200}
+    text={i18n.t('form_cardio_calculate')} 
+    onClick={this.handleCalculate}
+  />
   </View>
 }
 
-<View style={styles.shadowBox}>
+{(numberAnswered >= 8) && frsCurrent && <View style={styles.shadowBoxClear}>
+  <BasicButton
+    width={200} 
+    text={i18n.t('form_cardio_result')} 
+    onClick={this.handleSeeResult}
+  />
+  </View>
+}
+
+{/*show progress indicator when calculating risk*/}
+{FRScomputing && <View 
+  style={styles.containerProgress}>
+    <ProgressCircle percent={FRScompute_progress}>
+      <Ionicons name={`ios-cog`} size={35} color={colors.gray}/>
+    </ProgressCircle>
+    <View>
+      {(FRScompute_progress   < 100) && <Text style={styles.progressText}>{i18n.t('form_cardio_mpc')}</Text>}
+      {(FRScompute_progress === 100) && <Text style={styles.progressText}>{i18n.t('global_Done')}</Text>}
+    </View>
+  </View>
+}
+
+{/*ask questions when not computing*/}
+{!FRScomputing && <View 
+  style={styles.shadowBox}>
 
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.countryInput.togglePicker()}}>
 <View style={styles.row}>
 <View style={styles.label}><Text style={styles.text}>{i18n.t('form_basic_country')}</Text></View>
-<Text style={this.state.country == 0? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
+<Text style={this.state.country == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
   { this.state.country == 0 ? i18n.t('form_basic_please_select'): countriesList[this.state.country-1].label }
 </Text>
 <Picker
@@ -259,14 +356,13 @@ class QuestionnaireScreenBasic extends React.Component {
 }
 
 {Platform.OS == 'ios' &&
-<TouchableOpacity onPress={() => { 
-    this.inputRefs.birthyearInput.togglePicker(); 
-    this.state.birthyear == 0 && this.setState({ birthyear : yearsList[30].value });
-  }}
->
+<TouchableOpacity onPress={()=>{
+  this.inputRefs.birthyearInput.togglePicker(); 
+  this.state.birthyear == 0 && this.setState({ birthyear : yearsList[30].value });
+}}>
 <View style={styles.row}>
 <View style={styles.label}><Text style={styles.text}>{i18n.t('form_basic_birthday')}</Text></View>
-<Text style={this.state.birthyear == 0? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
+<Text style={this.state.birthyear == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.birthyear == 0 ? i18n.t('form_basic_please_select'): this.state.birthyear }
 </Text>
 <Picker
@@ -301,7 +397,7 @@ class QuestionnaireScreenBasic extends React.Component {
 <TouchableOpacity onPress={()=>{this.inputRefs.genderInput.togglePicker()}}>
 <View style={styles.row}>
 <View style={styles.label}><Text style={styles.text}>{i18n.t('form_basic_gender')}</Text></View>
-<Text style={this.state.gender == 0? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
+<Text style={this.state.gender == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.gender == 0 ? i18n.t('form_basic_please_select'): genderList[this.state.gender-1].label }
 </Text>
 <Picker
@@ -336,11 +432,10 @@ class QuestionnaireScreenBasic extends React.Component {
 <TouchableOpacity onPress={() => { 
   this.inputRefs.heightInput.togglePicker(); 
   this.state.height == 0 && this.setState({ height : heightList[45].value });
-  }}
->
+}}>
 <View style={styles.row}>
 <View style={styles.label}><Text style={styles.text}>{i18n.t('form_basic_height')}</Text></View>
-<Text style={this.state.height == 0? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
+<Text style={this.state.height == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.height == 0 ? i18n.t('form_basic_please_select'): this.state.height + ' cm' }
 </Text>
 <Picker
@@ -374,13 +469,13 @@ class QuestionnaireScreenBasic extends React.Component {
 
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={() => { 
-    this.inputRefs.weightInput.togglePicker(); 
-    this.state.weight == 0 && this.setState({ weight : weightList[45].value });
-  }}
+  this.inputRefs.weightInput.togglePicker(); 
+  this.state.weight == 0 && this.setState({ weight : weightList[45].value });
+}}
 >
 <View style={styles.row}>
 <View style={styles.label}><Text style={styles.text}>{i18n.t('form_basic_weight')}</Text></View>
-<Text style={this.state.weight == 0? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
+<Text style={this.state.weight == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.weight == 0 ? i18n.t('form_basic_please_select'): this.state.weight + ' kg'}
 </Text>
 <Picker
@@ -418,7 +513,7 @@ class QuestionnaireScreenBasic extends React.Component {
 <TouchableOpacity onPress={()=>{this.inputRefs.smokingInput.togglePicker()}}>
 <View style={styles.row}>
 <View style={styles.label}><Text style={styles.text}>{i18n.t('form_basic_smoke')}</Text></View>
-<Text style={this.state.smoking == 0? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
+<Text style={this.state.smoking == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.smoking == 0 ? i18n.t('form_basic_yes_no'): smokingList[this.state.smoking-1].label }
 </Text>
 <Picker
@@ -456,7 +551,7 @@ class QuestionnaireScreenBasic extends React.Component {
 <TouchableOpacity onPress={()=>{this.inputRefs.diabetesInput.togglePicker()}}>
 <View style={[styles.row, {borderBottomColor: '#FFFFFF'}]}>
 <View style={styles.label}><Text style={styles.text}>{i18n.t('form_basic_diabetes')}</Text></View>
-<Text style={this.state.diabetes == 0? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
+<Text style={this.state.diabetes == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.diabetes == 0 ? i18n.t('form_basic_yes_no'): diabetesList[this.state.diabetes-1].label }
 </Text>
 <Picker
@@ -486,7 +581,9 @@ class QuestionnaireScreenBasic extends React.Component {
 </View>
 }
 
-</View>
+</View>{/*closes the question shadowbox*/}
+}
+
 </ScrollView>
 </View>
 </View>);

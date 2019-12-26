@@ -3,29 +3,21 @@ import {
 	signOut,
 	burnEverything,
 	setAccount,
-	signinTokenGen,
 	resetError,
-	setUnreadCount,
 	signupUser_DB,
-	updateUser_DB,
+	updateUser_DB
 } from './actionUser';
 
 import {
 	getAnswers,
 	giveAnswer,
 	calculateRiskScore,
-	calculateRiskScoreProgress,
-	updateRiskLabel,
+	calculateRiskScoreProgress
 } from './actionAnswers';
 
 import {
-	getStatus,
-	circulateStatus,
-} from './actionWhitelist';
-
-import {
 	getResults,
-	circulateLocalResults,
+	circulateLocalResults
 } from './actionResults';
 
 export {
@@ -34,10 +26,7 @@ export {
 	signOut,
 	burnEverything,
 	setAccount,
-	signinTokenGen,
 	resetError,
-	signupUser_DB,
-	updateUser_DB,
 
 	//questionaire functions
 	getAnswers,
@@ -47,9 +36,5 @@ export {
 
 	//get new encrypted results from server
 	getResults,
-	circulateLocalResults,
-
-	//whitelist
-	getStatus,
-	circulateStatus,
+	circulateLocalResults
 };

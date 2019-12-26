@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
 import { Platform, View, Text, StyleSheet, Image } from 'react-native';
-
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator, HeaderBackButton } from 'react-navigation-stack';
 
@@ -14,7 +12,6 @@ import HomeScreen from '../screens/HomeScreen';
 
 /* Collect data */
 import QuestionnaireBasicScreen from '../screens/QuestionnaireScreenBasic';
-import QuestionnaireCardioScreen from '../screens/QuestionnaireScreenCardio';
 
 /* Results */
 import ResultFRSScreen from '../screens/ResultFRSScreen';
@@ -26,13 +23,7 @@ import AccountDeleteScreen from '../screens/AccountDeleteScreen';
 import AccountDeletedScreen from '../screens/AccountDeletedScreen';
 
 const Label = (props) => (
-  <Text style={
-    [styles.tabText, 
-      { 
-        color: (props.focused ? colors.headerFontColor : colors.gray),
-      }
-    ]
-  }>
+  <Text style={[styles.tabText, { color: (props.focused ? colors.headerFontColor : colors.gray) }]}>
     {props.text}
   </Text>
 );
@@ -62,7 +53,7 @@ const HomeStack = createStackNavigator(
   }, 
   {
     defaultNavigationOptions: {
-      headerTintColor: colors.headerFontColor, //this is the back arrow color
+      headerTintColor: colors.headerFontColor,
     },
   }
 );
@@ -86,15 +77,6 @@ HomeStack.navigationOptions = ({ navigation }) => {
         image={!focused ? require('../assets/images/nav/nav_home_g.png') : require('../assets/images/nav/nav_home_b.png')}
       />
     ),
-    tabBarOnPress: (event) => {
-      const { navigation } = event;
-      event.defaultHandler();
-      //when we press tab bar we want the home screen to have clean appearance
-      //could be useful in the future
-      if (navigation.state.routes[0].params && navigation.state.routes[0].params.scrollToTop) {
-        //navigation.state.routes[0].params.scrollToTop();
-      }
-    },
     tabBarVisible,
   };
 };
@@ -115,7 +97,7 @@ const DNAStack = createStackNavigator(
 }, 
 {
   defaultNavigationOptions: {
-    headerTintColor: colors.headerFontColor, //this is the back arrow color
+    headerTintColor: colors.headerFontColor,
   },
 });
 
@@ -157,7 +139,7 @@ const AccountStack = createStackNavigator(
 },
 {
   defaultNavigationOptions: {
-    headerTintColor: colors.headerFontColor, //this is the back arrow color
+    headerTintColor: colors.headerFontColor,
   },
 });
 
