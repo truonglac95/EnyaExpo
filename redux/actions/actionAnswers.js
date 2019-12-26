@@ -33,11 +33,13 @@ import {
 
 export const getAnswersBegin   = data  => ({ type: GET_ANSWERS });
 export const getAnswersSuccess = data  => ({ type: GET_ANSWERS_SUCCESS, payload: data });
-export const getFRSSuccess     = data  => ({ type: GET_FRS_SUCCESS,     payload: data });
 export const getAnswersFailure = error => ({ type: GET_ANSWERS_FAILURE, payload: error });
+
 export const giveAnswerBegin   = data  => ({ type: GIVE_ANSWER });
 export const giveAnswerSuccess = data  => ({ type: GIVE_ANSWER_SUCCESS, payload: data });
 export const giveAnswerFailure = error => ({ type: GIVE_ANSWER_FAILURE, payload: error });
+
+export const getFRSSuccess     = data  => ({ type: GET_FRS_SUCCESS,     payload: data });
 
 const answersL = {
   birthyear: 0,
@@ -192,7 +194,8 @@ export const calculateRiskScore = (data, gene, UUID, id) => async (dispatch) => 
 
 	if ( CanComputeRisk( data ) ) {
 		
-		if (__DEV__) console.log('Yes, there are enough data to compute the risk ');
+		//if (__DEV__) 
+      console.log('Yes, there are enough data to compute the risk ');
 
     APIStatus = await ComputeRiskSecure(data, UUID, id, dispatch); 
 

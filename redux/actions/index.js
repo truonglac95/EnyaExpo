@@ -8,13 +8,6 @@ import {
 	setUnreadCount,
 	signupUser_DB,
 	updateUser_DB,
-	receiveNotification,
-	shareDNA,
-	internetStatus,
-	getSharingState,
-	sbConnected,
-	preport,
-	getPreportState,
 } from './actionUser';
 
 import {
@@ -27,12 +20,11 @@ import {
 
 import {
 	getStatus,
-	circulateStatus, /*not sure this is needed*/
+	circulateStatus,
 } from './actionWhitelist';
 
 import {
 	getResults,
-	setResultDownloadFlag,
 	circulateLocalResults,
 } from './actionResults';
 
@@ -44,27 +36,17 @@ export {
 	setAccount,
 	signinTokenGen,
 	resetError,
-	setUnreadCount,
 	signupUser_DB,
 	updateUser_DB,
-	receiveNotification,
-	sbConnected,
-	internetStatus,
-	shareDNA,
-	getSharingState,
-	preport,
-	getPreportState,
 
 	//questionaire functions
 	getAnswers,
 	giveAnswer,
 	calculateRiskScore,
 	calculateRiskScoreProgress,
-	updateRiskLabel,
 
 	//get new encrypted results from server
 	getResults,
-	setResultDownloadFlag,
 	circulateLocalResults,
 
 	//whitelist

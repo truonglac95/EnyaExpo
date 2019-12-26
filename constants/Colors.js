@@ -12,8 +12,8 @@ export default {
   //all colors related to the header
   headerBackArrowColor: BDiconBlue,
   headerFontColor: BDiconBlue,
-  headerFont: 'montserratSB',
-  tabFont: 'montserrat',
+  //headerFont: 'montserratSB',
+  //tabFont: 'montserrat',
 
   //everything related to the main buttons
   buttonColorBack: '#FFFFFF',

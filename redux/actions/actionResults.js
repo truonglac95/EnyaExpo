@@ -4,9 +4,6 @@ import {
 	GET_RESULTS,
 	GET_RESULTS_SUCCESS,
 	GET_RESULTS_FAILURE,
-	UPDATE_RESULT_FLAG,
-	UPDATE_RESULT_FLAG_SUCCESS,
-	UPDATE_RESULT_FLAG_FAILURE,
 	CIRCULATE_LOCAL_RESULTS,
 } from '../constants';
 
@@ -14,39 +11,27 @@ import * as SecureStore from 'expo-secure-store';
 import { SECURE_STORAGE_USER_RESULT } from '../constants';
 import * as FileSystem from 'expo-file-system';
 
-import { updateRiskLabel, giveAnswer } from './actionAnswers';
-
 //files
 const pdfStore = `${FileSystem.documentDirectory}User/PDFs`;
 var ENresultPDF = ``;
-
-//if (__DEV__) console.log('Save file as:');
-//if (__DEV__) console.log(ENresultPDF);
-//if (__DEV__) console.log(FileSystem.documentDirectory);
 
 export const getResultsBegin     = data  => ({ type: GET_RESULTS });
 export const getResultsSuccess   = data  => ({ type: GET_RESULTS_SUCCESS, payload: data });
 export const getResultsFailure   = error => ({ type: GET_RESULTS_FAILURE, payload: error });
 
-export const updateResultFlagBegin   = data  => ({ type: UPDATE_RESULT_FLAG });
-export const updateResultFlagSuccess = data  => ({ type: UPDATE_RESULT_FLAG_SUCCESS, payload: data });
-export const updateResultFlagFailure = error => ({ type: UPDATE_RESULT_FLAF_FAILURE, payload: error });
-
 export const circulateLocalResults = data => ({ type: CIRCULATE_LOCAL_RESULTS, payload: data });
 
 function getTimestamps(value, index, array) { 
   //this is the upload time - set by the code when file is uploaded
-  //not related to file name
   var unix_time = parseInt(array[index].unix_time);
 	return [index, unix_time]; 
-
 };
 
 export const getResults = (uuid) => (dispatch) => {
 
 	dispatch(getResultsBegin());
 
-	if (__DEV__) console.log('REDUX: Getting result from BD database for UUID:', uuid)
+	if (__DEV__) console.log('REDUX: Getting result from database for UUID:', uuid)
 
 	fetch(`${API_URL}/results/${uuid}`, {
 		method: 'GET',
@@ -67,9 +52,6 @@ access blocked
 etc. 
 */
 	.then(result => {
-
-		//if (__DEV__) console.log('REDUX: Here is what the server said:', result)
-		//can reach server but no entry: Array []
 
     //for testing 
     //SecureStore.deleteItemAsync(SECURE_STORAGE_USER_RESULT).then(() => {}).catch(() => {});
@@ -151,22 +133,7 @@ etc.
             epc: result[0].ecc_epc,
             iv: result[0].ecc_iv,
             ENresultPDF: `${pdfStore}/${filename}`,
-            gene_rr: result[0].gene_rr,
-            lab_bp: result[0].lab_bp,
-            lab_cho: result[0].lab_cho,
-            lab_hdl: result[0].lab_hdl,
-            lab_bp_history: result[0].lab_bp_history,
-            lab_cho_history: result[0].lab_cho_history,
-            lab_hdl_history: result[0].lab_hdl_history,
     			};
-
-          //ok we just got new gene_rr data - need to update various labels
-          if(newLocalResult.gene_rr > 0) {
-            //if we have an FRS, then we have all the answers, too,
-            //then recompute the risk labels
-            if (__DEV__) console.log('actionResults: Updating Risk Labels because we might have new gene_rr values')
-            dispatch(updateRiskLabel(newLocalResult.gene_rr));
-          }
 
     		} //closes rstate 4 or 5
 
@@ -174,8 +141,7 @@ etc.
 				SecureStore.getItemAsync(SECURE_STORAGE_USER_RESULT).then(resultL => {
         	
           if (__DEV__) console.log('actionResults: Local keys/results check.')
-        	
-          //if (__DEV__) console.log(result);
+
         	if (resultL) {
           				
           	if (__DEV__) console.log('actionResults: Local keys/results found.')
@@ -214,15 +180,6 @@ etc.
           		//if (__DEV__) console.log('actionResults: Updating localResult to:', newLocalResult)
       				SecureStore.setItemAsync(SECURE_STORAGE_USER_RESULT, JSON.stringify(newLocalResult));
 
-              if(newLocalResult.lab_cho > 0) {
-                let newAnswer = [
-                  { question_id : 'cholesterol', answer : newLocalResult.lab_cho },
-                  { question_id : 'bloodpressure', answer : newLocalResult.lab_bp },
-                  { question_id : 'hdlc', answer : newLocalResult.lab_hdl },
-                ];
-                dispatch(giveAnswer(newAnswer));
-              }
-
               if((newLocalResult.r_state === 4) || (newLocalResult.r_state === 5)) {
                 if (__DEV__) console.log('actionResults: Downloading file')
                 FileSystem.downloadAsync( 
@@ -235,13 +192,13 @@ etc.
                   if (__DEV__) console.log(`actionResults: circulateLocalResults after file downloaded`);
                   dispatch(circulateLocalResults(newLocalResult));
                   //let the server know we have this file or result
-                  dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
+                  //dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
                 });
               } else {
                 if (__DEV__) console.log(`actionResults: circulateLocalResults`);
                 dispatch(circulateLocalResults(newLocalResult));
                 //let the server know we have this file or result
-                dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
+                //dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
               }
 
       			}
@@ -272,17 +229,7 @@ etc.
               });
 
               if (__DEV__) console.log(`actionResults: Need to CREATE local results`);
-              //if (__DEV__) console.log('actionResults: Creating localResult:', newLocalResult)
               SecureStore.setItemAsync(SECURE_STORAGE_USER_RESULT, JSON.stringify(newLocalResult));
-
-              if(newLocalResult.lab_cho > 0) {
-                let newAnswer = [
-                  { question_id : 'cholesterol', answer : newLocalResult.lab_cho },
-                  { question_id : 'bloodpressure', answer : newLocalResult.lab_bp },
-                  { question_id : 'hdlc', answer : newLocalResult.lab_hdl }
-                ];
-                dispatch(giveAnswer(newAnswer));
-              }
 
               if((newLocalResult.r_state === 4) || (newLocalResult.r_state === 5)) {
                 if (__DEV__) console.log('actionResults: Downloading file')
@@ -295,12 +242,12 @@ etc.
                   //can lead to a bug in decrypt
                   if (__DEV__) console.log(`actionResults: circulateLocalResults after file downloaded`);
                   dispatch(circulateLocalResults(newLocalResult));
-                  dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
+                  //dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
                 });
               } else {
                 if (__DEV__) console.log(`actionResults: circulateLocalResults non-file`);
                 dispatch(circulateLocalResults(newLocalResult));
-                dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
+                //dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
               };
             }
         	 }
@@ -318,7 +265,7 @@ etc.
 			}
 
 		} else {
-			//no idea when this triggers????
+			//how is this case triggered?
 			if (__DEV__) console.log('getResultsFailure(result.error) 322:', result)
 			dispatch(getResultsFailure(result.error));
 		}
@@ -326,48 +273,6 @@ etc.
 	.catch((err) => {
 		if (__DEV__) console.log('getResults - probable network error 327:', err)
 		dispatch(getResultsFailure({error_type : 'network_request_failed'}));
-    //handle error
 	});
 
 }
-
-//this changes the r_state to indicate download
-//ids is the result id
-export const setResultDownloadFlag = (uuid, id) => (dispatch) => {
-	
-  //if (__DEV__) console.log('setResultDownloadFlag: obtained this result')
-  //if (__DEV__) console.log('setResultDownloadFlag: setting flag to zero')
-  //if (__DEV__) console.log(uuid)
-  //if (__DEV__) console.log(id)
-
-	dispatch(updateResultFlagBegin());
-
-	fetch(`${API_URL}/results/${uuid}`, {
-		method: 'PUT',
-		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			id,
-		}),
-	})
-	.then(res => res.json()
-  )
-	.then(data => {
-		//if (__DEV__) console.log('Here is what the server said - update:', data)
-		if (!data.error) {
-			dispatch(updateResultFlagSuccess({id}));
-		} else {
-			dispatch(updateResultFlagFailure(data.error));
-		}
-	})
-	.catch((err) => {
-		if (__DEV__) console.log('setResultDownloadFlag - probable network error')
-		if (__DEV__) console.log(err)
-    //handle error
-    //humm
-    //I guess we are not handling any errors
-	});
-}
-

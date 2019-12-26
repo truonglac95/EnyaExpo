@@ -23,7 +23,6 @@ class AccountScreen extends React.Component {
         style={{
           fontSize: 19,
           color: colors.headerFontColor,
-          fontFamily: colors.headerFont,
           marginLeft: "auto", 
           marginRight: "auto",
           textAlign: 'center',
@@ -81,16 +80,6 @@ class AccountScreen extends React.Component {
   </Text>
 </View>
 
-<View style={{alignItems: 'center', justifyContent: 'flex-start',}}>
-  <View style={{marginTop: 30, marginBottom: 20}}>
-    <BasicButton 
-      text={i18n.t('account_chat')} 
-      icon="ios-chatbubbles" 
-      onClick={()=>{this.props.navigation.navigate('Chat')}} 
-    />
-  </View>
-</View>
-
 </View>
 
 <View style={styles.shadowBox}>
@@ -103,20 +92,6 @@ class AccountScreen extends React.Component {
 </ImageBackground>
 
 <View style={{alignItems: 'center', justifyContent: 'flex-start',}}>
-  <View style={{marginTop: 30}}>
-  <BasicButton 
-    text={i18n.t('account_sign_out')} 
-    icon="ios-log-out" 
-    onClick={this.handleLogout} 
-  />
-  </View>
-  <View style={{marginTop: 30}}>
-  <BasicButton 
-    text={i18n.t('account_change_password')} 
-    icon="ios-refresh" 
-    onClick={()=>{this.props.navigation.navigate('PasswordChange')}} 
-  />
-  </View>
   <View style={{marginTop: 30, marginBottom: 20}}>
   <BasicButton 
     text={i18n.t('account_delete_account')} 
@@ -139,7 +114,6 @@ const styles = StyleSheet.create({
     fontSize: 19,
     lineHeight: 25,
     color: colors.headerFontColor,
-    fontFamily: colors.headerFont,
     paddingTop: 10,
     paddingLeft: 12,
     paddingBottom: 10,
@@ -162,7 +136,6 @@ const styles = StyleSheet.create({
   textUUID: {
     fontSize: 18,
     lineHeight: 24,
-    fontFamily: 'roboto',
     fontWeight: 'normal',
     color: colors.darkGray,
     textAlign:'left',
@@ -171,7 +144,6 @@ const styles = StyleSheet.create({
   textVER: {
     fontSize: 14,
     lineHeight: 22,
-    fontFamily: 'roboto',
     fontWeight: 'normal',
     color: colors.darkGray,
     textAlign:'center',

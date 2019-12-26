@@ -49,26 +49,6 @@ class AccountDelete extends React.Component {
 
   handleDeleteAccount = () => {
 
-    const { password } = this.state;
-
-    this.setState({
-      error: '',
-      success: '',
-    });
-    
-    if (!password) {
-      this.setState({
-        error: 'MISSING_PARAMETER',
-      });
-    } else {
-      SecureStore.getItemAsync(SECURE_STORAGE_USER_ACCOUNT).then(result => {
-        if (result) {
-          const res = JSON.parse(result);
-          if (res.password !== password) {
-            this.setState({
-              error: 'INCORRECT_PASSWORD',
-            });
-          } else {
             Alert.alert(
               i18n.t('account_delete_title'),
               i18n.t('account_delete_alert'),
@@ -86,10 +66,7 @@ class AccountDelete extends React.Component {
               ],
               { cancelable: false },
             );
-          }
-        }
-      }).catch(err => {});
-    }
+
   }
 
   handleChange = (key, value) => {
@@ -105,17 +82,6 @@ class AccountDelete extends React.Component {
       error,
       success,
     } = this.state;
-    
-    let errorMessage = '';
-
-    switch (error) {
-      case 'INCORRECT_PASSWORD':
-        errorMessage = i18n.t('acccount_password_error');
-        break;
-      case 'MISSING_PARAMETER':
-        errorMessage = i18n.t('account_password_form');
-        break;
-    }
 
     return (
 
@@ -128,29 +94,6 @@ class AccountDelete extends React.Component {
 {/*general instructions at top of page*/}
 <View style={[mS.marTop20, {width: '84%'}]}>
   <Text style={mS.descriptionSmall}>{i18n.t('account_delete_password')}</Text>
-</View>
-
-{/*potential error messages
-first one is spacer to keep things from 
-hopping around if there is an error message*/}
-{!errorMessage && 
-  <View style={mS.errorBox}>
-    <Text style={mS.errorText}>&nbsp;</Text>
-  </View>
-}
-{!!errorMessage && 
-  <View style={mS.errorBox}>
-    <Text style={mS.errorText}>{errorMessage}</Text>
-  </View>
-}
-
-{/*password entry*/}
-<View style={[mS.passwordRow,{marginTop: 0}]}>
-  <PasswordInput
-    label={i18n.t('account_enter_password')}
-    password={password}
-    onChange={(v) => { this.handleChange('password', v); }}
-  />
 </View>
 
 {/*action button*/}

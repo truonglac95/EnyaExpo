@@ -24,7 +24,7 @@ class CodeScannerScreen extends React.Component {
 
 handleBarCodeScannedSim = () => {
 
-  let dataStringFromQRCodeScan = 'fba1b3c7564745b9284e7dfc73cf136d' +
+  let dataStringFromQRCodeScan = 'fba1b3c7564745b9284e7dfc73cf136d'  +
   'd4ee9d7931c934690b7d7efb439935ae2897730316ac44816187d0d6629970f4' +
   '9c72b528bc7e8e4a8519555da095326be635dfba5eee3131ad82e25113a11bd8' +
   '679441e9962f6a8c881db713d874bc78bef72e7532fd7e45';
@@ -35,7 +35,17 @@ handleBarCodeScannedSim = () => {
     //the scanner should only ever be called 
     //when there is no account in the first place
     SecureStore.deleteItemAsync(SECURE_STORAGE_USER_ACCOUNT).then(()=>{}).catch(()=>{});
-  
+   
+    const firstlogintime = new Date().getTime().toString();
+    const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
+
+    const account = result
+
+    let newAccount = {
+          ...account, 
+          id: id,
+    };
+
     //save to local secure storage
     SecureStore.setItemAsync(SECURE_STORAGE_USER_ACCOUNT, JSON.stringify(result));
   

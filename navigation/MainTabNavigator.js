@@ -15,7 +15,6 @@ import HomeScreen from '../screens/HomeScreen';
 /* Collect data */
 import QuestionnaireBasicScreen from '../screens/QuestionnaireScreenBasic';
 import QuestionnaireCardioScreen from '../screens/QuestionnaireScreenCardio';
-import QuestionnaireCardioScreenDemo from '../screens/QuestionnaireScreenCardioDemo';
 
 /* Results */
 import ResultFRSScreen from '../screens/ResultFRSScreen';
@@ -58,7 +57,6 @@ const HomeStack = createStackNavigator(
     Home: HomeScreen,
     Qbasic: QuestionnaireBasicScreen,
     Qcardio: QuestionnaireCardioScreen,
-    QcardioDemo: QuestionnaireCardioScreenDemo,
     ResultFRS: ResultFRSScreen,
     ResultDNA: ResultDNAScreen,
   }, 

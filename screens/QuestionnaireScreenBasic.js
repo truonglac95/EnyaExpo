@@ -1,8 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { StyleSheet, View, Text, TouchableOpacity, 
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, 
   ScrollView, Platform, Dimensions, Keyboard, Image } from 'react-native';
+
+import ProgressCircle from '../components/ProgressCircle';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Picker from 'react-native-picker-select';
 import BasicButton from '../components/BasicButton';
@@ -11,7 +14,7 @@ import i18n from '../constants/Strings';
 import mS from '../constants/masterStyle';
 
 //redux
-import { giveAnswer } from '../redux/actions';
+import { giveAnswer, calculateRiskScore } from '../redux/actions';
 
 const yearsList = [];
 for (var i = 1920; i <= (new Date()).getFullYear(); i++) {
@@ -50,6 +53,20 @@ const diabetesList = [
   { label: i18n.t('global_yes'), value: 2 }
 ];
 
+const hdlcList = [
+  { label: '<0.9'    , value:  1 },
+  { label: '0.9-0.99', value:  2 },
+  { label: '1.0-1.09', value:  3 },
+  { label: '1.1-1.19', value:  4 },
+  { label: '1.2-1.29', value:  5 },
+  { label: '1.3-1.39', value:  6 },
+  { label: '1.4-1.49', value:  7 },
+  { label: '1.5-1.59', value:  8 },
+  { label: '1.6-1.69', value:  9 },
+  { label: '1.7-1.79', value: 10 },
+  { label: '>1.79'   , value: 11 }
+];
+
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
@@ -79,7 +96,6 @@ class QuestionnaireScreenBasic extends React.Component {
     super(props);
 
     const { answers, frs } = this.props.answer;
-    const { status } = this.props.whitelist;
     const { localResult } = this.props.result;
 
     this.state = {
@@ -91,8 +107,6 @@ class QuestionnaireScreenBasic extends React.Component {
       smoking: (answers.smoking || 0),
       weight: (answers.weight || 0),
       diabetes: (answers.diabetes || 0),
-      status: (status || 0),
-      dnaStatus: (localResult.r_state || 0), //result type
     };
     
     this.inputRefs = {
@@ -123,8 +137,6 @@ class QuestionnaireScreenBasic extends React.Component {
 
   handleSave = (key, value) => {
 
-    //if (__DEV__) console.log('saving');
-
     if ( key === 'country' ) { this.setState({ country : value });}
     else if ( key === 'gender' ) { this.setState({ gender : value });}
     else if ( key === 'smoking' ) { this.setState({ smoking : value });}
@@ -132,7 +144,6 @@ class QuestionnaireScreenBasic extends React.Component {
     else if ( key === 'height' ) { this.setState({ height : value });}
     else if ( key === 'weight' ) { this.setState({ weight : value });}
     else if ( key === 'diabetes' ) {this.setState({ diabetes : value });} 
-    //}
 
     let newAnswer = [{ question_id : key, answer : value }];
 
@@ -142,41 +153,23 @@ class QuestionnaireScreenBasic extends React.Component {
   };
 
   handleContinue = () => {
-
-    if( this.state.status === 2 ) {
-      this.props.navigation.navigate('QcardioDemo');
-    } else {
-      this.props.navigation.navigate('Qcardio');
-    }
-
+    this.props.navigation.navigate('Qcardio');
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
 
     const { frs } = nextProps.answer;
-    const { status } = nextProps.whitelist;
-    const { localResult } = nextProps.result;
 
     this.setState({
       goodAnswersBasic: (frs.goodAnswersBasic || 0),
-      status: (status || 0),
-      dnaStatus: (localResult.r_state || 0), //result type
     });
 
   }
 
-  /*deals with missing config setting in Android, relating to the initial 
-  postion of the data in the scrollview. Also deals with iOS without needing 
-  the depreciated intialOffset*/
-  _onContentSizeChange() {
-     //let initialYScroll = 0;
-     //this.scrollView.scrollTo({x: 0, y: initialYScroll, animated: false});
-  };
-
   render() {
     
-    const { birthyear, country, gender, smoking, 
-            height, weight, diabetes, goodAnswersBasic } = this.state;
+    const { birthyear, country, gender, smoking, height, weight, 
+      diabetes, goodAnswersBasic } = this.state;
 
     const pickerStyle = {
       done: {
@@ -211,10 +204,7 @@ class QuestionnaireScreenBasic extends React.Component {
   showsVerticalScrollIndicator={false}
   overScrollMode={'always'}
   ref={scrollView => this.scrollView = scrollView}
-  onContentSizeChange={()=>{this._onContentSizeChange()}}
 >
-
-{/*<View style={{height: 100}}/>*/}
 
 {(goodAnswersBasic < 7) && 
   <View style={[styles.shadowBox, {height: 100, alignItems: 'center'}]}>
@@ -498,8 +488,9 @@ class QuestionnaireScreenBasic extends React.Component {
 
 </View>
 </ScrollView>
-
-</View></View>);}}
+</View>
+</View>);
+}}
 
 const styles = StyleSheet.create({
   //for most of the text

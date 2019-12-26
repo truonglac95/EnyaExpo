@@ -143,10 +143,7 @@ constructor (props) {
   }
 
   handleSave = (key, value) => {
-    
-    //if (__DEV__) console.log(key)
-    //if (__DEV__) console.log(value)
-    
+
     const { dispatch } = this.props;
 
     if ( key === 'hdlc' ) {
@@ -253,10 +250,6 @@ constructor (props) {
       frsScore_ab, frsScore_r, frsCurrent,percentAnswered, numberAnswered, 
       FRScomputing, FRScompute_progress } = this.state;
 
-    //if (__DEV__) console.log('Bloodpressure:', bloodpressure);
-    //if (__DEV__) console.log('HDL-C:', hdlc);
-    //if (__DEV__) console.log('Cholesterol:', cholesterol);
-
     const pickerStyle = {
       done: {
         color: '#FB2E59',
@@ -290,9 +283,6 @@ constructor (props) {
       resultDateString += resultDate.getFullYear();
     }
 
-    let internet = this.props.user.internet.internet_connected;
-    let SMCservers = this.props.user.internet.servers_reachable;
-
     return (
 
 <View style={styles.containerMain}>
@@ -321,9 +311,6 @@ constructor (props) {
     width={200}
     text={i18n.t('form_cardio_calculate')} 
     onClick={this.handleCalculate}
-    no_internet={!internet || !SMCservers}
-    todo={!SMCservers ? i18n.t('home_server_text') : i18n.t('global_internet_text_half') + i18n.t('form_calculate_risk')}
-    title={!SMCservers ? i18n.t('home_server_title') : i18n.t('home_internet_title')}
   />
   </View>
 }

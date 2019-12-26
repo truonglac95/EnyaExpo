@@ -115,24 +115,14 @@ class MainApp extends React.Component {
     if ( this.props.user.deleted ) {
       return <AccountDeletedScreen onWipeOut={this.props.onWipeOut}/>
     }
-    
-    if ( typeof(account.loading) == 'undefined' ) {
+    else if ( typeof(account.loading) == 'undefined' ) {
       //waiting to hear back from secure storage asyc call
       return null;
     }
     else if ( !account.UUID ) {
-      //if (__DEV__) console.log('Need to set up new account - scan the QR code')
       return <CodeScannerScreen />
     }
-    else if ( (!loginToken || !loginToken.valid) && !account.password ) {
-      return <LoginScreen login = {false}/>
-    }
-    else if ( !loginToken || !loginToken.valid ) {
-      if (__DEV__) console.log('Going to login screen')
-      return <LoginScreen login = {true}/>
-    }
     else {
-      //all set - grant access
       return (
         <View style={{flex: 1}}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}

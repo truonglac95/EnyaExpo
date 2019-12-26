@@ -14,7 +14,6 @@ import { Asset } from 'expo-asset';
 
 import MainApp from './MainApp';
 import BasicButton from './components/BasicButton';
-import SplashLoader from './components/SplashLoader';
 import colors from './constants/Colors';
 import i18n from './constants/Strings';
 import mS from './constants/masterStyle';
@@ -48,7 +47,7 @@ export default class App extends React.Component {
 
     SecureStore.getItemAsync(SECURE_STORAGE_USER_FLOW).then(result => {
       if(result) {
-        if (__DEV__) ('This is a signed up user - no need to show value prop slides')
+        if (__DEV__) ('This is a signed-up user - no need to show value prop slides')
         this.setState({
           active: 4, // go straight to login window
         });
@@ -60,9 +59,7 @@ export default class App extends React.Component {
   }
 
   moveOn = () => {
-
     this.setState({ active : this.state.active + 1 });
-
   }
 
   renderApp = (active) => {
@@ -201,8 +198,6 @@ export default class App extends React.Component {
       require('./assets/images/valueProp2.png'),
       require('./assets/images/valueProp3.png'),
       require('./assets/images/valueProp4.png'),
-      require('./assets/images/bdchat.png'),
-      require('./assets/images/avatar.png'),
       require('./assets/images/nav/nav_genes_g.png'),
       require('./assets/images/nav/nav_home_g.png'),
       require('./assets/images/nav/nav_me_g.png'),
@@ -213,14 +208,6 @@ export default class App extends React.Component {
       require('./assets/images/nav/nav_support_b.png'),
       require('./assets/images/id.png')
     ];
-
-    await Font.loadAsync({
-      'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
-      'roboto': require('./assets/fonts/RobotoMono-Regular.ttf'),
-      'montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
-      'montserratB': require('./assets/fonts/Montserrat-Bold.ttf'),
-      'montserratSB': require('./assets/fonts/Montserrat-SemiBold.ttf')
-    });
 
     const cacheImages = images.map((image) => {
       return Asset.fromModule(image).downloadAsync();

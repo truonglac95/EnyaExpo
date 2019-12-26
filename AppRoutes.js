@@ -6,7 +6,6 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import QuestionnaireScreenBasic from './screens/QuestionnaireScreenBasic';
 import QuestionnaireScreenCardio from './screens/QuestionnaireScreenCardio';
-import QuestionnaireScreenCardioDemo from './screens/QuestionnaireScreenCardioDemo';
 import ResultDNAScreen from './screens/ResultDNAScreen';
 import ResultFRSScreen from './screens/ResultFRSScreen';
 
@@ -23,7 +22,6 @@ const SCREEN_NAMES = {
   HOME_SCREEN: "HOME",
   QUESTIONNAIRE_BASIC_SCREEN: "QUESTIONNAIRE_BASIC",
   QUESTIONNAIRE_CARDIO_SCREEN: "QUESTIONNAIRE_CARDIO",
-  QUESTIONNAIRE_CARDIO_SCREEN_DEMO: "QUESTIONNAIRE_CARDIO_DEMO",
   RESULT_DNA_SCREEN: "RESULT_DNA",
   RESULT_FRS_SCREEN: "RESULT_FRS",
 };
@@ -63,10 +61,6 @@ const AppRouteConfig = {
   },
   [SCREEN_NAMES.QUESTIONNAIRE_CARDIO_SCREEN]: {
     screen: QuestionnaireScreenCardio,
-    navigationOptions: {}
-  },
-  [SCREEN_NAMES.QUESTIONNAIRE_CARDIO_SCREEN_DEMO]: {
-    screen: QuestionnaireScreenCardioDemo,
     navigationOptions: {}
   },
   [SCREEN_NAMES.RESULT_DNA_SCREEN]: {
