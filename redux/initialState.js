@@ -10,7 +10,7 @@ const initialStore = {
 		error: null,
 		loading: false,
 		answers: [],
-		frs: []
+		smc: []
 	},
 	result: {
 		error: null,

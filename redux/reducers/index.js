@@ -2,13 +2,11 @@ import { combineReducers } from 'redux';
 import { user } from './reducerUser';
 import { answer } from './reducerAnswers';
 import { result } from './reducerResults';
-import { whitelist } from './reducerWhitelist';
 
 const reducers = {
 	user,
 	answer,
 	result,
-  whitelist,
 };
 
 const appReducer = combineReducers(reducers);
@@ -18,39 +16,23 @@ const resetState = {
     error: null,
     loading: false,
     deleted: true,
-    unreadCount: 0,
     account: {
       loading: false, 
-    },
-    loginToken: null,
-    internet: [],
-    sharingState: {
-      error: null,
-      loading: false,
-    },
-    preportState: {
-      error: null,
-      loading: false,
-    },
+    }
   },
   answer: {
     error: null,
     loading: false,
     answers: [],
-    frs: [],
+    smc: []
   },
   result: {
     error: null,
     loading: false,
     results: [],
     localResult: [],
-    pleaseDownload: false,
-  },
-  whitelist: {
-    error: null,
-    loading: false,
-    status: 0,
-  },
+    pleaseDownload: false
+  }
 }
 
 const rootReducer = (state, action) => {

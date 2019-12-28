@@ -18,8 +18,8 @@ import colors from './constants/Colors';
 import i18n from './constants/Strings';
 import mS from './constants/masterStyle';
 
+import { SECURE_STORAGE_ACCOUNT } from './redux/constants';
 import * as SecureStore from 'expo-secure-store'
-import { SECURE_STORAGE_USER_FLOW } from './redux/constants';
 
 const Slider = (props) => (
   <View style={mS.sliderVP}>
@@ -45,7 +45,7 @@ export default class App extends React.Component {
 
   UNSAFE_componentWillMount() {
 
-    SecureStore.getItemAsync(SECURE_STORAGE_USER_FLOW).then(result => {
+    SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(result => {
       if(result) {
         if (__DEV__) ('This is a signed-up user - no need to show value prop slides')
         this.setState({
@@ -82,12 +82,12 @@ export default class App extends React.Component {
             onLoad={this._cacheResourcesAsync}
           />
           <View style={mS.msgBoxVP}>
-            <Text style={mS.titleTextVP}>{i18n.t('app_blockdoc_precision_health')}</Text>
-            <Text style={mS.tagTextVP}>{i18n.t('app_blockdoc')}</Text>
+            <Text style={mS.titleTextVP}>{'Enya.ai\nSDK and API'}</Text>
+            <Text style={mS.tagTextVP}>{'Secure Content Delivery and Computation'}</Text>
           </View>
           <Slider value={0}/>
           <BasicButton 
-            text={i18n.t('app_next')} 
+            text={'Next'} 
             onClick={this.moveOn} 
           />
         </GestureRecognizer>
@@ -108,12 +108,12 @@ export default class App extends React.Component {
             onLoad={this._cacheResourcesAsync}
           />
           <View style={mS.msgBoxVP}>
-            <Text style={mS.titleTextVP}>{i18n.t('app_MPC_title')}</Text>
-            <Text style={mS.tagTextVP}>{i18n.t('app_MPC_content')}</Text>
+            <Text style={mS.titleTextVP}>{'Private Computation'}</Text>
+            <Text style={mS.tagTextVP}>{'Data we exchange with you are cryptographically split, processed, and recombined so your medical information stays private.'}</Text>
           </View>
           <Slider value={1} />
           <BasicButton 
-            text={i18n.t('app_next')} 
+            text={'Next'} 
             onClick={this.moveOn} 
           />
         </GestureRecognizer>
@@ -134,12 +134,12 @@ export default class App extends React.Component {
             onLoad={this._cacheResourcesAsync}
           />
           <View style={mS.msgBoxVP}>
-            <Text style={mS.titleTextVP}>{i18n.t('app_key_card')}</Text>
-            <Text style={mS.tagTextVP}>{i18n.t('app_key_access')}</Text>
+            <Text style={mS.titleTextVP}>{'Create an Account'}</Text>
+            <Text style={mS.tagTextVP}>{'by scanning your QR key card and setting your password.'}</Text>
           </View>
           <Slider value={2} />
           <BasicButton 
-            text={i18n.t('app_next')} 
+            text={'Next'} 
             onClick={this.moveOn} 
           />
         </GestureRecognizer>
@@ -160,12 +160,12 @@ export default class App extends React.Component {
             onLoad={this._cacheResourcesAsync}
           />
           <View style={mS.msgBoxVP}>
-            <Text style={mS.titleTextVP}>{i18n.t('app_create_account')}</Text>
-            <Text style={mS.tagTextVP}>{i18n.t('app_scan_card')}</Text>
+            <Text style={mS.titleTextVP}>{'Your QR key card'}</Text>
+            <Text style={mS.tagTextVP}>{'allows only you to access your results.'}</Text>
           </View>
           <Slider value={3} />
           <BasicButton 
-            text={i18n.t('app_sign_up')} 
+            text={'Sign up'} 
             onClick={this.moveOn} 
           />
         </GestureRecognizer>
@@ -175,7 +175,7 @@ export default class App extends React.Component {
     // all is ready!
     return (
       <Provider store={store}>
-        <MainApp onWipeOut={() => { this.setState({ active: 0 }); }}/>
+        <MainApp onWipeOut={()=>{this.setState({active: 0})}}/>
       </Provider>
     );
   }

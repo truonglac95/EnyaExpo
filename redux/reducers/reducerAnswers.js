@@ -5,11 +5,11 @@ import {
 	GIVE_ANSWER,
 	GIVE_ANSWER_SUCCESS,
 	GIVE_ANSWER_FAILURE,
-	GET_FRS_SUCCESS,
-	CALCULATE_RISK_SCORE,
-	CALCULATE_RISK_SCORE_SUCCESS,
-	CALCULATE_RISK_SCORE_FAILURE,
-	CALCULATE_RISK_SCORE_PROGRESS,
+	GET_SMC_SUCCESS,
+	CALCULATE_SMC,
+	CALCULATE_SMC_SUCCESS,
+	CALCULATE_SMC_FAILURE,
+	CALCULATE_SMC_PROGRESS,
 } from '../constants';
 
 import initialState from '../initialState';
@@ -58,37 +58,37 @@ export function answer(state = INITIAL_STATE, action = {}) {
 				loading: false,
 				error: action.payload,
 			}
-		case GET_FRS_SUCCESS:
+		case GET_SMC_SUCCESS:
 			return {
 				...state,
 				loading: false,
 				error: null,
-				frs: action.payload,
+				SMC: action.payload,
 			}
-		case CALCULATE_RISK_SCORE:
+		case CALCULATE_SMC:
 			return {
 				...state,
 				loading: true,
 				error: null,
 			}
-		case CALCULATE_RISK_SCORE_SUCCESS:
+		case CALCULATE_SMC_SUCCESS:
 			return {
 				...state,
 				loading: false,
 				error: null,
-				frs: action.payload,
+				SMC: action.payload,
 			}
-		case CALCULATE_RISK_SCORE_FAILURE:
+		case CALCULATE_SMC_FAILURE:
 			return {
 				...state,
 				loading: false,
 				error: action.payload,
 			}
-		case CALCULATE_RISK_SCORE_PROGRESS:
+		case CALCULATE_SMC_PROGRESS:
 			return {
 				...state,
-				FRScompute_progress: action.payload.FRScompute_progress,
-				FRScomputing: action.payload.FRScomputing,
+				SMC_compute_progress: action.payload.SMC_compute_progress,
+				SMC_computing: action.payload.SMC_computing,
 			}
 		default:
 			return state;

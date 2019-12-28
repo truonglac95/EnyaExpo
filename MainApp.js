@@ -6,10 +6,9 @@ import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
 
 import AppNavigator from './navigation/AppNavigator';
-import LoginScreen from './screens/LoginScreen';
-import CodeScannerScreen from './screens/CodeScannerScreen';
-import AccountDeletedScreen from './screens/AccountDeletedScreen';
-import AccountDeleteScreen from './screens/AccountDeleteScreen';
+import CodeScanner from './screens/CodeScanner';
+import AccountDeleted from './screens/AccountDeleted';
+import AccountDelete from './screens/AccountDelete';
 
 import appRoutes from "./AppRoutes";
 
@@ -17,19 +16,14 @@ import appRoutes from "./AppRoutes";
 import { 
   setAccount,
   getResults,
-  getStatus,
-  circulateStatus,
   resetError,
-  receiveNotification,
-  setUnreadCount,
 } from './redux/actions';
 
 import * as SecureStore from 'expo-secure-store';
 
 import { 
-  SECURE_STORAGE_USER_ACCOUNT,
-  SECURE_STORAGE_USER_RESULT,
-  SECURE_STORAGE_USER_STATUS,
+  SECURE_STORAGE_ACCOUNT,
+  SECURE_STORAGE_RESULT,
 } from './redux/constants';
 
 const pdfStore = `${FileSystem.documentDirectory}User/PDFs`;
@@ -38,16 +32,6 @@ class MainApp extends React.Component {
 
   constructor (props) {
     super (props);
-  }
-
-  async componentDidMount() {
-    
-    //not sure what this does... need to check
-    //still relevant?????
-    this.props.dispatch(resetError());
-
-    //once we login, we check for results
-    this.props.dispatch(getResults(this.props.user.account.UUID));
   }
 
   UNSAFE_componentWillMount() {
@@ -63,11 +47,10 @@ class MainApp extends React.Component {
     });
 
     //load account settings, if any
-    SecureStore.getItemAsync(SECURE_STORAGE_USER_ACCOUNT).then(result => {
+    SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(result => {
       if (result) {
         const account = result ? JSON.parse(result) : {};
-        if (__DEV__) console.log('MainApp: Previous account settings found.');
-        //console.log(account);
+        if (__DEV__) console.log('MainApp: Previous account found.');
         let updatedAccount = {
           ...account,
           loading: false,
@@ -75,32 +58,9 @@ class MainApp extends React.Component {
         this.props.dispatch(setAccount(updatedAccount));
       } else {
         //need to set up account
-        if (__DEV__) console.log('MainApp: No account settings found - set up new account.');
+        if (__DEV__) console.log('MainApp: No account found - set up new account.');
         this.props.dispatch(setAccount({loading: false}));
-        //this now triggers flow through QR, T&C, and password
-        //ultimate successfull login will trigger 
-        //results download
-      }
-    }).catch(err => {
-      if (__DEV__) console.log(err);
-    });
-
-    //load status settings, if any
-    SecureStore.getItemAsync(SECURE_STORAGE_USER_STATUS).then(result => {
-      if (result) {
-        const status = result ? JSON.parse(result) : {};
-        this.props.dispatch(circulateStatus(status));
-      } else {
-        //need to set up status
-        if (__DEV__) console.log('MainApp: No status settings found - need to set up.');
-        if(!this.props.user.account.UUID) {
-          //too early to do anything
-          //need to wait until login
-        } else {
-          if (__DEV__) console.log('MainApp: Getting value of status variable');
-          this.props.dispatch(getStatus(this.props.user.account.UUID));
-          //this will also save a local copy, and circulate the status variable
-        }
+        //In production app triggers flow through QR code, T&C, and password, etc.
       }
     }).catch(err => {
       if (__DEV__) console.log(err);
@@ -108,19 +68,26 @@ class MainApp extends React.Component {
 
   }
 
+  componentDidMount() {
+    //resets everything after app delete
+    this.props.dispatch(resetError());
+  }
+
   render() {
 
-    const { account, loginToken } = this.props.user;
+    const { account } = this.props.user;
 
     if ( this.props.user.deleted ) {
-      return <AccountDeletedScreen onWipeOut={this.props.onWipeOut}/>
+      console.log('User just wiped their account')
+      return <AccountDeleted onWipeOut={this.props.onWipeOut}/>
     }
     else if ( typeof(account.loading) == 'undefined' ) {
       //waiting to hear back from secure storage asyc call
       return null;
     }
     else if ( !account.UUID ) {
-      return <CodeScannerScreen />
+      console.log('need to scan QR code')
+      return <CodeScanner />
     }
     else {
       return (

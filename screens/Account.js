@@ -8,14 +8,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import BasicButton from '../components/BasicButton';
 import mS from '../constants/masterStyle';
 import colors from '../constants/Colors';
-import i18n from '../constants/Strings';
 
- import Constants from 'expo-constants';
+import Constants from 'expo-constants';
 
 import * as SecureStore from 'expo-secure-store';
-import { SECURE_STORAGE_USER_ACCOUNT } from '../redux/constants';
+import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
 
-class AccountScreen extends React.Component {
+class Account extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
@@ -23,12 +22,12 @@ class AccountScreen extends React.Component {
         style={{
           fontSize: 19,
           color: colors.headerFontColor,
-          marginLeft: "auto", 
-          marginRight: "auto",
+          marginLeft: 'auto', 
+          marginRight: 'auto',
           textAlign: 'center',
           alignSelf: 'center',
         }}>
-          {i18n.t('account_acount_head')}
+          {'Account'}
         </Text>
       ),
     }
@@ -36,23 +35,6 @@ class AccountScreen extends React.Component {
 
   constructor (props) {
     super(props);
-  }
-
-  handleLogout = () => {
-
-    SecureStore.getItemAsync(SECURE_STORAGE_USER_ACCOUNT
-    ).then(result => {
-      const account = result ? JSON.parse(result) : {};
-      let updatedAccount = {
-        ...account,
-        staySignedIn: false,
-      };
-      SecureStore.setItemAsync(SECURE_STORAGE_USER_ACCOUNT, 
-        JSON.stringify(updatedAccount)
-        ).catch(err => {});
-      this.props.dispatch(signOut(updatedAccount));
-    }).catch(err => {});
-
   }
 
   render() {
@@ -66,17 +48,17 @@ class AccountScreen extends React.Component {
 
 <ImageBackground
   source={require('../assets/images/id.png')}
-  style={{width: '100%', height: 50 }}
+  style={{width: '100%', height: 50}}
 >
-  <Text style={styles.boxTitle}>{i18n.t('account_support')}</Text>
+  <Text style={styles.boxTitle}>{'Support information'}</Text>
 </ImageBackground>
 
 <View style={{marginLeft: 12, marginTop: 12,}}>
   <Text style={styles.textUUID}>
-    {i18n.t('account_user_id')}: {uuid.toUpperCase()}
+    {'User ID'}: {uuid.toUpperCase()}
   </Text>
   <Text style={styles.textUUID}>
-    {i18n.t('account_version')}: {`${Constants.manifest.version}`}
+    {'SDK Version'}: {`${Constants.manifest.version}`}
   </Text>
 </View>
 
@@ -88,13 +70,13 @@ class AccountScreen extends React.Component {
   source={require('../assets/images/id.png')}
   style={{width: '100%', height: 50}}
 >
-  <Text style={styles.boxTitle}>{i18n.t('account_acount_head')}</Text>
+  <Text style={styles.boxTitle}>{'Account Functions'}</Text>
 </ImageBackground>
 
 <View style={{alignItems: 'center', justifyContent: 'flex-start',}}>
   <View style={{marginTop: 30, marginBottom: 20}}>
   <BasicButton 
-    text={i18n.t('account_delete_account')} 
+    text={'Wipe Account'} 
     icon="ios-trash" 
     onClick={()=>{this.props.navigation.navigate('AccountDelete')}} 
   />
@@ -130,9 +112,6 @@ const styles = StyleSheet.create({
     borderColor: colors.homeBoxesLineColor,
     overflow: 'hidden',
   },
-  //so people do not mix up zeros and 
-  //capital O - which should never be 
-  //there but that's a detail
   textUUID: {
     fontSize: 18,
     lineHeight: 24,
@@ -153,4 +132,4 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({ user: state.user });
 
-export default connect(mapStateToProps)(AccountScreen);
+export default connect(mapStateToProps)(Account);

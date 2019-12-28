@@ -3,16 +3,14 @@ import {
 	signOut,
 	burnEverything,
 	setAccount,
-	resetError,
-	signupUser_DB,
-	updateUser_DB
+	resetError
 } from './actionUser';
 
 import {
 	getAnswers,
 	giveAnswer,
-	calculateRiskScore,
-	calculateRiskScoreProgress
+	secureCompute,
+	secureComputeProgress
 } from './actionAnswers';
 
 import {
@@ -31,8 +29,8 @@ export {
 	//questionaire functions
 	getAnswers,
 	giveAnswer,
-	calculateRiskScore,
-	calculateRiskScoreProgress,
+	secureCompute,
+	secureComputeProgress,
 
 	//get new encrypted results from server
 	getResults,

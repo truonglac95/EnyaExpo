@@ -15,7 +15,7 @@ export default class BasicButton extends Component {
     Alert.alert(
       title,
       todo,
-      [{text: i18n.t('global_ok')},],
+      [{text: 'global_ok'}],
       {cancelable: false},
     );
   }
@@ -23,7 +23,7 @@ export default class BasicButton extends Component {
   render() {
     
     const { text, onClick, leftEdge, topEdge, width, icon, 
-      size, no_internet, todo, title} = this.props;
+      size, todo, title} = this.props;
 
     const defaultWidth = Dimensions.get('window').width * 0.7;
     
@@ -38,9 +38,9 @@ export default class BasicButton extends Component {
         <TouchableOpacity 
           style={[styles.button, {
             width: (width || defaultWidth), 
-            backgroundColor: no_internet? colors.lighterGray : colors.buttonColorBack,
-            borderColor: no_internet? colors.lightGray : colors.buttonColorBorder}]} 
-          onPress={no_internet ? () => this.handleAlert(todo, title): onClick}>
+            backgroundColor: colors.buttonColorBack,
+            borderColor: colors.buttonColorBorder}]} 
+          onPress={onClick}>
           <View style={styles.flex}> 
             {icon && iOS &&
               <View style={{marginRight: 10, marginTop: 3}}>
@@ -62,7 +62,7 @@ export default class BasicButton extends Component {
             }
             <Text style={[styles.buttonColorText, {
               fontSize: size || 16,
-              color: no_internet ? colors.lightGray : colors.buttonColorText}]}>{text}
+              color: colors.buttonColorText}]}>{text}
             </Text>
           </View>
         </TouchableOpacity>

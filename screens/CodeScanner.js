@@ -11,12 +11,12 @@ import mS from '../constants/masterStyle';
 
 //secure storage
 import * as SecureStore from 'expo-secure-store';
-import { SECURE_STORAGE_USER_ACCOUNT } from '../redux/constants';
+import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
 
 //redux
 import { setAccount } from '../redux/actions';
 
-class CodeScannerScreen extends React.Component {
+class CodeScanner extends React.Component {
 
   constructor (props) {
     super(props);
@@ -34,7 +34,7 @@ handleBarCodeScannedSim = () => {
     //wipe any old account just in case
     //the scanner should only ever be called 
     //when there is no account in the first place
-    SecureStore.deleteItemAsync(SECURE_STORAGE_USER_ACCOUNT).then(()=>{}).catch(()=>{});
+    SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
    
     const firstlogintime = new Date().getTime().toString();
     const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
@@ -42,19 +42,20 @@ handleBarCodeScannedSim = () => {
     const account = result
 
     let newAccount = {
-          ...account, 
-          id: id,
+      ...account, 
+      id: id,
     };
 
     //save to local secure storage
-    SecureStore.setItemAsync(SECURE_STORAGE_USER_ACCOUNT, JSON.stringify(result));
+    SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(result));
   
     //circulate props to everyone else
     this.props.dispatch(setAccount(result));
-    //at this point, there is a UUID availible to all etc.
 
   }).catch(err => {
+
     console.log(err)
+
   });
 
 };
@@ -71,7 +72,7 @@ handleBarCodeScannedSim = () => {
 
         <View>
           <BasicButton 
-            text={'Simulate Good Scan'}
+            text={'Simulate Valid Scan'}
             onClick={() => { this.handleBarCodeScannedSim() }} 
           />
         </View>
@@ -83,5 +84,4 @@ handleBarCodeScannedSim = () => {
 }
 
 const mapStateToProps = state => ({ user: state.user });
-
-export default connect(mapStateToProps)(CodeScannerScreen);
+export default connect(mapStateToProps)(CodeScanner);

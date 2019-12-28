@@ -1,34 +1,29 @@
-import * as SecureStore from 'expo-secure-store'
-
 import {
 	//basic ops
 	GET_ANSWERS,
 	GET_ANSWERS_SUCCESS,
-  GET_FRS_SUCCESS,
 	GET_ANSWERS_FAILURE,
 	GIVE_ANSWER,
 	GIVE_ANSWER_SUCCESS,
 	GIVE_ANSWER_FAILURE,
 	//scoring
-	CALCULATE_RISK_SCORE,
-	CALCULATE_RISK_SCORE_SUCCESS,
-	CALCULATE_RISK_SCORE_FAILURE,
-  CALCULATE_RISK_SCORE_PROGRESS,
+  GET_SMC_SUCCESS,
+	SECURE_COMPUTE,
+	SECURE_COMPUTE_SUCCESS,
+  SECURE_COMPUTE_PROGRESS,
 	//stored answers
-  SECURE_STORAGE_FRS,
+  SECURE_STORAGE_SMC,
 	SECURE_STORAGE_ANSWERS,
-  SECURE_STORAGE_USER_ACCOUNT,
+  SECURE_STORAGE_ACCOUNT,
 } from '../constants';
 
 import { 
-	CanComputeRisk, 
-	NumGoodAnswersBasic, 
-	NumGoodAnswersCardio,
-} from '../../EnyaSDK/ComputeRiskLocal';
-
-import { 
+  CanCompute, 
+  NumGoodAnswers, 
 	ComputeRiskSecure, 
 } from '../../EnyaSDK/ComputeRiskSecure';
+
+import * as SecureStore from 'expo-secure-store'
 
 export const getAnswersBegin   = data  => ({ type: GET_ANSWERS });
 export const getAnswersSuccess = data  => ({ type: GET_ANSWERS_SUCCESS, payload: data });
@@ -38,9 +33,9 @@ export const giveAnswerBegin   = data  => ({ type: GIVE_ANSWER });
 export const giveAnswerSuccess = data  => ({ type: GIVE_ANSWER_SUCCESS, payload: data });
 export const giveAnswerFailure = error => ({ type: GIVE_ANSWER_FAILURE, payload: error });
 
-export const getFRSSuccess     = data  => ({ type: GET_FRS_SUCCESS,     payload: data });
+export const get_SMC_Success   = data  => ({ type: GET_SMC_SUCCESS,     payload: data });
 
-const answersL = {
+const answers = {
   birthyear: 0,
   weight: 0,
   height: 0,
@@ -51,14 +46,13 @@ const answersL = {
   hdlc: 0,
 }
 
-const frsL = {
-  goodAnswersBasic: 0,
+const smc = {
+  goodAnswers: 0,
   percentAnswered: 0,
   numberAnswered: 0,
-  haveFRS: false,
-  frsScore_ab: 0.0,
-  frsScore_r: 0.0,
-  frsCurrent: false,
+  haveSMC: false,
+  result: 0.0,
+  current: false,
 };
 
 export const getAnswers = () => (dispatch) => {
@@ -73,21 +67,21 @@ export const getAnswers = () => (dispatch) => {
       } else {
       	//create the file structure
         if (__DEV__) console.log('Answers: No previous answers found.');
-        SecureStore.setItemAsync(SECURE_STORAGE_ANSWERS, JSON.stringify(answersL));
+        SecureStore.setItemAsync(SECURE_STORAGE_ANSWERS, JSON.stringify(answers));
       }
     }).catch(err => {
       if (__DEV__) console.log(err);
     });
 
-  SecureStore.getItemAsync(SECURE_STORAGE_FRS).then(result => {
+  SecureStore.getItemAsync(SECURE_STORAGE_SMC).then(result => {
     if (result) {
-        if (__DEV__) console.log('Answers: Previous Secure Score found.');
+        if (__DEV__) console.log('Answers: SMC results found.');
         const data = JSON.parse(result);
-        dispatch(getFRSSuccess(data));
+        dispatch(get_SMC_Success(data));
       } else {
         //create the file structure
-        if (__DEV__) console.log('Answers: No previous Secure Score found.');
-        SecureStore.setItemAsync(SECURE_STORAGE_FRS, JSON.stringify(frsL));
+        if (__DEV__) console.log('Answers: No SMC results found.');
+        SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(smc));
       }
     }).catch(err => {
       if (__DEV__) console.log(err);
@@ -107,38 +101,38 @@ export const giveAnswer = (answer) => (dispatch) => {
 
       answer.forEach(ans => {data[ans.question_id] = ans.answer});
 
-      let updatedData = { ...data, };
+      let updatedData = { ...data };
 
       SecureStore.setItemAsync(SECURE_STORAGE_ANSWERS, JSON.stringify(updatedData));
 
       dispatch( giveAnswerSuccess(updatedData) );
 
-      var goodAnswersBasic = NumGoodAnswersBasic( data );
+      var goodAnswers = NumGoodAnswers( data );
 
-      var numberAnswered = goodAnswersBasic;
-      
-      var frsCurrent = false; //because we just got a new answer
+      var current = false; //because we just received a new answer from the user
       
       var percentAnswered = 0;
 
-      if( goodAnswersBasic > 0 ) {
-        percentAnswered = Math.round((goodAnswersBasic / 8.0) * 100);
+      if( goodAnswers > 0 ) {
+        percentAnswered = Math.round((goodAnswers / 8.0) * 100);
       }
 
-      SecureStore.getItemAsync(SECURE_STORAGE_FRS).then(res2 => {
+      SecureStore.getItemAsync(SECURE_STORAGE_SMC).then(res2 => {
 
         if (res2) {
           
-          let frs = JSON.parse(res2);
-          let updatedFRS = {
-            ...frs,
+          let smc = JSON.parse(res2);
+
+          let updatedSMC = {
+            ...smc,
             percentAnswered,
             numberAnswered,
-            goodAnswersBasic,
-            frsCurrent,
+            current,
           };
-          SecureStore.setItemAsync(SECURE_STORAGE_FRS, JSON.stringify(updatedFRS));
-          dispatch( getFRSSuccess(updatedFRS) );
+
+          SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(updatedSMC));
+          
+          dispatch( get_SMC_Success(updatedSMC) );
           
         };
       });
@@ -147,85 +141,87 @@ export const giveAnswer = (answer) => (dispatch) => {
 
 };
 
-export const calculateRiskScoreBegin = () => ({
-  type: CALCULATE_RISK_SCORE
+export const secureComputeBegin = () => ({
+  type: SECURE_COMPUTE
 });
 
-export const calculateRiskScoreSuccess = (data) => ({
-	type: CALCULATE_RISK_SCORE_SUCCESS,
+export const secureComputeSuccess = (data) => ({
+	type: SECURE_COMPUTE_SUCCESS,
 	payload: data,
 });
 
-export const calculateRiskScoreProgress = (data) => ({
-  type: CALCULATE_RISK_SCORE_PROGRESS,
-  payload: data,
-});
-
-export const calculateRiskScoreFailure = (error) => ({
-	type: CALCULATE_RISK_SCORE_FAILURE,
+export const secureComputeFailure = (error) => ({
+	type: SECURE_COMPUTE_FAILURE,
 	payload: error,
 });
 
-export const calculateRiskScore = (data, gene, UUID, id) => async (dispatch) => {
+export const secureComputeProgress = (data) => ({
+  type: SECURE_COMPUTE_PROGRESS,
+  payload: data,
+});
 
-	dispatch( calculateRiskScoreBegin() );
+export const secureCompute = (data, UUID, id) => async (dispatch) => {
 
-  dispatch( calculateRiskScoreProgress({
-      FRScompute_progress: 0,
-      FRScomputing: true 
+  console.log('secureCompute')
+  console.log(data)
+  console.log(UUID)
+  console.log(id)
+
+	dispatch( secureComputeBegin() );
+
+  dispatch( secureComputeProgress({
+      SMC_compute_progress: 0,
+      SMC_computing: true 
     })
   );
 
-  var frsScore_ab = 0.0;
-  var haveFRS = false;
-  var frsCurrent = false;
+  var result = 0.0;
+  var current = false;
+  var haveSMC = false;
 
 	if ( CanComputeRisk( data ) ) {
 		
-		if (__DEV__) console.log('Yes, there are enough data to compute the risk ');
+		if (__DEV__) console.log('Yes, there are enough data for SMC computation');
 
     APIStatus = await ComputeRiskSecure(data, UUID, id, dispatch); 
 
     //absolute scores
-    frsScore_ab = APIStatus.risk_score_ab; 
+    result = APIStatus.risk_score_ab; 
 
-    if(frsScore_ab > 0) {
-      frsCurrent = true; //because we just recomputed it
-      haveFRS = true; //yes, we have result
+    if(result > 0) {
+      current = true; //because we just recomputed it
+      haveSMC = true; //yes, we have result
     }
 
 	}
 
-	SecureStore.getItemAsync(SECURE_STORAGE_FRS).then(res => {
+	SecureStore.getItemAsync(SECURE_STORAGE_SMC).then(res => {
 
-		const frs = res ? JSON.parse(res) : {};
+		const smc = res ? JSON.parse(res) : {};
 
-    let updatedFRS = {
-      ...frs,
-      frsScore_ab,
-      haveFRS,
-      frsCurrent,
+    let updatedSMC = {
+      ...smc,
+      result,
+      haveSMC,
+      current,
       error: null
     };
 
-    SecureStore.setItemAsync(SECURE_STORAGE_FRS, JSON.stringify(updatedFRS));
+    SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(updatedFRS));
 
-    if ( haveFRS ) {
+    if ( haveSMC ) {
     
-    	dispatch( calculateRiskScoreSuccess( updatedFRS ) );
+    	dispatch( secureComputeSuccess( updatedSMC ) );
       
-      dispatch( calculateRiskScoreProgress({ 
-          FRScompute_progress: 100,
-          FRScomputing: false 
+      dispatch( secureComputeProgress({ 
+          SMC_compute_progress: 100,
+          SMC_computing: false 
         })
       );
     
     } else {
 
-    	dispatch( calculateRiskScoreFailure({ 
-          error: 'Not enough data to compute FRS'
-        })
-      );
+    	dispatch( secureComputeFailure({error: 'Not enough data for secure computation'}) );
 
     }
 

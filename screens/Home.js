@@ -5,24 +5,18 @@ import { Platform, StyleSheet, Text, TouchableOpacity,
   View, FlatList, Image, ActivityIndicator, Dimensions, 
   ScrollView, ImageBackground } from 'react-native';
 
-import { LinearGradient } from 'expo-linear-gradient';
-
 import * as Permissions from 'expo-permissions';
 
-import { setDefaultScreen } from '../redux/actions';
-
 import ProgressCircle from '../components/ProgressCircle';
-
 import BasicButton from '../components/BasicButton';
 import colors from '../constants/Colors';
-import i18n from '../constants/Strings';
 import mS from '../constants/masterStyle';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 //redux
-import { calculateRiskScore } from '../redux/actions';
+import { secureCompute, getResults } from '../redux/actions';
 
-class HomeScreen extends React.Component {  
+class Home extends React.Component {  
 
   static navigationOptions = ({ navigation }) => {
     return {
@@ -47,77 +41,61 @@ class HomeScreen extends React.Component {
 
     scrollView : ScrollView;
 
-    const { frs } = this.props.answer;
+    const { smc } = this.props.answer;
     const { localResult } = this.props.result;
 
     this.state = {
 
-      //FRS result and logic
-      percentAnswered: (frs.percentAnswered || 0), //0 to 100%
-      haveFRS: (frs.haveFRS || false), //is there an FRS number?
-      frsLabel_gene: (frs.frsLabel_gene || ''), //e.g. elevated
-      frsLabel_lifestyle: (frs.frsLabel_lifestyle || ''), //e.g. elevated
-      frsScore_ab: (frs.frsScore_ab || 0),  //e.g. 14.5%
-      frsScore_r: (frs.frsScore_r || 0),  //e.g. 1.2
-      frsCurrent: (frs.frsCurrent || false), //is the score valid/current?
+      //SMC details
+      percentAnswered: (smc.percentAnswered || 0), //0 to 100%
+      haveSMC: (smc.haveSMC || false), //is there an SMC result?
+      result: (smc.result || 0.0),  //e.g. 14.5%
+      current: (smc.current || false), //is the score valid/current?
 
-      //for the FRS progress indicator
-      FRScompute_progress: (this.props.answer.FRScompute_progress || 0),
-      FRScomputing: (this.props.answer.FRScomputing || false),
+      haveDNA: (localResult.haveDNA || false),
+      downloadingReport: false,
 
-      //DNA result and logic
-      //if gene_rr = 0.0 no result
-      //if gene_bias = 
-      //gene_bias: (localResult.gene_bias || 0), //text - e.g. slightly increases
-      gene_rr: (Number.parseFloat(localResult.gene_rr).toPrecision(2) || 0.0), //e.g. 1.8
-      dnaStatus: (localResult.r_state || 0), //result type
-      haveDNA: (localResult.haveDNA || false), //is there a DNA result?
+      //for the SMC progress indicator
+      SMC_compute_progress: (this.props.answer.SMC_compute_progress || 0),
+      SMC_computing: (this.props.answer.SMC_computing || false),
 
-      /* 
-      r_state == 0 -> No information - waiting for your dna sample
-      r_state == 1 -> Sample received
-      r_state == 2 -> Sequencing in progress
-      r_state == 3 -> Analyzing your genome 
-      r_state == 4 -> Result done - please download -> and the app sets this to state 8 after successful download.
-      r_state == 5 -> Result done - please download -> and the app sets this to state 8 after successful download.
-      */
     };
 
   }
 
   handleClickItem = (page) => {
 
-    if (page === 'RESULTS_FRS') {
-      this.props.navigation.navigate('ResultFRS');
+    if (page === 'RESULTS_SMC') {
+      this.props.navigation.navigate('ResultSMC');
     } else if (page === 'GIVE_ANSWERS') {
-      this.props.navigation.navigate('Qbasic');
-    } else if (page === 'RESULTS_DNA') {
-      this.props.navigation.navigate('ResultDNA');
+      this.props.navigation.navigate('Questionnaire');
+    } else if (page === 'REPORT_SEE') {
+      this.props.navigation.navigate('Result');
+    } else if (page === 'REPORT_GET') {
+      //getting report
+      console.log('Getting report')
+      this.setState({downloadingReport: true});
+      this.props.dispatch(getResults(this.props.user.account.UUID));
     }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
 
-    const { frs } = nextProps.answer;
+    const { smc } = nextProps.answer;
     const { localResult } = nextProps.result;
 
     this.setState({
 
-      percentAnswered: (frs.percentAnswered || 0.0),
-      
-      frsScore_ab: (frs.frsScore_ab || 0.0),
-      frsScore_r: (frs.frsScore_r || 0.0),
-      frsLabel_gene: (frs.frsLabel_gene || ''), //e.g. elevated
-      frsLabel_lifestyle: (frs.frsLabel_lifestyle || ''), //e.g. elevated
-      frsCurrent: (frs.frsCurrent || false), 
-      haveFRS: (frs.haveFRS || false),
-      
-      gene_rr: (Number.parseFloat(localResult.gene_rr).toPrecision(2) || 0.0), //e.g. 1.8
-      dnaStatus: (localResult.r_state || 0),
+      percentAnswered: (smc.percentAnswered || 0.0),
+      result: (smc.result || 0.0),
+      current: (smc.current || false), 
+      haveSMC: (smc.haveSMC || false),
+
+      SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
+      SMC_computing: (nextProps.answer.SMC_computing || false),
+
       haveDNA: (localResult.haveDNA || false),
-      
-      FRScompute_progress: (nextProps.answer.FRScompute_progress || 0),
-      FRScomputing: (nextProps.answer.FRScomputing || false),
+      //downloadingReport: (nextProps.result.loading || false),
 
     });
   }
@@ -125,19 +103,20 @@ class HomeScreen extends React.Component {
   handleCalculate = () => {
 
     const { dispatch } = this.props;
-    const { answers, frs } = this.props.answer;
+    const { answers, smc } = this.props.answer;
     const { account } = this.props.user;
     const { localResult } = this.props.result;
 
-    dispatch(calculateRiskScore(answers, localResult, account.UUID, account.id));
+    //dispatch(calculateRiskScore(answers, localResult, account.UUID, account.id));
 
   }
 
   render() {
 
-    const { frsCurrent, percentAnswered, frsScore_ab, frsScore_r, frsLabel_gene, 
-            frsLabel_lifestyle, haveFRS, dnaStatus, haveDNA, gene_rr, 
-            FRScompute_progress, FRScomputing, positionY } = this.state;
+    //console.log(this.props.result);
+
+    const { current, percentAnswered, result, SMC_compute_progress, 
+      SMC_computing, haveDNA, haveSMC, downloadingReport } = this.state;
 
     return (
 
@@ -163,11 +142,11 @@ class HomeScreen extends React.Component {
       height: 50,
     }}
   >
-    <Text style={styles.boxTitle}>{i18n.t('homescreen_summary')}</Text>
+    <Text style={styles.boxTitle}>{'Overview'}</Text>
   </ImageBackground>
 
 <View style={styles.textBlock}>
-  <Text style={styles.mediumDark}>{'We cannot calulate your score yet.'}</Text>
+  <Text style={styles.mediumDark}>{'We cannot calculate your score yet.'}</Text>
   <Text style={mS.smallGrayFP}>{'Please answer the questions about you. With that information, we can VALUE_PROP_HERE (match/score/estimate).'}</Text>
 </View>
 
@@ -197,11 +176,11 @@ class HomeScreen extends React.Component {
 <View style={[styles.cardioLeft, {paddingTop: 20}]}>
 
 {/*'there is an SMC result - allow people to view the result and to update their answers'*/}
-{frsCurrent && <View>
+{current && <View>
 <BasicButton 
-  text={i18n.t('View Result')}
+  text={'View Result'}
   width="80%" 
-  onClick={()=>this.handleClickItem('RESULTS_FRS')}
+  onClick={()=>this.handleClickItem('RESULTS_SMC')}
 />
 <TouchableOpacity 
   style={{marginTop: 20}}
@@ -212,8 +191,8 @@ class HomeScreen extends React.Component {
 </View>
 }
 
-{/*'no FRS result - prompt people to answer questions and to give/update their answers'*/}
-{!frsCurrent && (percentAnswered < 100) && <View>
+{/*'no SMC result - prompt people to answer questions and to give/update their answers'*/}
+{!current && (percentAnswered < 100) && <View>
 <TouchableOpacity 
   //added this bc in android the sensitive region was very small
   hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
@@ -221,13 +200,13 @@ class HomeScreen extends React.Component {
 >
   <Text style={styles.largeAction}>{'Complete my information'}</Text>
 </TouchableOpacity>
-  <Text style={[mS.smallGrayFP, {marginTop: 5}]}>{i18n.t('homescreen_recommend')}</Text>
+  <Text style={[mS.smallGrayFP, {marginTop: 5}]}>{'homescreen_recommend'}</Text>
 </View>
 }
 
 {/*'no FRS result - but we have all the data and need to recalculate'*/}
-{!frsCurrent && (percentAnswered === 100) && <View>
-<Text style={mS.smallGrayFP}>{i18n.t('homescreen_all_question')}</Text>
+{!current && (percentAnswered === 100) && <View>
+<Text style={mS.smallGrayFP}>{'homescreen_all_question'}</Text>
 <View style={{marginTop: 20}}>
   <BasicButton 
     text={'Calculate Risk'}
@@ -244,34 +223,34 @@ class HomeScreen extends React.Component {
 
 <View style={styles.cardioRight}>
 
-{frsCurrent &&
+{current &&
 <View>
   <Text style={[styles.gray, {textAlign: 'center', fontWeight: 'bold', fontSize: overallScore_ab >= 10 ? 30 : 38}]}>{overallScore_ab}%</Text>
-  <Text style={[mS.smallGrayFP, {textAlign: 'center'}]}>{i18n.t('homescreen_risk_event')}</Text>
+  <Text style={[mS.smallGrayFP, {textAlign: 'center'}]}>{'homescreen_risk_event'}</Text>
 </View>
 }
 
 {/*'not enough data - display progress answering questions'*/}
-{!frsCurrent && !FRScomputing && 
+{!current && !SMC_computing && 
   <View style={styles.circleProgress}>
     <ProgressCircle percent={percentAnswered}>
       <Text style={styles.progressIconNumber}>{`${percentAnswered}%`}</Text>
     </ProgressCircle>
     <View>
-      <Text style={styles.progressText}>{i18n.t('homescreen_question_answered')}</Text>
+      <Text style={styles.progressText}>{'homescreen_question_answered'}</Text>
     </View>
   </View>
 }
 
 {/*'show progress indicator when calculating risk'*/}
-{FRScomputing && 
+{SMC_computing && 
   <View style={styles.circleProgress}>
-    <ProgressCircle percent={FRScompute_progress}>
+    <ProgressCircle percent={SMC_compute_progress}>
       <Ionicons name={`ios-cog`} size={35} color={colors.gray}/>
     </ProgressCircle>
     <View>
-      {(FRScompute_progress   < 100) && <Text style={styles.progressText}>{i18n.t('homescreen_calculating_risk')}</Text>}
-      {(FRScompute_progress === 100) && <Text style={styles.progressText}>{i18n.t('global_Done')}</Text>}
+      {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'homescreen_calculating_risk'}</Text>}
+      {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'global_Done'}</Text>}
     </View>
 </View>
 }
@@ -283,7 +262,7 @@ class HomeScreen extends React.Component {
 </View>
 
 {/********************************************
-      START OF THE THIRD BOX - Secure Delivery
+  THIRD BOX - Secure Report Delivery
 **********************************************/}
 
 <View style={styles.shadowBox}>
@@ -296,36 +275,43 @@ class HomeScreen extends React.Component {
       height: 50,
     }}
   >
-    <Text style={styles.boxTitle}>{'Secure Delivery'}</Text>
+    <Text style={styles.boxTitle}>{'Secure Report Delivery'}</Text>
   </ImageBackground>
 
-{/*END GENE BOX TITLE*/}
-
-{/*BEGIN GENE STATUS BOX*/}
 <View style={styles.textBlock}>
-
-{/*We have the full report*/}
-{haveDNA && (dnaStatus > 3) &&
 <Text style={mS.smallGrayFP}>
-  <Text style={{fontWeight: 'bold'}}>{i18n.t('result_status')}{` `}</Text>
-  {i18n.t('homescreen_gene_here')}{` `}{gene_bias_text}
-</Text>}
+  <Text style={{fontWeight: 'bold'}}>{'Status:'}{` `}</Text>
+  {'Your genotyping and microbiome analysis have been completed!'}
+</Text>
 </View>
-{/*END GENE STATUS BOX*/}
 
-{/*BEGIN GENE BUTTONS*/}
+{/*BEGIN REPORT BUTTONS*/}
 
-<View style={{
-  width: '60%',
-  padding: 12,
-  paddingTop: 20
-}}>
+{haveDNA &&
+<View style={{width: '60%',padding: 12,paddingTop: 20}}>
   <BasicButton 
-    text={'View Results'}
+    text={'View Report'}
     width="80%"
-    onClick={()=>this.handleClickItem('RESULTS_DNA')}
+    onClick={()=>this.handleClickItem('REPORT_SEE')}
   />
 </View>
+}
+
+{!haveDNA && !downloadingReport &&
+<View style={{width: '60%',padding: 12,paddingTop: 20}}>
+  <BasicButton 
+    text={'Download Report'}
+    width="80%"
+    onClick={()=>this.handleClickItem('REPORT_GET')}
+  />
+</View>
+}
+
+{!haveDNA && downloadingReport &&
+<View style={{width: '60%',padding: 12,paddingTop: 20}}>
+  <ActivityIndicator size="large" color='#33337F'/>
+</View>
+}
 
 </View>
 </View>
@@ -456,4 +442,4 @@ const mapStateToProps = state => ({
   result: state.result,
 });
 
-export default connect(mapStateToProps)(HomeScreen);
+export default connect(mapStateToProps)(Home);

@@ -8,16 +8,16 @@ import {
 } from '../constants';
 
 import * as SecureStore from 'expo-secure-store';
-import { SECURE_STORAGE_USER_RESULT } from '../constants';
+import { SECURE_STORAGE_RESULT } from '../constants';
 import * as FileSystem from 'expo-file-system';
 
 //files
 const pdfStore = `${FileSystem.documentDirectory}User/PDFs`;
 var ENresultPDF = ``;
 
-export const getResultsBegin     = data  => ({ type: GET_RESULTS });
-export const getResultsSuccess   = data  => ({ type: GET_RESULTS_SUCCESS, payload: data });
-export const getResultsFailure   = error => ({ type: GET_RESULTS_FAILURE, payload: error });
+export const getResultsBegin   = data  => ({ type: GET_RESULTS });
+export const getResultsSuccess = data  => ({ type: GET_RESULTS_SUCCESS, payload: data });
+export const getResultsFailure = error => ({ type: GET_RESULTS_FAILURE, payload: error });
 
 export const circulateLocalResults = data => ({ type: CIRCULATE_LOCAL_RESULTS, payload: data });
 
@@ -54,7 +54,7 @@ etc.
 	.then(result => {
 
     //for testing 
-    //SecureStore.deleteItemAsync(SECURE_STORAGE_USER_RESULT).then(() => {}).catch(() => {});
+    //SecureStore.deleteItemAsync(SECURE_STORAGE_RESULT).then(() => {}).catch(() => {});
 
     var newLocalResult = {};
     var downloadURL = '';
@@ -93,12 +93,11 @@ etc.
 			  result = [result[latestIndex]];
 
 			  //compute local results array
-			  if( result[0].report_type > 5 ) {
+			  if( result[0].r_state > 5 ) {
           if (__DEV__) console.log('actionResults: Case 8');
-          //case 8
     			newLocalResult = {};
     		} 
-        else if( result[0].report_type < 4 ) {
+        else if( result[0].r_state < 4 ) {
           //case 0, 1, 2, 3
           if (__DEV__) console.log('actionResults: Simple report < 4');
           newLocalResult = {
@@ -113,6 +112,7 @@ etc.
         else {
           //case 4 or 5
           if (__DEV__) console.log('actionResults: New file, 4 or 5');
+          
           downloadURL = result[0].url_to_s3_crypto_pdf;
 
     			var filename = result[0].url_to_s3_crypto_pdf;
@@ -138,7 +138,7 @@ etc.
     		} //closes rstate 4 or 5
 
 				//now let's see if we have a local result
-				SecureStore.getItemAsync(SECURE_STORAGE_USER_RESULT).then(resultL => {
+				SecureStore.getItemAsync(SECURE_STORAGE_RESULT).then(resultL => {
         	
           if (__DEV__) console.log('actionResults: Local keys/results check.')
 
@@ -178,7 +178,7 @@ etc.
               //we need to update the local results
           		if (__DEV__) console.log(`actionResults: Need to UPDATE local results`);
           		//if (__DEV__) console.log('actionResults: Updating localResult to:', newLocalResult)
-      				SecureStore.setItemAsync(SECURE_STORAGE_USER_RESULT, JSON.stringify(newLocalResult));
+      				SecureStore.setItemAsync(SECURE_STORAGE_RESULT, JSON.stringify(newLocalResult));
 
               if((newLocalResult.r_state === 4) || (newLocalResult.r_state === 5)) {
                 if (__DEV__) console.log('actionResults: Downloading file')
@@ -229,12 +229,12 @@ etc.
               });
 
               if (__DEV__) console.log(`actionResults: Need to CREATE local results`);
-              SecureStore.setItemAsync(SECURE_STORAGE_USER_RESULT, JSON.stringify(newLocalResult));
+              SecureStore.setItemAsync(SECURE_STORAGE_RESULT, JSON.stringify(newLocalResult));
 
               if((newLocalResult.r_state === 4) || (newLocalResult.r_state === 5)) {
                 if (__DEV__) console.log('actionResults: Downloading file')
                 FileSystem.downloadAsync( 
-                  downloadURL, //newLocalResult.url,
+                  downloadURL,
                   newLocalResult.ENresultPDF,
                 ).then(({ uri }) => {
                   if (__DEV__) console.log('actionResults: Finished downloading to', uri);

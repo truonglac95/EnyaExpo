@@ -4,11 +4,10 @@ import {
 	USER_SIGN_OUT,
 	RESET_APP,
 	USER_RESET_ERROR,
-	SECURE_STORAGE_USER_ACCOUNT,
+	SECURE_STORAGE_ACCOUNT,
 	SECURE_STORAGE_ANSWERS,
-	SECURE_STORAGE_FRS,
-	SECURE_STORAGE_USER_FLOW,
-	SECURE_STORAGE_USER_RESULT,
+	SECURE_STORAGE_SMC,
+	SECURE_STORAGE_RESULT,
 	USER_SIGN_UP,
 	USER_SIGN_UP_SUCCESS,
 	USER_SIGN_UP_FAILURE,
@@ -47,11 +46,10 @@ export const burnEverything = () => (dispatch) => {
 
 	if (__DEV__) console.log('Burning the account...')
 
-    SecureStore.deleteItemAsync(SECURE_STORAGE_USER_FLOW).then(() => {}).catch(() => {});
-	SecureStore.deleteItemAsync(SECURE_STORAGE_USER_ACCOUNT).then(() => {}).catch(() => {});
+	SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(() => {}).catch(() => {});
 	SecureStore.deleteItemAsync(SECURE_STORAGE_ANSWERS).then(() => {}).catch(() => {});
-	SecureStore.deleteItemAsync(SECURE_STORAGE_FRS).then(() => {}).catch(() => {});
-	SecureStore.deleteItemAsync(SECURE_STORAGE_USER_RESULT).then(() => {}).catch(() => {});
+	SecureStore.deleteItemAsync(SECURE_STORAGE_SMC).then(() => {}).catch(() => {});
+	SecureStore.deleteItemAsync(SECURE_STORAGE_RESULT).then(() => {}).catch(() => {});
 
     if (__DEV__) console.log('Cleared Secure Storage...')
 

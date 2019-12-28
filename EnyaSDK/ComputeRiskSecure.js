@@ -1,7 +1,3 @@
-import {
-  CALCULATE_RISK_SCORE_PROGRESS,
-} from '../redux/constants';
-
 const math = require("mathjs");
 const crypto = require('crypto-js');
 
@@ -11,13 +7,52 @@ import {
   SECURE_PRS_CHANNEL_3
  } from '../settings';
 
+import {
+  CALCULATE_SMC_PROGRESS,
+} from '../redux/constants';
+
 const PRECISION = 10000 //precision makes sure 4 digits are reserved
 const BITLENGTH = 8;
 const USER_WEIGHT_SHAPE = [8]
 const BLOCKDOC_WEIGHT_SHAPE = [288,8]
 
-const calculateRiskScoreProgress = (data) => ({
-  type: CALCULATE_RISK_SCORE_PROGRESS,
+export function CanCompute( data ) {
+
+    var ga = 0; //ga is short for 'good answers'
+    
+    if ( data.birthyear > 0 ) { ga += 1; }
+    if ( data.gender > 0 ) { ga += 1; }
+    if ( data.height > 0 ) { ga += 1; }
+    if ( data.weight > 0 ) { ga += 1; }
+    if ( data.smoking > 0 ) { ga += 1; }
+    if ( data.diabetes > 0 ) { ga += 1; }
+    if ( data.hdlc > 0 ) { ga += 1; }
+
+    if( ga >= 7 ) {
+      return true; //yes we have all the info we need
+    } else {
+      return false; //not enough data
+    }
+}
+
+export function NumGoodAnswers( data ) {
+
+    var ga = 0;
+    
+    if ( data.birthyear > 0 ) { ga += 1; }
+    if ( data.gender > 0 ) { ga += 1; }
+    if ( data.height > 0 ) { ga += 1; }
+    if ( data.weight > 0 ) { ga += 1; }
+    if ( data.smoking > 0 ) { ga += 1; }
+    if ( data.diabetes > 0 ) { ga += 1; }
+    if ( data.hdlc > 0 ) { ga += 1; }
+    if ( data.country > 0 ) { ga += 1; }
+
+    return ga;
+}
+
+const calculate_SMC_Progress = (data) => ({
+  type: CALCULATE_SMC_PROGRESS,
   payload: data,
 });
 
@@ -32,9 +67,9 @@ export async function ComputeRiskSecure( data, uuid, id, dispatch ) {
      Return:secure mpc risk score 
   */
 
-  dispatch(calculateRiskScoreProgress( {
-    FRScompute_progress: 0,
-    FRScomputing: true })
+  dispatch(calculate_SMC_Progress( {
+    SMC_compute_progress: 0,
+    SMC_computing: true })
   );
 
   let risk_score = 0.0;
