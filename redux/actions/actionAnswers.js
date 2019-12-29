@@ -44,7 +44,6 @@ const answers = {
   gender: 0,
   smoking: 0,
   diabetes: 0,
-  hdlc: 0,
 }
 
 const smc = {
