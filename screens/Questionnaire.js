@@ -10,7 +10,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Picker from 'react-native-picker-select';
 import BasicButton from '../components/BasicButton';
 import colors from '../constants/Colors';
-import i18n from '../constants/Strings';
 import mS from '../constants/masterStyle';
 
 //redux
@@ -32,39 +31,24 @@ for (var i = 120; i <= 215; i++) {
 }
 
 const countriesList = [
-  { label: 'form_basic_HongKong' , value: 1 },
-  { label: 'form_basic_China' , value: 2 },
-  { label: 'form_basic_USA' , value: 3 }, 
-  { label: 'form_basic_Singapore' , value: 4 }
+  { label: 'China' , value: 1 },
+  { label: 'USA' , value: 2 }, 
+  { label: 'Korea' , value: 3 }
 ];
 
 const genderList = [
-  { label: 'form_basic_Male' , value: 1 }, 
-  { label: 'form_basic_Female' , value: 2 }
+  { label: 'Male' , value: 1 }, 
+  { label: 'Female' , value: 2 }
 ];
 
 const smokingList = [
-  { label: 'global_no' , value: 1 }, 
-  { label: 'global_yes' , value: 2 }
+  { label: 'No' , value: 1 }, 
+  { label: 'Yes' , value: 2 }
 ];
 
 const diabetesList = [
-  { label: 'global_no' , value: 1 }, 
-  { label: 'global_yes' , value: 2 }
-];
-
-const hdlcList = [
-  { label: '<0.9'    , value:  1 },
-  { label: '0.9-0.99', value:  2 },
-  { label: '1.0-1.09', value:  3 },
-  { label: '1.1-1.19', value:  4 },
-  { label: '1.2-1.29', value:  5 },
-  { label: '1.3-1.39', value:  6 },
-  { label: '1.4-1.49', value:  7 },
-  { label: '1.5-1.59', value:  8 },
-  { label: '1.6-1.69', value:  9 },
-  { label: '1.7-1.79', value: 10 },
-  { label: '>1.79'   , value: 11 }
+  { label: 'No' , value: 1 }, 
+  { label: 'Yes' , value: 2 }
 ];
 
 const screenWidth = Dimensions.get('window').width;
@@ -99,14 +83,13 @@ class Questionnaire extends React.Component {
 
     super(props);
 
-    const { answers, SMC } = this.props.answer;
+    const { answers, smc } = this.props.answer;
     const { localResult } = this.props.result;
 
     this.state = {
 
-      percentAnswered: (SMC.percentAnswered || 0),
-      numberAnswered: (SMC.numberAnswered || 0),
-      goodAnswers: (SMC.goodAnswers || 0),
+      percentAnswered: (smc.percentAnswered || 0),
+      numberAnswered: (smc.numberAnswered || 0),
 
       birthyear: (answers.birthyear || 0),
       country: (answers.country || 0),
@@ -115,10 +98,9 @@ class Questionnaire extends React.Component {
       smoking: (answers.smoking || 0),
       weight: (answers.weight || 0),
       diabetes: (answers.diabetes || 0),
-      hdlc: (answers.hdlc || 0),
 
-      result: (SMC.result || 0.0),
-      current: (SMC.current || false),
+      result: (smc.result || 0.0),
+      current: (smc.current || false),
 
       SMC_compute_progress: (this.props.answer.SMC_compute_progress|| 0),
       SMC_computing: (this.props.answer.SMC_computing || false),
@@ -135,7 +117,6 @@ class Questionnaire extends React.Component {
       smokingInput: null,
       weightInput: null,
       diabetesInput: null,
-      hdlcInput: null,
     };
 
   }
@@ -150,7 +131,6 @@ class Questionnaire extends React.Component {
       smokingInput: null,
       weightInput: null,
       diabetesInput: null,
-      hdlcInput: null,
     };
 
   }
@@ -180,13 +160,10 @@ class Questionnaire extends React.Component {
     else if ( key === 'diabetes' ) {
       this.setState({ diabetes : value })
     }
-    else if ( key === 'hdlc' ) {
-      this.setState({ hdlc : value })
-    }
 
     let newAnswer = [{ question_id : key, answer : value }];
 
-    if (__DEV__) console.log(newAnswer); 
+    //if (__DEV__) console.log(newAnswer); 
 
     dispatch(giveAnswer(newAnswer));
 
@@ -203,7 +180,7 @@ class Questionnaire extends React.Component {
     const { account } = this.props.user;
     const { localResult } = this.props.result;
 
-    dispatch( calculateRiskScore(answers, localResult, account.UUID, account.id) );
+    dispatch( secureCompute(answers, account.UUID, account.id) );
 
     this.setState({ recalculating: true });
 
@@ -211,16 +188,15 @@ class Questionnaire extends React.Component {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
 
-    const { SMC } = nextProps.answer;
+    const { smc } = nextProps.answer;
     const { localResult: nextLocalResult } = nextProps.result;
     const { localResult } = this.props.result;
 
     this.setState({
-      percentAnswered: (SMC.percentAnswered || 0),
-      numberAnswered: (SMC.numberAnswered || 0),
-      result: (SMC.result || 0.0),
-      current: (SMC.current || false),
-      goodAnswers: (SMC.goodAnswers || 0),
+      percentAnswered: (smc.percentAnswered || 0),
+      numberAnswered: (smc.numberAnswered || 0),
+      result: (smc.result || 0.0),
+      current: (smc.current || false),
       SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
       SMC_computing: (nextProps.answer.SMC_computing || false),
     });
@@ -234,12 +210,11 @@ class Questionnaire extends React.Component {
   }
 
   render() {
-    
+
     const { localResult } = this.props.result;
 
-    const { birthyear, country, gender, smoking, height, weight, 
-            diabetes, hdlc, goodAnswers, result, 
-            current, percentAnswered, numberAnswered, 
+    const { birthyear, country, gender, smoking, height, weight, diabetes, hdlc, 
+            result, current, percentAnswered, numberAnswered, 
             SMC_computing, SMC_compute_progress } = this.state;
 
     const pickerStyle = {
@@ -277,16 +252,16 @@ class Questionnaire extends React.Component {
   ref={scrollView => this.scrollView = scrollView}
 >
 
-{!SMC_computing && (goodAnswers < 7) &&
+{!SMC_computing && (numberAnswered < 7) &&
   <View style={[styles.shadowBox, {alignItems: 'center', marginTop: 13, fontSize: 20}]}>
     <Text style={styles.smallGray}>{'form_cardio_info'}</Text>
   </View>
 }
 
-{(numberAnswered >= 7) && !current && <View style={styles.shadowBoxClear}>
+{(numberAnswered >= 7) && !current && !SMC_computing && <View style={styles.shadowBoxClear}>
   <BasicButton 
     width={200}
-    text={'Secure Calculate'} 
+    text={'Secure Compute'} 
     onClick={this.handleCalculate}
   />
   </View>
@@ -302,12 +277,12 @@ class Questionnaire extends React.Component {
 }
 
 {/*show progress indicator when calculating risk*/}
-{SMCcomputing && <View 
+{SMC_computing && <View 
   style={styles.containerProgress}>
     <ProgressCircle percent={SMC_compute_progress}/>
     <View>
-      {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'form_cardio_mpc'}</Text>}
-      {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'global_Done'}</Text>}
+      {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'Computing'}</Text>}
+      {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'Done'}</Text>}
     </View>
   </View>
 }
@@ -320,14 +295,14 @@ class Questionnaire extends React.Component {
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.countryInput.togglePicker()}}>
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_country'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Country'}</Text></View>
 <Text style={this.state.country == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
-  { this.state.country == 0 ? 'form_basic_please_select' : countriesList[this.state.country-1].label }
+  { this.state.country == 0 ? 'Please select' : countriesList[this.state.country-1].label }
 </Text>
 <Picker
   items={countriesList}
   value={country}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('country',v)}}
   onDownArrow={()=>{this.inputRefs.birthyearInput.togglePicker();}}
   ref={el => { this.inputRefs.countryInput = el;}}
@@ -339,12 +314,12 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'android' &&
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_country'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Country'}</Text></View>
 <Picker
   items={countriesList}
   value={country}
   useNativeAndroidPickerStyle={false}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('country',v)}}
   style={pickerStyle}
 />
@@ -357,14 +332,14 @@ class Questionnaire extends React.Component {
   this.state.birthyear == 0 && this.setState({ birthyear : yearsList[30].value });
 }}>
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_birthday'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Birthyear'}</Text></View>
 <Text style={this.state.birthyear == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
-{ this.state.birthyear == 0 ? 'form_basic_please_select': this.state.birthyear }
+{ this.state.birthyear == 0 ? 'Please select': this.state.birthyear }
 </Text>
 <Picker
   items={yearsList}
   value={birthyear}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('birthyear',v)}}
   onUpArrow  ={()=>{this.inputRefs.countryInput.togglePicker();}}
   onDownArrow={()=>{this.inputRefs.genderInput.togglePicker();}}
@@ -377,12 +352,12 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'android' &&
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_birthday'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Birthday'}</Text></View>
 <Picker
   items={yearsList}
   value={birthyear}
   useNativeAndroidPickerStyle={false}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('birthyear',v)}}
   style={pickerStyle}
 />
@@ -392,14 +367,14 @@ class Questionnaire extends React.Component {
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.genderInput.togglePicker()}}>
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_gender'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Gender'}</Text></View>
 <Text style={this.state.gender == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
-{ this.state.gender == 0 ? 'form_basic_please_select': genderList[this.state.gender-1].label }
+{ this.state.gender == 0 ? 'Please select': genderList[this.state.gender-1].label }
 </Text>
 <Picker
   items={genderList}
   value={gender}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('gender',v)}}
   onUpArrow={()=>{this.inputRefs.birthyearInput.togglePicker()}}
   onDownArrow={()=>{this.inputRefs.heightInput.togglePicker()}}
@@ -412,12 +387,12 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'android' &&
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_gender'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Gender'}</Text></View>
 <Picker
   items={genderList}
   value={gender}
   useNativeAndroidPickerStyle={false}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('gender',v)}}
   style={pickerStyle}
 />
@@ -430,15 +405,15 @@ class Questionnaire extends React.Component {
   this.state.height == 0 && this.setState({ height : heightList[45].value });
 }}>
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_height'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Height'}</Text></View>
 <Text style={this.state.height == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
-{ this.state.height == 0 ? 'form_basic_please_select': this.state.height + ' cm' }
+{ this.state.height == 0 ? 'Please select': this.state.height + ' cm' }
 </Text>
 <Picker
   items={heightList}
   value={height}
   useNativeAndroidPickerStyle={false}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('height',v)}}
   onUpArrow  ={()=>{this.inputRefs.genderInput.togglePicker()}}
   onDownArrow={()=>{this.inputRefs.weightInput.togglePicker()}}
@@ -456,7 +431,7 @@ class Questionnaire extends React.Component {
   items={heightList}
   value={height}
   useNativeAndroidPickerStyle={false}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('height',v)}}
   style={pickerStyle}
 />
@@ -470,16 +445,16 @@ class Questionnaire extends React.Component {
 }}
 >
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_weight'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Weight'}</Text></View>
 <Text style={this.state.weight == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
-{ this.state.weight == 0 ? 'form_basic_please_select': this.state.weight + ' kg'}
+{ this.state.weight == 0 ? 'Please select': this.state.weight + ' kg'}
 </Text>
 <Picker
   items={weightList}
   value={weight}
   onpress={() => {this.state.weight == 0 ? this.setState({ weight : weightList[45].value }) : this.setState({ weight : this.state.weight })}}
   useNativeAndroidPickerStyle={false}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('weight',v)}}
   onUpArrow  ={()=>{this.inputRefs.heightInput.togglePicker()}}
   onDownArrow={()=>{this.inputRefs.smokingInput.togglePicker()}}
@@ -492,13 +467,13 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'android' &&
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_weight'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Weight'}</Text></View>
 <Picker
   items={weightList}
   value={weight}
   onpress={()=>{this.state.weight == 0 ? this.setState({ weight : weightList[45].value }) : this.setState({ weight : this.state.weight })}}
   useNativeAndroidPickerStyle={false}
-  placeholder={{label: 'form_basic_please_select', value: 0}}
+  placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('weight',v)}}
   style={pickerStyle}
 />
@@ -508,14 +483,14 @@ class Questionnaire extends React.Component {
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.smokingInput.togglePicker()}}>
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_smoke'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Smoking'}</Text></View>
 <Text style={this.state.smoking == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
-{ this.state.smoking == 0 ? 'form_basic_yes_no': smokingList[this.state.smoking-1].label }
+{ this.state.smoking == 0 ? 'No/Yes': smokingList[this.state.smoking-1].label }
 </Text>
 <Picker
   items={smokingList}
   value={smoking}
-  placeholder={{ label: 'form_basic_yes_no', value: 0}}
+  placeholder={{ label: 'No/Yes', value: 0}}
   //do not need the 'city' thing here because the keyboard blocks these anyway
   //so its impossible for someone to select these with the keyboard up
   onValueChange={(v)=>{this.handleSave('smoking',v)}}
@@ -530,12 +505,12 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'android' &&
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_smoke'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Smoking'}</Text></View>
 <Picker
   items={smokingList}
   value={smoking}
   useNativeAndroidPickerStyle={false}
-  placeholder={{label: 'form_basic_yes_no', value: 0}}
+  placeholder={{label: 'No/Yes', value: 0}}
   onValueChange={(v)=>{this.handleSave('smoking',v)}}
   style={pickerStyle}
 />
@@ -546,14 +521,14 @@ class Questionnaire extends React.Component {
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.diabetesInput.togglePicker()}}>
 <View style={[styles.row, {borderBottomColor: '#FFFFFF'}]}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_diabetes'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Diabetes'}</Text></View>
 <Text style={this.state.diabetes == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
-{ this.state.diabetes == 0 ? 'form_basic_yes_no': diabetesList[this.state.diabetes-1].label }
+{ this.state.diabetes == 0 ? 'No/Yes': diabetesList[this.state.diabetes-1].label }
 </Text>
 <Picker
   items={diabetesList}
   value={diabetes}
-  placeholder={{label: 'form_basic_yes_no', value: 0}}
+  placeholder={{label: 'No/Yes', value: 0}}
   onValueChange={(v)=>{this.handleSave('diabetes',v)}}
   onUpArrow={()=>{this.inputRefs.smokingInput.togglePicker();}}
   ref={el=>{this.inputRefs.diabetesInput = el}}
@@ -565,12 +540,12 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'android' &&
 <View style={[styles.row, {borderBottomColor: '#FFFFFF'}]}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_diabetes'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Diabetes'}</Text></View>
 <Picker
   items={diabetesList}
   value={diabetes}
   useNativeAndroidPickerStyle={false}
-  placeholder={{label: 'form_basic_yes_no', value: 0}}
+  placeholder={{label: 'No/Yes', value: 0}}
   onValueChange={(v)=>{this.handleSave('diabetes',v)}}
   style={pickerStyle}
 />

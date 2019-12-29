@@ -79,46 +79,6 @@ HomeStack.navigationOptions = ({ navigation }) => {
   };
 };
 
-const ResultStack = createStackNavigator(
-{
-  Result: {
-    screen: Result,
-    navigationOptions: ({navigation}) => ({
-      headerLeft: 
-        <HeaderBackButton 
-          tintColor={colors.headerFontColor}
-          backTitleVisible={true}
-          onPress={() => navigation.goBack(null)} 
-        />
-    })
-  },
-}, 
-{
-  defaultNavigationOptions: {
-    headerTintColor: colors.headerFontColor,
-  },
-});
-
-ResultStack.navigationOptions = ({ navigation }) => {
-  
-  let tabBarVisible = true;
-
-  const { routeName } = navigation.state.routes[navigation.state.index];
-
-  if (routeName === 'Result') {
-    tabBarVisible = false;
-  }
-
-  return {
-    tabBarLabel: ({ focused }) => <Label text={'Report'} focused={focused} />,
-    tabBarIcon: ({ focused }) => (
-      <TabImage 
-        image={!focused ? require('../assets/images/nav/nav_genes_g.png') : require('../assets/images/nav/nav_genes_b.png')}
-      />),
-    tabBarVisible,
-  };
-};
-
 const AccountStack = createStackNavigator(
 {
   Account: {
@@ -167,7 +127,6 @@ const styles = StyleSheet.create({
 export default createBottomTabNavigator(
   {
     HomeStack,
-    ResultStack,
     AccountStack,
   }, 
   {

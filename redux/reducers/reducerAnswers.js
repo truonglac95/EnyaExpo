@@ -6,10 +6,10 @@ import {
 	GIVE_ANSWER_SUCCESS,
 	GIVE_ANSWER_FAILURE,
 	GET_SMC_SUCCESS,
-	CALCULATE_SMC,
-	CALCULATE_SMC_SUCCESS,
-	CALCULATE_SMC_FAILURE,
-	CALCULATE_SMC_PROGRESS,
+	SECURE_COMPUTE,
+	SECURE_COMPUTE_SUCCESS,
+	SECURE_COMPUTE_FAILURE,
+	SECURE_COMPUTE_PROGRESS,
 } from '../constants';
 
 import initialState from '../initialState';
@@ -25,7 +25,6 @@ export function answer(state = INITIAL_STATE, action = {}) {
 				error: null,
 			}
 		case GET_ANSWERS_SUCCESS:
-		    //if (__DEV__) console.log('circulating local answers:', action.payload)
 			return {
 				...state,
 				loading: false,
@@ -45,7 +44,6 @@ export function answer(state = INITIAL_STATE, action = {}) {
 				error: null,
 			}
 		case GIVE_ANSWER_SUCCESS:
-		    //if (__DEV__) console.log('GIVE_ANSWER_SUCCESS')
 			return {
 				...state,
 				loading: false,
@@ -63,28 +61,28 @@ export function answer(state = INITIAL_STATE, action = {}) {
 				...state,
 				loading: false,
 				error: null,
-				SMC: action.payload,
+				smc: action.payload,
 			}
-		case CALCULATE_SMC:
+		case SECURE_COMPUTE:
 			return {
 				...state,
 				loading: true,
 				error: null,
 			}
-		case CALCULATE_SMC_SUCCESS:
+		case SECURE_COMPUTE_SUCCESS:
 			return {
 				...state,
 				loading: false,
 				error: null,
-				SMC: action.payload,
+				smc: action.payload,
 			}
-		case CALCULATE_SMC_FAILURE:
+		case SECURE_COMPUTE_FAILURE:
 			return {
 				...state,
 				loading: false,
 				error: action.payload,
 			}
-		case CALCULATE_SMC_PROGRESS:
+		case SECURE_COMPUTE_PROGRESS:
 			return {
 				...state,
 				SMC_compute_progress: action.payload.SMC_compute_progress,

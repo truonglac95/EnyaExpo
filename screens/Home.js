@@ -14,7 +14,7 @@ import mS from '../constants/masterStyle';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 //redux
-import { secureCompute, getResults } from '../redux/actions';
+import { secureCompute, getResults, getAnswers } from '../redux/actions';
 
 class Home extends React.Component {  
 
@@ -95,7 +95,6 @@ class Home extends React.Component {
       SMC_computing: (nextProps.answer.SMC_computing || false),
 
       haveDNA: (localResult.haveDNA || false),
-      //downloadingReport: (nextProps.result.loading || false),
 
     });
   }
@@ -225,7 +224,7 @@ class Home extends React.Component {
 
 {current &&
 <View>
-  <Text style={[styles.gray, {textAlign: 'center', fontWeight: 'bold', fontSize: overallScore_ab >= 10 ? 30 : 38}]}>{overallScore_ab}%</Text>
+  <Text style={[styles.gray, {textAlign: 'center', fontWeight: 'bold', fontSize: result >= 10 ? 30 : 38}]}>{result}%</Text>
   <Text style={[mS.smallGrayFP, {textAlign: 'center'}]}>{'homescreen_risk_event'}</Text>
 </View>
 }

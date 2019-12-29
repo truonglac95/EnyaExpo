@@ -15,7 +15,6 @@ import { Asset } from 'expo-asset';
 import MainApp from './MainApp';
 import BasicButton from './components/BasicButton';
 import colors from './constants/Colors';
-import i18n from './constants/Strings';
 import mS from './constants/masterStyle';
 
 import { SECURE_STORAGE_ACCOUNT } from './redux/constants';

@@ -48,7 +48,6 @@ const answers = {
 }
 
 const smc = {
-  goodAnswers: 0,
   percentAnswered: 0,
   numberAnswered: 0,
   haveSMC: false,
@@ -108,14 +107,12 @@ export const giveAnswer = (answer) => (dispatch) => {
 
       dispatch( giveAnswerSuccess(updatedData) );
 
-      var goodAnswers = NumGoodAnswers( data );
-
+      var numberAnswered = NumGoodAnswers( data );
       var current = false; //because we just received a new answer from the user
-      
       var percentAnswered = 0;
 
-      if( goodAnswers > 0 ) {
-        percentAnswered = Math.round((goodAnswers / 8.0) * 100);
+      if( numberAnswered > 0 ) {
+        percentAnswered = Math.round((numberAnswered / 8.0) * 100);
       }
 
       SecureStore.getItemAsync(SECURE_STORAGE_SMC).then(res2 => {
@@ -163,11 +160,6 @@ export const secureComputeProgress = (data) => ({
 
 export const secureCompute = (data, UUID, id) => async (dispatch) => {
 
-  console.log('secureCompute')
-  console.log(data)
-  console.log(UUID)
-  console.log(id)
-
 	dispatch( secureComputeBegin() );
 
   dispatch( secureComputeProgress({
@@ -180,7 +172,7 @@ export const secureCompute = (data, UUID, id) => async (dispatch) => {
   var current = false;
   var haveSMC = false;
 
-	if ( CanComputeRisk( data ) ) {
+	if ( CanCompute( data ) ) {
 		
 		if (__DEV__) console.log('Yes, there are enough data for SMC computation');
 
@@ -194,7 +186,11 @@ export const secureCompute = (data, UUID, id) => async (dispatch) => {
       haveSMC = true; //yes, we have result
     }
 
-	}
+	} else {
+
+    if (__DEV__) console.log('No, not enough data for SMC computation');
+
+  }
 
 	SecureStore.getItemAsync(SECURE_STORAGE_SMC).then(res => {
 
@@ -208,7 +204,7 @@ export const secureCompute = (data, UUID, id) => async (dispatch) => {
       error: null
     };
 
-    SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(updatedFRS));
+    SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(updatedSMC));
 
     if ( haveSMC ) {
     

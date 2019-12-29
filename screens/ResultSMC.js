@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 // UI
 import { StyleSheet, Text, ScrollView, View, Dimensions, ActivityIndicator } from 'react-native';
 import colors from '../constants/Colors';
-import i18n from '../constants/Strings';
 
 class ResultSMC extends React.Component {
 
@@ -19,7 +18,7 @@ class ResultSMC extends React.Component {
           textAlign: 'center',
           alignSelf: 'center',
         }}>
-          {'Secure Computation Result'}
+          {'SMC Result'}
         </Text>
       ),
       headerRight: (<View></View>),
@@ -34,11 +33,11 @@ class ResultSMC extends React.Component {
 
     this.state = {
       result: (smc.result || 0.0),
-      hdlc: (answers.hdlc || 0),
       diabetes: (answers.diabetes || 0),
       smoking: (answers.smoking || 0),
       birthyear: (answers.birthyear || 0),
       gender: (answers.gender || 0),
+      country: (answers.country || 0)
     };
 
   }
@@ -49,18 +48,18 @@ UNSAFE_componentWillReceiveProps(nextProps) {
 
     this.setState({
       result: (nextSMC.result || 0.0),
-      hdlc: (nextAnswers.hdlc || 0),
       diabetes: (nextAnswers.diabetes || 0),
       smoking: (nextAnswers.smoking || 0),
       birthyear: (nextAnswers.birthyear || 0),
       gender: (nextAnswers.gender || 0),
+      country: (nextAnswers.country || 0)
     });
 
   }
 
   render() {
     
-    const { result, hdlc, diabetes, smoking, birthyear, gender } = this.state;
+    const { result, diabetes, smoking, birthyear, gender, country } = this.state;
 
     //so we do not briefly show the wrong (old) result
     if (this.props.answer.loading) {
@@ -71,8 +70,8 @@ UNSAFE_componentWillReceiveProps(nextProps) {
      }
 
     var score = parseFloat(result).toFixed(1);
-    var strHDL = '';
     var strMain = '';
+    var strCountry = '';
 
     if (score <= 3) {
       strMain = 'result_main_low low low low low.'
@@ -84,14 +83,14 @@ UNSAFE_componentWillReceiveProps(nextProps) {
       strMain = 'result_main_high high high high high.'
     }
 
-    if (hdlc <= 3) { 
-      strHDL = 'result_hdl_low low low low low.'
+    if (country <= 1) { 
+      strCountry = 'result_country_low low low low low.'
     }
-    else if (hdlc <= 8) { 
-      strHDL = 'result_hdl_norm low low low low.'
+    else if (country <= 2) { 
+      strCountry = 'result_country_norm low low low low.'
     }
     else { 
-      strHDL = 'result_hdl_hig low low low low.'
+      strCountry = 'result_country_hig low low low low.'
     }
 
     return (
@@ -116,9 +115,9 @@ UNSAFE_componentWillReceiveProps(nextProps) {
 
 </View>
 
-{/*Compare this to others?*/}
+{/*Compare to others?*/}
 <View style={styles.row}>
-<Text style={styles.title}>{'What does this mean for me?'}</Text>
+<Text style={styles.title}>{'Compare to others'}</Text>
 <Text style={styles.text}>{'result_FRS_you_have'}
   <Text style={{fontWeight: 'bold'}}>{score}%</Text>{'result_FRS_10y'}{strMain}
 </Text>
@@ -128,7 +127,7 @@ UNSAFE_componentWillReceiveProps(nextProps) {
 <View style={styles.row}>
 <Text style={styles.title}>{'What does this mean for me?'}</Text>
 <Text style={styles.text}>{'result_FRS_you_have'}
-  <Text style={{fontWeight: 'bold'}}>{score}%</Text>{'result_FRS_10y'}{strHDL}
+  <Text style={{fontWeight: 'bold'}}>{score}%</Text>{'result_FRS_10y'}{strCountry}
 </Text>
 </View>
 

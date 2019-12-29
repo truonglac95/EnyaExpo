@@ -3,7 +3,6 @@ import { View, StyleSheet, Text, TouchableOpacity, Dimensions, Platform, Alert }
 
 import colors from '../constants/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import i18n from '../constants/Strings';
 
 export default class BasicButton extends Component {
   
@@ -15,7 +14,7 @@ export default class BasicButton extends Component {
     Alert.alert(
       title,
       todo,
-      [{text: 'global_ok'}],
+      [{text: 'Ok'}],
       {cancelable: false},
     );
   }

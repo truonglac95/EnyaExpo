@@ -47,10 +47,10 @@ handleBarCodeScannedSim = () => {
     };
 
     //save to local secure storage
-    SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(result));
+    SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
   
     //circulate props to everyone else
-    this.props.dispatch(setAccount(result));
+    this.props.dispatch(setAccount(newAccount));
 
   }).catch(err => {
 

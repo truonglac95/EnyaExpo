@@ -8,7 +8,7 @@ import {
  } from '../settings';
 
 import {
-  CALCULATE_SMC_PROGRESS,
+  SECURE_COMPUTE_PROGRESS,
 } from '../redux/constants';
 
 const PRECISION = 10000 //precision makes sure 4 digits are reserved
@@ -26,9 +26,8 @@ export function CanCompute( data ) {
     if ( data.weight > 0 ) { ga += 1; }
     if ( data.smoking > 0 ) { ga += 1; }
     if ( data.diabetes > 0 ) { ga += 1; }
-    if ( data.hdlc > 0 ) { ga += 1; }
 
-    if( ga >= 7 ) {
+    if( ga >= 6 ) {
       return true; //yes we have all the info we need
     } else {
       return false; //not enough data
@@ -45,20 +44,18 @@ export function NumGoodAnswers( data ) {
     if ( data.weight > 0 ) { ga += 1; }
     if ( data.smoking > 0 ) { ga += 1; }
     if ( data.diabetes > 0 ) { ga += 1; }
-    if ( data.hdlc > 0 ) { ga += 1; }
+
     if ( data.country > 0 ) { ga += 1; }
 
     return ga;
 }
 
-const calculate_SMC_Progress = (data) => ({
-  type: CALCULATE_SMC_PROGRESS,
+const secureComputeProgress = (data) => ({
+  type: SECURE_COMPUTE_PROGRESS,
   payload: data,
 });
 
 export async function ComputeRiskSecure( data, uuid, id, dispatch ) {
-
-//export async function ComputeRiskSecure ( data, uuid, id ) {
 
   /* 
      Input: data: contains all user input
@@ -67,7 +64,7 @@ export async function ComputeRiskSecure( data, uuid, id, dispatch ) {
      Return:secure mpc risk score 
   */
 
-  dispatch(calculate_SMC_Progress( {
+  dispatch(secureComputeProgress( {
     SMC_compute_progress: 0,
     SMC_computing: true })
   );
@@ -84,41 +81,8 @@ export async function ComputeRiskSecure( data, uuid, id, dispatch ) {
 
   //age 
   const age = (new Date().getFullYear()) - data.birthyear;
-  
-  // average of age < 65 comes from the literature, > 65 comes from the single 
-  // exponential fit of data points from the literature
-  if (gender == 0) {
-    if      (age < 40) { average_risk = 0.9 }
-    else if (age < 45) { average_risk = 1.2 }
-    else if (age < 50) { average_risk = 1.6 }
-    else if (age < 55) { average_risk = 2.3 }
-    else if (age < 60) { average_risk = 3.1 }
-    else if (age < 65) { average_risk = 4.0 }
-    else if (age < 70) { average_risk = 5.5 } 
-    else if (age < 75) { average_risk = 7.4 } 
-    else if (age < 80) { average_risk = 9.9 } 
-    else if (age < 85) { average_risk = 13.4 } 
-    else if (age < 90) { average_risk = 18.0 } 
-    else if (age < 95) { average_risk = 24.3 } 
-    else if (age > 94) { average_risk = 30 } 
-  } else {
-    if      (age < 40) { average_risk = 0.2 }
-    else if (age < 45) { average_risk = 0.4 }
-    else if (age < 50) { average_risk = 0.6 }
-    else if (age < 55) { average_risk = 0.9 }
-    else if (age < 60) { average_risk = 1.3 }
-    else if (age < 65) { average_risk = 2.0 }
-    else if (age < 70) { average_risk = 3.0 } 
-    else if (age < 75) { average_risk = 4.6 } 
-    else if (age < 80) { average_risk = 6.9 } 
-    else if (age < 85) { average_risk = 10.3 } 
-    else if (age < 90) { average_risk = 15.7 } 
-    else if (age < 95) { average_risk = 23.6 } 
-    else if (age > 94) { average_risk = 30 } 
-  }
 
-  // blood pressure: parse back to a real value
-  const blood_pressure = 112 + data.bloodpressure * 5;
+  const blood_pressure = 112 + 3 * 5;
 
   console.log('ComputeRiskSecure: Go MPC jia you');
 
@@ -126,11 +90,7 @@ export async function ComputeRiskSecure( data, uuid, id, dispatch ) {
   const BMI = data.weight / Math.pow((data.height/100),2);
 
   // TC: parse back to a real value
-  //?? we don't consider the fine details - e.g. there are only three categories?
-  var total_cholesterol = 0
-  if      (data.cholesterol == 1) { total_cholesterol = 3.5 }
-  else if (data.cholesterol  < 5) { total_cholesterol = 5.0 }
-  else                            { total_cholesterol = 6.0 }
+  var total_cholesterol = 6.0
 
   // smoke: consider no and not specified as no
   var smoke = 0
@@ -151,8 +111,6 @@ export async function ComputeRiskSecure( data, uuid, id, dispatch ) {
   data_package = [uuid, id, hash_vector, user_data, user_vector]
 
   risk_score = await riskscore( dispatch )
-
-  risk_score.risk_score_r = risk_score.risk_score_ab / average_risk
 
   return risk_score
 
@@ -384,9 +342,9 @@ const get_dot_product = async (key, input_json) => {
 // Main function
 const requests = async(data_package, dispatch) => {
 
-  dispatch(calculateRiskScoreProgress( {
-    FRScompute_progress: 15,
-    FRScomputing: true, })
+  dispatch(secureComputeProgress( {
+    SMC_compute_progress: 15,
+    SMC_computing: true, })
   );
 
   // Unpack all the data
@@ -404,9 +362,9 @@ const requests = async(data_package, dispatch) => {
   if (api_keys.status == 201){
     console.log("Step0: Successfully got API keys.");
     test_code++;
-    dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 25,
-      FRScomputing: true,
+    dispatch(secureComputeProgress( {
+      SMC_compute_progress: 25,
+      SMC_computing: true,
     })
   );
   } else { console.log("Step0: Failed to get API keys."); return; }
@@ -420,9 +378,9 @@ const requests = async(data_package, dispatch) => {
   if (user_uuid.status == 201) { 
     console.log("Step1: Successfully sent UUID and stored it in Mysql."); 
     test_code++; 
-    dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 35,
-      FRScomputing: true, })
+    dispatch(secureComputeProgress( {
+      SMC_compute_progress: 35,
+      SMC_computing: true, })
     );
   } else { console.log("Step1: Failed to send UUID."); return; }
 
@@ -432,9 +390,9 @@ const requests = async(data_package, dispatch) => {
   if (user_id.status == 201) { 
     console.log("Step2: Successfully sent id and stored it in Redis."); 
     test_code++; 
-    dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 45,
-      FRScomputing: true,
+    dispatch(secureComputeProgress( {
+      SMC_compute_progress: 45,
+      SMC_computing: true,
     })
   );
   } else { console.log("Step2: Failed to send id."); return; }
@@ -444,9 +402,9 @@ const requests = async(data_package, dispatch) => {
   
   if (initial.status == 200) { 
     console.log("Step3: Successfully got information.");
-    dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 55,
-      FRScomputing: true,
+    dispatch(secureComputeProgress( {
+      SMC_compute_progress: 55,
+      SMC_computing: true,
     })
   ); 
     test_code++; 
@@ -461,9 +419,9 @@ const requests = async(data_package, dispatch) => {
  
   if (beaver_triple.status == 201) { 
     console.log("Step4: Successfully updated and retrieved user Beaver triple."); 
-    dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 65,
-      FRScomputing: true,
+    dispatch(secureComputeProgress( {
+      SMC_compute_progress: 65,
+      SMC_computing: true,
     })
   ); 
     test_code++; 
@@ -475,9 +433,9 @@ const requests = async(data_package, dispatch) => {
 
   if (other_beaver_triple.status == 201) { 
     console.log("Step5: Successfully asked blockdoc to retrieve Beaver triple."); 
-    dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 75,
-      FRScomputing: true,
+    dispatch(secureComputeProgress( {
+      SMC_compute_progress: 75,
+      SMC_computing: true,
     })
   );
     test_code++; 
@@ -490,9 +448,9 @@ const requests = async(data_package, dispatch) => {
 
   if (random_share.status == 201) { 
     console.log("Step6: Successfully sent and got random share."); 
-    dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 85,
-      FRScomputing: true,
+    dispatch(secureComputeProgress( {
+      SMC_compute_progress: 85,
+      SMC_computing: true,
       })
     );
     test_code++; 
@@ -514,9 +472,9 @@ const requests = async(data_package, dispatch) => {
   
   if (blockdoc_difference.status == 201) { 
     console.log("Step7: Successfully sent and got am1, bm1."); 
-    dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 100,
-      FRScomputing: true,
+    dispatch(secureComputeProgress( {
+      SMC_compute_progress: 100,
+      SMC_computing: true,
       })
     );
     test_code++; 
@@ -541,9 +499,9 @@ const requests = async(data_package, dispatch) => {
   
   if (dot_product_from_blockdoc.status == 201) { 
     console.log("Step8: Successfully got dot product from blockdoc."); 
-    dispatch(calculateRiskScoreProgress( {
-        FRScompute_progress: 100,
-        FRScomputing: true,
+    dispatch(secureComputeProgress( {
+        SMC_compute_progress: 100,
+        SMC_computing: true,
       })
     );
     test_code++; 
@@ -559,9 +517,9 @@ const requests = async(data_package, dispatch) => {
   if (risk_score == 0.0) { risk_score = 0.1;  }
   if (risk_score > 30.0) { risk_score = 30.0; }
   
-  dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 100,
-      FRScomputing: true,
+  dispatch(secureComputeProgress( {
+      SMC_compute_progress: 100,
+      SMC_computing: true,
     })
   );
 
@@ -571,9 +529,9 @@ const requests = async(data_package, dispatch) => {
 /* Maxiumum 5 times requests */
 const riskscore = async (dispatch) => {
 
-  dispatch(calculateRiskScoreProgress( {
-      FRScompute_progress: 5,
-      FRScomputing: true,
+  dispatch(secureComputeProgress( {
+      SMC_compute_progress: 5,
+      SMC_computing: true,
     })
   );
 

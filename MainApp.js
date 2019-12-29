@@ -15,8 +15,8 @@ import appRoutes from "./AppRoutes";
 //redux
 import { 
   setAccount,
-  getResults,
   resetError,
+  getAnswers
 } from './redux/actions';
 
 import * as SecureStore from 'expo-secure-store';
@@ -71,6 +71,7 @@ class MainApp extends React.Component {
   componentDidMount() {
     //resets everything after app delete
     this.props.dispatch(resetError());
+    this.props.dispatch(getAnswers());
   }
 
   render() {

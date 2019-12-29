@@ -1,11 +1,8 @@
+import Home from './screens/Home';
+import CodeScanner from './screens/CodeScanner';
 import Account from './screens/Account';
 import AccountDelete from './screens/AccountDelete';
 import AccountDeleted from './screens/AccountDeleted';
-
-import CodeScanner from './screens/CodeScanner';
-
-import Home from './screens/Home';
-
 import Questionnaire from './screens/Questionnaire';
 import ResultSMC from './screens/ResultSMC';
 import Result from './screens/Result';
