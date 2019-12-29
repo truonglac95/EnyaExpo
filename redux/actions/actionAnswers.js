@@ -42,8 +42,8 @@ const answers = {
   height: 0,
   country: 0,
   gender: 0,
-  smoking: 0,
-  diabetes: 0,
+  binary_1: 0,
+  binary_2: 0,
 }
 
 const smc = {

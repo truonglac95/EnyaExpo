@@ -24,8 +24,8 @@ export function CanCompute( data ) {
     if ( data.gender > 0 ) { ga += 1; }
     if ( data.height > 0 ) { ga += 1; }
     if ( data.weight > 0 ) { ga += 1; }
-    if ( data.smoking > 0 ) { ga += 1; }
-    if ( data.diabetes > 0 ) { ga += 1; }
+    if ( data.binary_1 > 0 ) { ga += 1; }
+    if ( data.binary_2 > 0 ) { ga += 1; }
 
     if( ga >= 6 ) {
       return true; //yes we have all the info we need
@@ -42,8 +42,8 @@ export function NumGoodAnswers( data ) {
     if ( data.gender > 0 ) { ga += 1; }
     if ( data.height > 0 ) { ga += 1; }
     if ( data.weight > 0 ) { ga += 1; }
-    if ( data.smoking > 0 ) { ga += 1; }
-    if ( data.diabetes > 0 ) { ga += 1; }
+    if ( data.binary_1 > 0 ) { ga += 1; }
+    if ( data.binary_2 > 0 ) { ga += 1; }
 
     if ( data.country > 0 ) { ga += 1; }
 
@@ -92,17 +92,16 @@ export async function ComputeRiskSecure( data, uuid, id, dispatch ) {
   // TC: parse back to a real value
   var total_cholesterol = 6.0
 
-  // smoke: consider no and not specified as no
-  var smoke = 0
-  if (data.smoking == 1) { smoke = 0 }
-  else                   { smoke = 1 }
+  
+  var binary_1 = 0
+  if (data.binary_1 == 1) { binary_1 = 0 }
+  else                   { binary_1 = 1 }
 
-  // diabete: consider no and unknown as no
-  var diabete = 0
-  if (data.diabetes == 1) { diabete = 0 }
-  else                    { diabete = 1 }
+  var binary_2 = 0
+  if (data.binary_2 == 1) { binary_2 = 0 }
+  else                    { binary_2 = 1 }
 
-  const user_data = [gender, age, blood_pressure, BMI, total_cholesterol, smoke, diabete, 1];
+  const user_data = [gender, age, blood_pressure, BMI, total_cholesterol, binary_1, binary_2, 1];
 
   const user_vector = [user_data[0], user_data[1], 1, 1, 1, 1, 1, 1];
   const hash_vector = crypto.MD5(user_data.toString()).toString()
@@ -142,7 +141,7 @@ function find_index(matrix, array){
 }
 
 /* For a given person, get the correct value pointer for him/her
-input: [sex, age, SBP, BMI, TC, Smoke, diabete, mean] */
+input: [sex, age, SBP, BMI, TC, binary_1, binary_2, mean] */
 function get_category(client_weight, category_insurance){
   var category_client = [0,0,0,0,0,0,0,0]
 
@@ -172,7 +171,7 @@ function get_category(client_weight, category_insurance){
     { category_client[4] ++; if (category_client[4] > TC_category.length)
     { category_client[4] = TC_category.length; break; }}
 
-  // smoke and diabete 
+ 
   if (client_weight[5] > 0) { category_client[5] = 1 }
   else                      { category_client[5] = 0 } 
   if (client_weight[6] > 0) { category_client[6] = 1 }

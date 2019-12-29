@@ -33,8 +33,8 @@ class ResultSMC extends React.Component {
 
     this.state = {
       result: (smc.result || 0.0),
-      diabetes: (answers.diabetes || 0),
-      smoking: (answers.smoking || 0),
+      binary_2: (answers.binary_2 || 0),
+      binary_1: (answers.binary_1 || 0),
       birthyear: (answers.birthyear || 0),
       gender: (answers.gender || 0),
       country: (answers.country || 0)
@@ -48,8 +48,8 @@ UNSAFE_componentWillReceiveProps(nextProps) {
 
     this.setState({
       result: (nextSMC.result || 0.0),
-      diabetes: (nextAnswers.diabetes || 0),
-      smoking: (nextAnswers.smoking || 0),
+      binary_2: (nextAnswers.binary_2 || 0),
+      binary_1: (nextAnswers.binary_1 || 0),
       birthyear: (nextAnswers.birthyear || 0),
       gender: (nextAnswers.gender || 0),
       country: (nextAnswers.country || 0)
@@ -59,7 +59,7 @@ UNSAFE_componentWillReceiveProps(nextProps) {
 
   render() {
     
-    const { result, diabetes, smoking, birthyear, gender, country } = this.state;
+    const { result, binary_2, binary_1, birthyear, gender, country } = this.state;
 
     //so we do not briefly show the wrong (old) result
     if (this.props.answer.loading) {

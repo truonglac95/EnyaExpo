@@ -41,12 +41,12 @@ const genderList = [
   { label: 'Female' , value: 2 }
 ];
 
-const smokingList = [
+const Binary_1_List = [
   { label: 'No' , value: 1 }, 
   { label: 'Yes' , value: 2 }
 ];
 
-const diabetesList = [
+const Binary_2_List = [
   { label: 'No' , value: 1 }, 
   { label: 'Yes' , value: 2 }
 ];
@@ -95,9 +95,9 @@ class Questionnaire extends React.Component {
       country: (answers.country || 0),
       gender:(answers.gender || 0),
       height: (answers.height || 0),
-      smoking: (answers.smoking || 0),
+      binary_1: (answers.binary_1 || 0),
       weight: (answers.weight || 0),
-      diabetes: (answers.diabetes || 0),
+      binary_2: (answers.binary_2 || 0),
 
       result: (smc.result || 0.0),
       current: (smc.current || false),
@@ -114,9 +114,9 @@ class Questionnaire extends React.Component {
       countryInput: null,
       genderInput: null,
       heightInput: null,
-      smokingInput: null,
+      binary_1_Input: null,
       weightInput: null,
-      diabetesInput: null,
+      binary_2_Input: null,
     };
 
   }
@@ -128,9 +128,9 @@ class Questionnaire extends React.Component {
       countryInput: null,
       genderInput: null,
       heightInput: null,
-      smokingInput: null,
+      binary_1_Input: null,
       weightInput: null,
-      diabetesInput: null,
+      binary_2_Input: null,
     };
 
   }
@@ -145,8 +145,8 @@ class Questionnaire extends React.Component {
     else if ( key === 'gender' ) { 
       this.setState({ gender : value })
     }
-    else if ( key === 'smoking' ) { 
-      this.setState({ smoking : value })
+    else if ( key === 'binary_1' ) { 
+      this.setState({ binary_1 : value })
     }
     else if ( key === 'birthyear' ){ 
       this.setState({ birthyear :value })
@@ -157,8 +157,8 @@ class Questionnaire extends React.Component {
     else if ( key === 'weight' ) { 
       this.setState({ weight : value })
     }
-    else if ( key === 'diabetes' ) {
-      this.setState({ diabetes : value })
+    else if ( key === 'binary_2' ) {
+      this.setState({ binary_2 : value })
     }
 
     let newAnswer = [{ question_id : key, answer : value }];
@@ -213,7 +213,7 @@ class Questionnaire extends React.Component {
 
     const { localResult } = this.props.result;
 
-    const { birthyear, country, gender, smoking, height, weight, diabetes, hdlc, 
+    const { birthyear, country, gender, binary_1, height, weight, binary_2, hdlc, 
             result, current, percentAnswered, numberAnswered, 
             SMC_computing, SMC_compute_progress } = this.state;
 
@@ -457,7 +457,7 @@ class Questionnaire extends React.Component {
   placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('weight',v)}}
   onUpArrow  ={()=>{this.inputRefs.heightInput.togglePicker()}}
-  onDownArrow={()=>{this.inputRefs.smokingInput.togglePicker()}}
+  onDownArrow={()=>{this.inputRefs.binary_1_Input.togglePicker()}}
   ref={el => { this.inputRefs.weightInput = el}}
   style={pickerStyle}
 />
@@ -481,22 +481,22 @@ class Questionnaire extends React.Component {
 }
 
 {Platform.OS == 'ios' &&
-<TouchableOpacity onPress={()=>{this.inputRefs.smokingInput.togglePicker()}}>
+<TouchableOpacity onPress={()=>{this.inputRefs.binary_1_Input.togglePicker()}}>
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Smoking'}</Text></View>
-<Text style={this.state.smoking == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
-{ this.state.smoking == 0 ? 'No/Yes': smokingList[this.state.smoking-1].label }
+<View style={styles.label}><Text style={styles.text}>{'Binary_1'}</Text></View>
+<Text style={this.state.binary_1 == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
+{ this.state.binary_1 == 0 ? 'No/Yes': Binary_1_List[this.state.binary_1-1].label }
 </Text>
 <Picker
-  items={smokingList}
-  value={smoking}
+  items={Binary_1_List}
+  value={binary_1}
   placeholder={{ label: 'No/Yes', value: 0}}
   //do not need the 'city' thing here because the keyboard blocks these anyway
   //so its impossible for someone to select these with the keyboard up
-  onValueChange={(v)=>{this.handleSave('smoking',v)}}
+  onValueChange={(v)=>{this.handleSave('binary_1',v)}}
   onUpArrow={()=>{this.inputRefs.weightInput.togglePicker()}}
-  onDownArrow={()=>{this.inputRefs.diabetesInput.togglePicker()}}
-  ref={el => { this.inputRefs.smokingInput = el}}
+  onDownArrow={()=>{this.inputRefs.binary_2_Input.togglePicker()}}
+  ref={el => { this.inputRefs.binary_1_Input = el}}
   style={pickerStyle}
 />
 </View>
@@ -505,33 +505,32 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'android' &&
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Smoking'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Binary_1'}</Text></View>
 <Picker
-  items={smokingList}
-  value={smoking}
+  items={Binary_1_List}
+  value={binary_1}
   useNativeAndroidPickerStyle={false}
   placeholder={{label: 'No/Yes', value: 0}}
-  onValueChange={(v)=>{this.handleSave('smoking',v)}}
+  onValueChange={(v)=>{this.handleSave('binary_1',v)}}
   style={pickerStyle}
 />
 </View>
 }
 
-{/* DIABETES */}
 {Platform.OS == 'ios' &&
-<TouchableOpacity onPress={()=>{this.inputRefs.diabetesInput.togglePicker()}}>
+<TouchableOpacity onPress={()=>{this.inputRefs.binary_2_Input.togglePicker()}}>
 <View style={[styles.row, {borderBottomColor: '#FFFFFF'}]}>
-<View style={styles.label}><Text style={styles.text}>{'Diabetes'}</Text></View>
-<Text style={this.state.diabetes == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
-{ this.state.diabetes == 0 ? 'No/Yes': diabetesList[this.state.diabetes-1].label }
+<View style={styles.label}><Text style={styles.text}>{'Binary_2'}</Text></View>
+<Text style={this.state.binary_2 == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
+{ this.state.binary_2 == 0 ? 'No/Yes': Binary_2_List[this.state.binary_2-1].label }
 </Text>
 <Picker
-  items={diabetesList}
-  value={diabetes}
+  items={Binary_2_List}
+  value={binary_2}
   placeholder={{label: 'No/Yes', value: 0}}
-  onValueChange={(v)=>{this.handleSave('diabetes',v)}}
-  onUpArrow={()=>{this.inputRefs.smokingInput.togglePicker();}}
-  ref={el=>{this.inputRefs.diabetesInput = el}}
+  onValueChange={(v)=>{this.handleSave('binary_2',v)}}
+  onUpArrow={()=>{this.inputRefs.binary_1_Input.togglePicker();}}
+  ref={el=>{this.inputRefs.binary_2_Input = el}}
   style={pickerStyle}
 />
 </View>
@@ -540,13 +539,13 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'android' &&
 <View style={[styles.row, {borderBottomColor: '#FFFFFF'}]}>
-<View style={styles.label}><Text style={styles.text}>{'Diabetes'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Binary_2'}</Text></View>
 <Picker
-  items={diabetesList}
-  value={diabetes}
+  items={Binary_2_List}
+  value={binary_2}
   useNativeAndroidPickerStyle={false}
   placeholder={{label: 'No/Yes', value: 0}}
-  onValueChange={(v)=>{this.handleSave('diabetes',v)}}
+  onValueChange={(v)=>{this.handleSave('binary_2',v)}}
   style={pickerStyle}
 />
 </View>
