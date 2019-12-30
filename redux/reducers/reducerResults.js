@@ -22,7 +22,7 @@ export function result(state = INITIAL_STATE, action = {}) {
 			return {
 				...state,
 				loading: false,
-				results: action.payload.results,
+				downloaded: true
 			}
 		case GET_RESULTS_FAILURE:
 			return {

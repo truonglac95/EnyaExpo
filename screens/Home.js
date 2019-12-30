@@ -55,6 +55,8 @@ class Home extends React.Component {
       haveDNA: (localResult.haveDNA || false),
       downloadingReport: false,
 
+      haveReport: (this.props.result.downloaded || false),
+
       //for the SMC progress indicator
       SMC_compute_progress: (this.props.answer.SMC_compute_progress || 0),
       SMC_computing: (this.props.answer.SMC_computing || false),
@@ -82,7 +84,6 @@ class Home extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
 
     const { smc } = nextProps.answer;
-    const { localResult } = nextProps.result;
 
     this.setState({
 
@@ -94,7 +95,9 @@ class Home extends React.Component {
       SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
       SMC_computing: (nextProps.answer.SMC_computing || false),
 
-      haveDNA: (localResult.haveDNA || false),
+      haveDNA: (nextProps.result.localResult.haveDNA || false),
+
+      haveReport: (nextProps.result.downloaded || false),
 
     });
   }
@@ -104,6 +107,7 @@ class Home extends React.Component {
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
     const { account } = this.props.user;
+    
     dispatch( secureCompute(answers, account.UUID, account.id) );
 
   }
@@ -111,7 +115,10 @@ class Home extends React.Component {
   render() {
 
     const { current, percentAnswered, result, SMC_compute_progress, 
-      SMC_computing, haveDNA, haveSMC, downloadingReport } = this.state;
+      SMC_computing, haveDNA, haveSMC, downloadingReport,
+      haveReport } = this.state;
+
+    //console.log(haveReport)
 
     return (
 
@@ -282,7 +289,7 @@ class Home extends React.Component {
 
 {/*BEGIN REPORT BUTTONS*/}
 
-{haveDNA &&
+{haveReport &&
 <View style={{width: '60%',padding: 12,paddingTop: 20}}>
   <BasicButton 
     text={'View Report'}
@@ -292,7 +299,7 @@ class Home extends React.Component {
 </View>
 }
 
-{!haveDNA && !downloadingReport &&
+{!haveReport && !downloadingReport &&
 <View style={{width: '60%',padding: 12,paddingTop: 20}}>
   <BasicButton 
     text={'Download Report'}
@@ -302,7 +309,7 @@ class Home extends React.Component {
 </View>
 }
 
-{!haveDNA && downloadingReport &&
+{!haveReport && downloadingReport &&
 <View style={{width: '60%',padding: 12,paddingTop: 20}}>
   <ActivityIndicator size="large" color='#33337F'/>
 </View>
