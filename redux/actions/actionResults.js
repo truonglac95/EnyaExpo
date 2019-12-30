@@ -7,7 +7,7 @@ import {
 	CIRCULATE_LOCAL_RESULTS,
 } from '../constants';
 
-import { Enya_GetResult } from '../../EnyaSDK/Result';
+import { Enya_GetResult } from '../../EnyaSDK/SecureResult';
 
 export const getResultsBegin   = data  => ({ type: GET_RESULTS });
 export const getResultsSuccess = data  => ({ type: GET_RESULTS_SUCCESS });

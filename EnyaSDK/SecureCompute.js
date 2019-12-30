@@ -16,45 +16,12 @@ const BITLENGTH = 8;
 const USER_WEIGHT_SHAPE = [8]
 const BLOCKDOC_WEIGHT_SHAPE = [288,8]
 
-export function CanCompute( data ) {
-
-    var ga = 0; //ga is short for 'good answers'
-    
-    if ( data.birthyear > 0 ) { ga += 1; }
-    if ( data.gender > 0 ) { ga += 1; }
-    if ( data.height > 0 ) { ga += 1; }
-    if ( data.weight > 0 ) { ga += 1; }
-    if ( data.binary_1 > 0 ) { ga += 1; }
-    if ( data.binary_2 > 0 ) { ga += 1; }
-
-    if( ga >= 6 ) {
-      return true; //yes we have all the info we need
-    } else {
-      return false; //not enough data
-    }
-}
-
-export function NumGoodAnswers( data ) {
-
-    var ga = 0;
-    
-    if ( data.birthyear > 0 ) { ga += 1; }
-    if ( data.gender > 0 ) { ga += 1; }
-    if ( data.height > 0 ) { ga += 1; }
-    if ( data.weight > 0 ) { ga += 1; }
-    if ( data.binary_1 > 0 ) { ga += 1; }
-    if ( data.binary_2 > 0 ) { ga += 1; }
-    if ( data.country > 0 ) { ga += 1; }
-
-    return ga;
-}
-
 const secureComputeProgress = (data) => ({
   type: SECURE_COMPUTE_PROGRESS,
   payload: data,
 });
 
-export async function ComputeRiskSecure( data, uuid, id, dispatch ) {
+export async function Enya_SecureCompute( data, uuid, id, dispatch ) {
 
   /* 
      Input: data: contains all user input

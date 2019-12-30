@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Dimensions, ActivityIndicator, Platform } from 
 import mS from '../constants/masterStyle';
 import PDFReader from 'rn-pdf-reader-js';
 
-import { Enya_GetKey, Enya_DecryptResult } from '../EnyaSDK/Result';
+import { Enya_GetKey, Enya_DecryptResult } from '../EnyaSDK/SecureResult';
 
 class Report extends React.Component {
 

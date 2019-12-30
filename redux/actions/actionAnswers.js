@@ -18,13 +18,42 @@ import {
   SECURE_STORAGE_ACCOUNT,
 } from '../constants';
 
-import { 
-  CanCompute, 
-  NumGoodAnswers, 
-	ComputeRiskSecure, 
-} from '../../EnyaSDK/ComputeRiskSecure';
+import { Enya_SecureCompute } from '../../EnyaSDK/SecureCompute';
 
 import * as SecureStore from 'expo-secure-store'
+
+function CanCompute( data ) {
+
+    var ga = 0; //ga is short for 'good answers'
+    
+    if ( data.birthyear > 0 ) { ga += 1; }
+    if ( data.gender > 0 ) { ga += 1; }
+    if ( data.height > 0 ) { ga += 1; }
+    if ( data.weight > 0 ) { ga += 1; }
+    if ( data.binary_1 > 0 ) { ga += 1; }
+    if ( data.binary_2 > 0 ) { ga += 1; }
+
+    if( ga >= 6 ) {
+      return true; //yes we have all the info we need
+    } else {
+      return false; //not enough data
+    }
+}
+
+function NumGoodAnswers( data ) {
+
+    var ga = 0;
+    
+    if ( data.birthyear > 0 ) { ga += 1; }
+    if ( data.gender > 0 ) { ga += 1; }
+    if ( data.height > 0 ) { ga += 1; }
+    if ( data.weight > 0 ) { ga += 1; }
+    if ( data.binary_1 > 0 ) { ga += 1; }
+    if ( data.binary_2 > 0 ) { ga += 1; }
+    if ( data.country > 0 ) { ga += 1; }
+
+    return ga;
+}
 
 export const getAnswersBegin   = data  => ({ type: GET_ANSWERS });
 export const getAnswersSuccess = data  => ({ type: GET_ANSWERS_SUCCESS, payload: data });
@@ -175,7 +204,7 @@ export const secureCompute = (data, UUID, id) => async (dispatch) => {
 		
 		if (__DEV__) console.log('Yes, there are enough data for SMC computation');
 
-    APIStatus = await ComputeRiskSecure(data, UUID, id, dispatch); 
+    APIStatus = await Enya_SecureCompute(data, UUID, id, dispatch); 
 
     //absolute scores
     result = APIStatus.risk_score_ab; 
