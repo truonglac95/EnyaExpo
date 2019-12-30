@@ -11,7 +11,7 @@ module.exports = StyleSheet.create({
       textAlign: 'center',
     	fontSize: 15,
     	fontWeight: '400',
-    	color: colors.darkGray, //change this based on Jim's request
+    	color: '#404040', //change this based on Jim's request
   	},
     //same as the error text but not red
     forgot: {
@@ -43,18 +43,18 @@ module.exports = StyleSheet.create({
     },
   	description: {
     	fontSize: 20,
-      color: colors.darkGray,
+      color: '#404040',
     },
     descriptionSmall: {
       fontSize: 15,
       lineHeight: 20, // support Chinese text
-      color: colors.darkGray,
+      color: '#404040',
     },
     //generalized informational text relating to login, delete, etc
     textInfoLogin: {
       fontSize: 16,
       lineHeight: 22,
-      color: colors.darkGray,
+      color: '#404040',
     },
     basicContainer: {
       paddingTop: 120,
@@ -113,7 +113,7 @@ module.exports = StyleSheet.create({
       textAlign: 'center',
       fontWeight: '600', 
       fontSize: 26,
-      color: colors.darkGray,
+      color: '#404040',
     },
     tagTextVP: {
       textAlign: 'center',
@@ -149,7 +149,7 @@ module.exports = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     fontWeight: '400', // Regular
-    color: colors.darkGray,
+    color: '#404040',
   },
   mediumSizeFP: {
     fontSize: 16,

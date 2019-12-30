@@ -23,7 +23,7 @@ class Home extends React.Component {
       headerTitle: () => (<Text 
         style={{
           fontSize: 19,
-          color: colors.headerFontColor,
+          color: '#33337F',
           marginLeft: 'auto', 
           marginRight: 'auto',
           textAlign: 'center',
@@ -102,17 +102,13 @@ class Home extends React.Component {
   handleCalculate = () => {
 
     const { dispatch } = this.props;
-    const { answers, smc } = this.props.answer;
+    const { answers } = this.props.answer;
     const { account } = this.props.user;
-    const { localResult } = this.props.result;
-
-    //dispatch(calculateRiskScore(answers, localResult, account.UUID, account.id));
+    dispatch( secureCompute(answers, account.UUID, account.id) );
 
   }
 
   render() {
-
-    //console.log(this.props.result);
 
     const { current, percentAnswered, result, SMC_compute_progress, 
       SMC_computing, haveDNA, haveSMC, downloadingReport } = this.state;
@@ -199,16 +195,16 @@ class Home extends React.Component {
 >
   <Text style={styles.largeAction}>{'Complete my information'}</Text>
 </TouchableOpacity>
-  <Text style={[mS.smallGrayFP, {marginTop: 5}]}>{'homescreen_recommend'}</Text>
+  <Text style={[mS.smallGrayFP, {marginTop: 5}]}>{'to get personalized recommendations.'}</Text>
 </View>
 }
 
 {/*'no FRS result - but we have all the data and need to recalculate'*/}
 {!current && (percentAnswered === 100) && <View>
-<Text style={mS.smallGrayFP}>{'homescreen_all_question'}</Text>
+<Text style={mS.smallGrayFP}>{'All questions answered'}</Text>
 <View style={{marginTop: 20}}>
   <BasicButton 
-    text={'Calculate Risk'}
+    text={'Calculate Score'}
     width="80%"
     onClick={this.handleCalculate}
   />
@@ -225,7 +221,7 @@ class Home extends React.Component {
 {current &&
 <View>
   <Text style={[styles.gray, {textAlign: 'center', fontWeight: 'bold', fontSize: result >= 10 ? 30 : 38}]}>{result}%</Text>
-  <Text style={[mS.smallGrayFP, {textAlign: 'center'}]}>{'homescreen_risk_event'}</Text>
+  <Text style={[mS.smallGrayFP, {textAlign: 'center'}]}>{'Your Score'}</Text>
 </View>
 }
 
@@ -236,20 +232,20 @@ class Home extends React.Component {
       <Text style={styles.progressIconNumber}>{`${percentAnswered}%`}</Text>
     </ProgressCircle>
     <View>
-      <Text style={styles.progressText}>{'homescreen_question_answered'}</Text>
+      <Text style={styles.progressText}>{'Questions Answered'}</Text>
     </View>
   </View>
 }
 
-{/*'show progress indicator when calculating risk'*/}
+{/*'show progress indicator when calculating score'*/}
 {SMC_computing && 
   <View style={styles.circleProgress}>
     <ProgressCircle percent={SMC_compute_progress}>
       <Ionicons name={`ios-cog`} size={35} color={colors.gray}/>
     </ProgressCircle>
     <View>
-      {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'homescreen_calculating_risk'}</Text>}
-      {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'global_Done'}</Text>}
+      {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'Calculating Score'}</Text>}
+      {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'Done'}</Text>}
     </View>
 </View>
 }
@@ -327,7 +323,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingLeft: 12,
     paddingBottom: 10,
-    color: colors.headerFontColor,
+    color: '#33337F',
     fontFamily: colors.headerFont,
   },
   textBlock: {
@@ -360,7 +356,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     fontWeight: '400', // Regular
-    color: colors.darkGray,
+    color: '#404040',
   },
   mediumSize: {
     fontSize: 16,
@@ -391,7 +387,7 @@ const styles = StyleSheet.create({
     color: colors.gray,
   },
   darkGray: {
-    color: colors.darkGray,
+    color: '#404040',
   },
   mainContainer: {
     flex: 1, 
@@ -411,7 +407,7 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     borderWidth: 1,
     paddingBottom: 10, 
-    borderColor: colors.homeBoxesLineColor,
+    borderColor: '#33337F',
     overflow: 'hidden',
   },
   geneStatusBox :{

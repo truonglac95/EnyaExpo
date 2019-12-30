@@ -44,7 +44,6 @@ export function NumGoodAnswers( data ) {
     if ( data.weight > 0 ) { ga += 1; }
     if ( data.binary_1 > 0 ) { ga += 1; }
     if ( data.binary_2 > 0 ) { ga += 1; }
-
     if ( data.country > 0 ) { ga += 1; }
 
     return ga;
@@ -82,26 +81,15 @@ export async function ComputeRiskSecure( data, uuid, id, dispatch ) {
   //age 
   const age = (new Date().getFullYear()) - data.birthyear;
 
-  const blood_pressure = 112 + 3 * 5;
-
   console.log('ComputeRiskSecure: Go MPC jia you');
 
   // BMI: calculate from the height and weight
   const BMI = data.weight / Math.pow((data.height/100),2);
 
-  // TC: parse back to a real value
-  var total_cholesterol = 6.0
+  var binary_1 = data.binary_1 - 1
+  var binary_2 = data.binary_2 - 1
 
-  
-  var binary_1 = 0
-  if (data.binary_1 == 1) { binary_1 = 0 }
-  else                   { binary_1 = 1 }
-
-  var binary_2 = 0
-  if (data.binary_2 == 1) { binary_2 = 0 }
-  else                    { binary_2 = 1 }
-
-  const user_data = [gender, age, blood_pressure, BMI, total_cholesterol, binary_1, binary_2, 1];
+  const user_data = [gender, age, 127, BMI, 6.0, binary_1, binary_2, 1];
 
   const user_vector = [user_data[0], user_data[1], 1, 1, 1, 1, 1, 1];
   const hash_vector = crypto.MD5(user_data.toString()).toString()

@@ -22,7 +22,7 @@ import AccountDelete from '../screens/AccountDelete';
 import AccountDeleted from '../screens/AccountDeleted';
 
 const Label = (props) => (
-  <Text style={[styles.tabText, { color: (props.focused ? colors.headerFontColor : colors.gray) }]}>
+  <Text style={[styles.tabText, { color: (props.focused ? '#33337F' : colors.gray) }]}>
     {props.text}
   </Text>
 );
@@ -51,7 +51,7 @@ const HomeStack = createStackNavigator(
   }, 
   {
     defaultNavigationOptions: {
-      headerTintColor: colors.headerFontColor,
+      headerTintColor: '#33337F',
     },
   }
 );
@@ -86,7 +86,7 @@ const AccountStack = createStackNavigator(
     navigationOptions: ({navigation}) => ({
       headerLeft: 
         <HeaderBackButton 
-          tintColor={colors.headerFontColor}
+          tintColor={'#33337F'}
           backTitleVisible={true}
           onPress={() => navigation.goBack(null)} 
         />
@@ -97,7 +97,7 @@ const AccountStack = createStackNavigator(
 },
 {
   defaultNavigationOptions: {
-    headerTintColor: colors.headerFontColor,
+    headerTintColor: '#33337F',
   },
 });
 

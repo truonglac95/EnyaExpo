@@ -66,7 +66,7 @@ class Questionnaire extends React.Component {
       headerTitle: () => (<Text 
         style={{
           fontSize: 19,
-          color: colors.headerFontColor,
+          color: '#33337F',
           marginLeft: 'auto', 
           marginRight: 'auto',
           textAlign: 'center',
@@ -95,8 +95,8 @@ class Questionnaire extends React.Component {
       country: (answers.country || 0),
       gender:(answers.gender || 0),
       height: (answers.height || 0),
-      binary_1: (answers.binary_1 || 0),
       weight: (answers.weight || 0),
+      binary_1: (answers.binary_1 || 0),
       binary_2: (answers.binary_2 || 0),
 
       result: (smc.result || 0.0),
@@ -114,8 +114,8 @@ class Questionnaire extends React.Component {
       countryInput: null,
       genderInput: null,
       heightInput: null,
-      binary_1_Input: null,
       weightInput: null,
+      binary_1_Input: null,
       binary_2_Input: null,
     };
 
@@ -128,8 +128,8 @@ class Questionnaire extends React.Component {
       countryInput: null,
       genderInput: null,
       heightInput: null,
-      binary_1_Input: null,
       weightInput: null,
+      binary_1_Input: null,
       binary_2_Input: null,
     };
 
@@ -145,9 +145,6 @@ class Questionnaire extends React.Component {
     else if ( key === 'gender' ) { 
       this.setState({ gender : value })
     }
-    else if ( key === 'binary_1' ) { 
-      this.setState({ binary_1 : value })
-    }
     else if ( key === 'birthyear' ){ 
       this.setState({ birthyear :value })
     }
@@ -156,6 +153,9 @@ class Questionnaire extends React.Component {
     }
     else if ( key === 'weight' ) { 
       this.setState({ weight : value })
+    }
+    else if ( key === 'binary_1' ) { 
+      this.setState({ binary_1 : value })
     }
     else if ( key === 'binary_2' ) {
       this.setState({ binary_2 : value })
@@ -213,7 +213,7 @@ class Questionnaire extends React.Component {
 
     const { localResult } = this.props.result;
 
-    const { birthyear, country, gender, binary_1, height, weight, binary_2, hdlc, 
+    const { birthyear, country, gender, height, weight, binary_1, binary_2,
             result, current, percentAnswered, numberAnswered, 
             SMC_computing, SMC_compute_progress } = this.state;
 
@@ -226,14 +226,14 @@ class Questionnaire extends React.Component {
       },
       inputIOS: {
         fontSize: 18,
-        color: colors.darkGray,
+        color: '#404040',
         flex: 1,
         width: 0,
         height: 0,
       },
       inputAndroid: {
         fontSize: 18,
-        color: colors.darkGray,
+        color: '#404040',
         flex: 1,
         width: 270,
         height: 45,
@@ -254,11 +254,14 @@ class Questionnaire extends React.Component {
 
 {!SMC_computing && (numberAnswered < 7) &&
   <View style={[styles.shadowBox, {alignItems: 'center', marginTop: 13, fontSize: 20}]}>
-    <Text style={styles.smallGray}>{'form_cardio_info'}</Text>
+    <Text style={styles.smallGray}>{'Please answer the questions to VALUE_PROP ' + 
+    'for you. All calculations use secure multiparty computation ' + 
+    'to preserve your privacy.'}</Text>
   </View>
 }
 
-{(numberAnswered >= 7) && !current && !SMC_computing && <View style={styles.shadowBoxClear}>
+{(numberAnswered >= 7) && !current && !SMC_computing && 
+<View style={styles.shadowBoxClear}>
   <BasicButton 
     width={200}
     text={'Secure Compute'} 
@@ -267,30 +270,30 @@ class Questionnaire extends React.Component {
   </View>
 }
 
-{(numberAnswered >= 7) && current && <View style={styles.shadowBoxClear}>
+{(numberAnswered >= 7) && current && 
+<View style={styles.shadowBoxClear}>
   <BasicButton
     width={200} 
     text={'See Result'} 
     onClick={this.handleSeeResult}
   />
-  </View>
+</View>
 }
 
 {/*show progress indicator when calculating risk*/}
-{SMC_computing && <View 
-  style={styles.containerProgress}>
-    <ProgressCircle percent={SMC_compute_progress}/>
-    <View>
-      {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'Computing'}</Text>}
-      {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'Done'}</Text>}
-    </View>
+{SMC_computing && <View style={styles.containerProgress}>
+  <ProgressCircle percent={SMC_compute_progress}>
+    <Ionicons name={`ios-cog`} size={35} color={colors.gray} style={{paddingTop:5,paddingLeft:2}}/>
+  </ProgressCircle>
+  <View>
+    {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'Computing'}</Text>}
+    {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'Done'}</Text>}
   </View>
+</View>
 }
 
 {/*ask questions when not computing*/}
-{!SMC_computing && 
-
-<View style={styles.shadowBox}>
+{!SMC_computing && <View style={styles.shadowBox}>
 
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.countryInput.togglePicker()}}>
@@ -579,6 +582,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
+  containerProgress: {
+    marginTop: 100,
+    alignItems:'center',
+    justifyContent:'center',
+    flex:1,
+  },
   shadowBox: {
     display: 'flex',
     marginTop: 13, //spacing between boxes
@@ -590,7 +599,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 9,
     borderWidth: 1,
-    borderColor: colors.homeBoxesLineColor,
+    borderColor: '#33337F',
   },
   shadowBoxClear: {
     display: 'flex',

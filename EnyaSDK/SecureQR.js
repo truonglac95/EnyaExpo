@@ -1,6 +1,7 @@
 import forge from 'node-forge';
+import * as SecureStore from 'expo-secure-store';
 
-export async function SecureQRGetCredentials( data ) {
+export async function Enya_QRSetCredentials( data ) {
 
     const password = 'elliptic31415926newAES';
 
@@ -32,15 +33,21 @@ export async function SecureQRGetCredentials( data ) {
       var eccPrivKey = decodedQR.substring(31);
 
       let newAccount = {
-        timestamp: (new Date()).getTime(),
         UUID,
         QRversion,
         QRfullcode: data,
         eccPrivKey,
-        loading: false,
       };
 
-      return newAccount;
+      //wipe any old account just in case
+      //the scanner should only ever be called 
+      //when there is no account in the first place
+      SecureStore.deleteItemAsync('ENYA_KEYS').then(()=>{}).catch(()=>{});
+
+      //save to local secure storage
+      SecureStore.setItemAsync('ENYA_KEYS', JSON.stringify(newAccount));
+
+      return UUID;
 
     } 
     else {

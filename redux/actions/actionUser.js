@@ -1,22 +1,15 @@
 import {
+	RESET_APP,
 	SET_ACCOUNT,
+	USER_RESET_ERROR,
 	USER_SIGNIN_SUCCESS,
 	USER_SIGN_OUT,
-	RESET_APP,
-	USER_RESET_ERROR,
 	SECURE_STORAGE_ACCOUNT,
 	SECURE_STORAGE_ANSWERS,
 	SECURE_STORAGE_SMC,
 	SECURE_STORAGE_RESULT,
-	USER_SIGN_UP,
-	USER_SIGN_UP_SUCCESS,
-	USER_SIGN_UP_FAILURE,
-	UPDATE_USER,
-	UPDATE_USER_SUCCESS,
-	UPDATE_USER_FAILURE,
 } from '../constants';
 
-import { API_URL } from '../../settings';
 import * as SecureStore from 'expo-secure-store'
 
 export const resetApp = () => ({

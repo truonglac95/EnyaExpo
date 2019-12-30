@@ -1,18 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { signOut } from '../redux/actions';
-
-import { View, Text, StyleSheet, Platform, Image, Dimensions, ImageBackground } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-
-import BasicButton from '../components/BasicButton';
-import mS from '../constants/masterStyle';
-import colors from '../constants/Colors';
-
 import Constants from 'expo-constants';
 
-import * as SecureStore from 'expo-secure-store';
-import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
+import { View, Text, StyleSheet, Platform, Image, 
+  Dimensions, ImageBackground } from 'react-native';
+import BasicButton from '../components/BasicButton';
 
 class Account extends React.Component {
 
@@ -21,7 +13,7 @@ class Account extends React.Component {
       headerTitle: () => (<Text 
         style={{
           fontSize: 19,
-          color: colors.headerFontColor,
+          color: '#33337F',
           marginLeft: 'auto', 
           marginRight: 'auto',
           textAlign: 'center',
@@ -50,7 +42,7 @@ class Account extends React.Component {
   source={require('../assets/images/id.png')}
   style={{width: '100%', height: 50}}
 >
-  <Text style={styles.boxTitle}>{'Support information'}</Text>
+  <Text style={styles.boxTitle}>{'Support Information'}</Text>
 </ImageBackground>
 
 <View style={{marginLeft: 12, marginTop: 12,}}>
@@ -73,7 +65,7 @@ class Account extends React.Component {
   <Text style={styles.boxTitle}>{'Account Functions'}</Text>
 </ImageBackground>
 
-<View style={{alignItems: 'center', justifyContent: 'flex-start',}}>
+<View style={{alignItems: 'center', justifyContent: 'flex-start'}}>
   <View style={{marginTop: 30, marginBottom: 20}}>
   <BasicButton 
     text={'Wipe Account'} 
@@ -95,7 +87,7 @@ const styles = StyleSheet.create({
   boxTitle: {
     fontSize: 19,
     lineHeight: 25,
-    color: colors.headerFontColor,
+    color: '#33337F',
     paddingTop: 10,
     paddingLeft: 12,
     paddingBottom: 10,
@@ -105,18 +97,18 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#FFFFFF',
     width: '96%',
-    marginTop: 13, //spacing between boxes
+    marginTop: 13,
     borderRadius: 9,
     borderWidth: 1,
     paddingBottom: 10, 
-    borderColor: colors.homeBoxesLineColor,
+    borderColor: '#33337F',
     overflow: 'hidden',
   },
   textUUID: {
     fontSize: 18,
     lineHeight: 24,
     fontWeight: 'normal',
-    color: colors.darkGray,
+    color: '#404040',
     textAlign:'left',
     justifyContent:'center',
   },
@@ -124,7 +116,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     fontWeight: 'normal',
-    color: colors.darkGray,
+    color: '#404040',
     textAlign:'center',
     justifyContent:'center',
   },

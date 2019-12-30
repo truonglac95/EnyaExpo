@@ -111,7 +111,7 @@ export const giveAnswer = (answer) => (dispatch) => {
       var percentAnswered = 0;
 
       if( numberAnswered > 0 ) {
-        percentAnswered = Math.round((numberAnswered / 8.0) * 100);
+        percentAnswered = Math.round((numberAnswered / 7.0) * 100);
       }
 
       SecureStore.getItemAsync(SECURE_STORAGE_SMC).then(res2 => {

@@ -31,7 +31,7 @@ class Report extends React.Component {
         <Text 
           style={{
             fontSize: 19,
-            color: colors.headerFontColor,
+            color: '#33337F',
             marginLeft: 'auto',
             marginRight: 'auto',
             textAlign: 'center',
@@ -105,7 +105,7 @@ class Report extends React.Component {
     let hacker = false;
 
     if( error !== null ){
-      if (__DEV__) console.log('ResultsDNA: We have an error:', error)
+      if (__DEV__) console.log('Result: We have an error:', error)
       //What kind?
       if( error.error_type === 'network_request_failed' ) {
         can_reach_api = false;
@@ -174,14 +174,10 @@ class Report extends React.Component {
       mac: Buffer.from(localResult.mac, 'hex'),
     };
 
-    //if (__DEV__) console.log("keyPayload bytes:", keyPayload);
-
     var passwordECIES = await ecies.decrypt(privateKey, keyPayload);
-    //this gives an ecies buffer
     //if (__DEV__) console.log("ResultsDNA password 1:", passwordECIES);
     var passwordHex = passwordECIES.toString();
     //now we have a HEX string
-    //if (__DEV__) console.log("ResultsDNA password 2:", passwordHex);
     var passwordForge = forge.util.hexToBytes(passwordHex);
     //now we have a forge datastructure
 
@@ -216,6 +212,7 @@ class Report extends React.Component {
     
     decipher.start({iv: iv});
     decipher.update(input);
+    
     var decrypted = decipher.output.getBytes();
 
     decrypted64 = forge.util.encode64(decrypted);

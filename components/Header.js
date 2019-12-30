@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Dimensions, Image } from 'react-native';
-import colors from '../constants/Colors';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default class Header extends Component {
 
@@ -10,7 +8,6 @@ export default class Header extends Component {
   }
 
   back = () => {
-    //improves security
     this.props.navigation.onBack();
   }
 
@@ -32,9 +29,9 @@ export default class Header extends Component {
                 <Ionicons
                   name="ios-arrow-back"
                   size={30}
-                  color={colors.headerFontColor}
+                  color={'#33337F'}
                 />
-                <Text style={{fontSize: 18, paddingLeft: 5, paddingTop: 4, color: colors.headerFontColor}}>Back</Text>
+                <Text style={{fontSize: 18, paddingLeft: 5, paddingTop: 4, color: '#33337F'}}>Back</Text>
               </View>
               </TouchableOpacity>
             </View>
@@ -53,16 +50,15 @@ const styles = StyleSheet.create({
     top: 0,
     paddingTop: 45,
     marginBottom: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', //'#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderBottomWidth: 1,
-    borderColor: colors.homeBoxesLineColor,
+    borderColor: '#33337F',
   },
   title: {
     textAlign: 'center',
     fontSize: 19,
     lineHeight: 24,
-    color: colors.headerFontColor,
-    fontFamily: colors.headerFont,
+    color: '#33337F',
   },
   back: {
     position: 'absolute',

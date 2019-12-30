@@ -83,7 +83,6 @@ class MainApp extends React.Component {
       return <AccountDeleted onWipeOut={this.props.onWipeOut}/>
     }
     else if ( typeof(account.loading) == 'undefined' ) {
-      //waiting to hear back from secure storage asyc call
       return null;
     }
     else if ( !account.UUID ) {

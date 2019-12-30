@@ -12,7 +12,7 @@ Screen Names:
 ============================================================================= */
 
 const SCREEN_NAMES = {
-  ACCOUNT_DELETED_: "ACCOUNT_DELETED",
+  ACCOUNT_DELETED: "ACCOUNT_DELETED",
   ACCOUNT_DELETE: "ACCOUNT_DELETE",
   ACCOUNT: "ACCOUNT",
   CODE_SCANNER: "CODE_SCANNER",

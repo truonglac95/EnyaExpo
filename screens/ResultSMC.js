@@ -12,7 +12,7 @@ class ResultSMC extends React.Component {
       headerTitle: () => (<Text 
         style={{
           fontSize: 19,
-          color: colors.headerFontColor,
+          color: '#33337F',
           marginLeft: 'auto',
           marginRight: 'auto',
           textAlign: 'center',

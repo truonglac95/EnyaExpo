@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 //Enya
-import { SecureQRGetCredentials } from '../EnyaSDK/SecureQR';
+import { Enya_QRSetCredentials } from '../EnyaSDK/SecureQR';
 
 //visuals and UI
 import { Text, View } from 'react-native';
@@ -29,27 +29,22 @@ handleBarCodeScannedSim = () => {
   '9c72b528bc7e8e4a8519555da095326be635dfba5eee3131ad82e25113a11bd8' +
   '679441e9962f6a8c881db713d874bc78bef72e7532fd7e45';
 
-  SecureQRGetCredentials( dataStringFromQRCodeScan ).then(result => {
+  Enya_QRSetCredentials( dataStringFromQRCodeScan ).then(UUID => {
 
-    //wipe any old account just in case
-    //the scanner should only ever be called 
-    //when there is no account in the first place
     SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
    
     const firstlogintime = new Date().getTime().toString();
     const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
 
-    const account = result
-
     let newAccount = {
-      ...account, 
-      id: id,
+      UUID, 
+      id, 
     };
 
     //save to local secure storage
     SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
   
-    //circulate props to everyone else
+    //circulate props
     this.props.dispatch(setAccount(newAccount));
 
   }).catch(err => {
@@ -65,7 +60,7 @@ handleBarCodeScannedSim = () => {
     return (
 
       <View style={mS.containerCenter}>
-        
+
         <View style={mS.msgBoxVP}>
           <Text style={mS.titleTextVP}>{'Please scan your\nQR code card'}</Text>
         </View>
@@ -76,7 +71,6 @@ handleBarCodeScannedSim = () => {
             onClick={() => { this.handleBarCodeScannedSim() }} 
           />
         </View>
-        
 
       </View>
     );

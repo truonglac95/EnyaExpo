@@ -7,10 +7,6 @@ import BasicButton from '../components/BasicButton';
 import mS from '../constants/masterStyle';
 
 class AccountDeleted extends React.Component {
-  
-  constructor (props) {
-    super(props);
-  }
 
   render () {
 
@@ -25,7 +21,8 @@ class AccountDeleted extends React.Component {
 
       <View style={mS.msgBoxVP}>
         <Text style={mS.titleTextVP}>{'Account Wiped'}</Text>
-        <Text style={mS.tagTextVP}>{'You can recreate your account with your QR code card.'}</Text>
+        <Text style={mS.tagTextVP}>{'You can recreate your account ' + 
+        'with your QR code card.'}</Text>
       </View>
 
       <View style={{height: 23}}/>
@@ -36,6 +33,7 @@ class AccountDeleted extends React.Component {
       />
 
       </View>
+      
     );
   }
 }
