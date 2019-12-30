@@ -18,12 +18,7 @@ import {
   SECURE_STORAGE_ACCOUNT,
 } from '../constants';
 
-import { 
-  CanCompute, 
-  NumGoodAnswers, 
-	ComputeRiskSecure, 
-} from '../../EnyaSDK/ComputeRiskSecure';
-
+import * as EnyaSMC from '../../EnyaSDK/EnyaSMC'
 import * as SecureStore from 'expo-secure-store'
 
 export const getAnswersBegin   = data  => ({ type: GET_ANSWERS });
@@ -53,6 +48,41 @@ const smc = {
   result: 0.0,
   current: false,
 };
+
+
+const CanCompute = function ( data ) {
+
+  var ga = 0; //ga is short for 'good answers'
+  
+  if ( data.birthyear > 0 ) { ga += 1; }
+  if ( data.gender > 0 ) { ga += 1; }
+  if ( data.height > 0 ) { ga += 1; }
+  if ( data.weight > 0 ) { ga += 1; }
+  if ( data.binary_1 > 0 ) { ga += 1; }
+  if ( data.binary_2 > 0 ) { ga += 1; }
+
+  if( ga >= 6 ) {
+    return true; //yes we have all the info we need
+  } else {
+    return false; //not enough data
+  }
+}
+
+const NumGoodAnswers = function ( data ) {
+
+  var ga = 0;
+  
+  if ( data.birthyear > 0 ) { ga += 1; }
+  if ( data.gender > 0 ) { ga += 1; }
+  if ( data.height > 0 ) { ga += 1; }
+  if ( data.weight > 0 ) { ga += 1; }
+  if ( data.binary_1 > 0 ) { ga += 1; }
+  if ( data.binary_2 > 0 ) { ga += 1; }
+  if ( data.country > 0 ) { ga += 1; }
+
+  return ga;
+}
+
 
 export const getAnswers = () => (dispatch) => {
 
@@ -157,7 +187,7 @@ export const secureComputeProgress = (data) => ({
   payload: data,
 });
 
-export const secureCompute = (data, UUID, id) => async (dispatch) => {
+export const secureCompute = (data) => async (dispatch) => {
 
 	dispatch( secureComputeBegin() );
 
@@ -166,7 +196,16 @@ export const secureCompute = (data, UUID, id) => async (dispatch) => {
       SMC_computing: true 
     })
   );
-
+  
+  const circle_indicator = async function(){
+    for (var i = 0; i < 200; i++) {
+      dispatch( secureComputeProgress({
+        SMC_compute_progress: i/2,
+        SMC_computing: true 
+      }))
+      await new Promise(resolve => setTimeout(resolve, 5))
+    }
+  }
   var result = 0.0;
   var current = false;
   var haveSMC = false;
@@ -175,14 +214,31 @@ export const secureCompute = (data, UUID, id) => async (dispatch) => {
 		
 		if (__DEV__) console.log('Yes, there are enough data for SMC computation');
 
-    APIStatus = await ComputeRiskSecure(data, UUID, id, dispatch); 
+    //----------- Configure settings ---------------------
+    EnyaSMC.input.apply(this, Object.values(data))
+    EnyaSMC.configure({
+        AccessToken: "s89ysydgsi6",
+        Algorithm: "test2",
+    })
+    //-----------------------------------------------------
+ 
+    //----------- Running the model -----------------------
+    const [model, _] = await Promise.all([EnyaSMC.Linear(), circle_indicator()])
+    //-----------------------------------------------------
 
-    //absolute scores
-    result = APIStatus.risk_score_ab; 
-
-    if(result > 0) {
+    if(model.status_code == 200) {
+      dispatch( secureComputeProgress({
+        SMC_compute_progress: 100,
+        SMC_computing: true 
+      }))
+      result = model.secure_result;
       current = true; //because we just recomputed it
       haveSMC = true; //yes, we have result
+    } else {
+      dispatch( secureComputeProgress({
+        SMC_compute_progress: 0,
+        SMC_computing: false
+      }))
     }
 
 	} else {
