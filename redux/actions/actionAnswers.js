@@ -217,7 +217,7 @@ export const secureCompute = (data) => async (dispatch) => {
     EnyaSMC.input.apply(this, Object.values(data))
     EnyaSMC.configure({
         AccessToken: "s89ysydgsi6",
-        Algorithm: "test2",
+        Algorithm: "test3",
     })
     //-----------------------------------------------------
  
