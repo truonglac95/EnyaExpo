@@ -49,7 +49,6 @@ const smc = {
   current: false,
 };
 
-
 const CanCompute = function ( data ) {
 
   var ga = 0; //ga is short for 'good answers'
@@ -232,6 +231,7 @@ export const secureCompute = (data) => async (dispatch) => {
         SMC_computing: true 
       }))
       result = model.secure_result;
+
       current = true; //because we just recomputed it
       haveSMC = true; //yes, we have result
     } else {

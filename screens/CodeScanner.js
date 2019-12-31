@@ -32,18 +32,15 @@ handleBarCodeScannedSim = () => {
   Enya_QRSetCredentials( dataStringFromQRCodeScan ).then(UUID => {
 
     SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
-   
+
     const firstlogintime = new Date().getTime().toString();
     const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
 
-    let newAccount = {
-      UUID, 
-      id, 
-    };
+    let newAccount = { UUID, id };
 
-    //save to local secure storage
+    //save to secure storage
     SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
-  
+
     //circulate props
     this.props.dispatch(setAccount(newAccount));
 

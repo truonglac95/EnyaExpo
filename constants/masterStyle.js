@@ -157,4 +157,12 @@ module.exports = StyleSheet.create({
     fontWeight: '400', // Regular
     color: colors.gray,
   },
+  screenTitle: {
+    fontSize: 19,
+    color: '#33337F',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    textAlign: 'center',
+    alignSelf: 'center',
+  }
 });

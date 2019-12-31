@@ -31,9 +31,8 @@ for (var i = 120; i <= 215; i++) {
 }
 
 const countriesList = [
-  { label: 'China' , value: 1 },
-  { label: 'USA' , value: 2 }, 
-  { label: 'Korea' , value: 3 }
+  { label: 'Korea' , value: 1 },
+  { label: 'USA' , value: 2 },
 ];
 
 const genderList = [
@@ -63,18 +62,7 @@ class Questionnaire extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle: () => (<Text 
-        style={{
-          fontSize: 19,
-          color: '#33337F',
-          marginLeft: 'auto', 
-          marginRight: 'auto',
-          textAlign: 'center',
-          alignSelf: 'center',
-        }}>
-          {'Secure Compute'}
-        </Text>
-      ),
+      headerTitle: () => (<Text style={mS.screenTitle}>{'Secure Compute'}</Text>),
       headerRight: (<View></View>),
     }
   };
@@ -563,7 +551,6 @@ class Questionnaire extends React.Component {
 }}
 
 const styles = StyleSheet.create({
-  //for most of the text
   smallGray: {
     fontSize: 14,
     lineHeight: 17,
