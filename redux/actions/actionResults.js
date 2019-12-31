@@ -7,7 +7,7 @@ import {
 	CIRCULATE_LOCAL_RESULTS,
 } from '../constants';
 
-import { Enya_GetResult } from '../../EnyaSDK/SecureResult';
+import * as EnyaDeliver from '../../EnyaSDK/EnyaDeliver';
 
 export const getResultsBegin   = data  => ({ type: GET_RESULTS });
 export const getResultsSuccess = data  => ({ type: GET_RESULTS_SUCCESS });
@@ -46,7 +46,7 @@ export const getResults = (uuid) => (dispatch) => {
       		//which one is most current?
       		if (result.length > 0) {
         		//Send the result to Enya
-        		Enya_GetResult(result).then(flag => {
+        		EnyaDeliver.Enya_GetResult(result).then(flag => {
           			//console.log('Enya_Result( result ).then(flag => {')
           			//console.log(flag)
           			if(flag == 'downloaded'){

@@ -1,0 +1,22 @@
+{
+  "name": "enyadeliver",
+  "version": "1.0.0",
+  "description": "A secure delivery package",
+  "main": "module.js",
+  "author": {
+    "name": "Blockdoc",
+    "email": "contact@blockdoc.com",
+    "url": "https://www.blockdoc.com"
+  },
+  "keywords": [
+    "private",
+    "secure",
+    "delivery"
+  ],
+  "dependencies": {
+    "buffer": "^5.4.3",
+    "expo-file-system": "^8.0.0",
+    "expo-secure-store": "^8.0.0",
+    "node-forge": "^0.9.1"
+  }
+}

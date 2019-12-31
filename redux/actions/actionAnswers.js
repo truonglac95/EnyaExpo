@@ -230,7 +230,7 @@ export const secureCompute = (data) => async (dispatch) => {
         SMC_compute_progress: 100,
         SMC_computing: true 
       }))
-      result = model.secure_result;
+      result = parseFloat(model.secure_result).toFixed(2);
 
       current = true; //because we just recomputed it
       haveSMC = true; //yes, we have result

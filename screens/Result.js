@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Dimensions, ActivityIndicator, Platform } from 
 import mS from '../constants/masterStyle';
 import PDFReader from 'rn-pdf-reader-js';
 
-import { Enya_GetKey, Enya_DecryptResult } from '../EnyaSDK/SecureResult';
+import * as EnyaDeliver from '../EnyaSDK/EnyaDeliver'
 
 class Report extends React.Component {
 
@@ -38,7 +38,7 @@ class Report extends React.Component {
       isMounted : true,
     }, () => {
       this.setState({cryptoState: 'decrypting'});
-      Enya_DecryptResult().then(decrypted64 => {
+      EnyaDeliver.Enya_DecryptResult().then(decrypted64 => {
         if (this.state.isMounted) {
           this.setState({
             base64String: 'data:application/pdf;base64,' + decrypted64,

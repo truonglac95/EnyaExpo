@@ -146,11 +146,18 @@ class Home extends React.Component {
   >
     <Text style={styles.boxTitle}>{'Overview'}</Text>
   </ImageBackground>
-
+{!current &&
 <View style={styles.textBlock}>
   <Text style={styles.mediumDark}>{'We cannot calculate your score yet.'}</Text>
   <Text style={mS.smallGrayFP}>{'Please answer the questions about you. With that information, we can VALUE_PROP_HERE (match/score/estimate).'}</Text>
 </View>
+}
+{current &&
+<View style={styles.textBlock}>
+  <Text style={styles.mediumDark}>{'We have securely calculated your score.'}</Text>
+<Text style={mS.smallGrayFP}>{'Your risk score is '}{result}%{'. \nYour relative risk score is '}{result/2}{'.'}</Text>
+</View>
+}
 
 </View>
 </View>

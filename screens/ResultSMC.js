@@ -69,28 +69,25 @@ UNSAFE_componentWillReceiveProps(nextProps) {
        </View>);
      }
 
-    var score = parseFloat(result).toFixed(1);
+    var score = parseFloat(result).toFixed(2);
     var strMain = '';
-    var strCountry = '';
+    var strMean = '';
 
     if (score <= 3) {
-      strMain = 'result_main_low low low low low.'
+      strMain = 'low.'
     }
     else if (score <= 8) { 
-      strMain = 'result_main_med med med med med.'
+      strMain = 'median.'
     }
     else { 
-      strMain = 'result_main_high high high high high.'
+      strMain = 'high.'
     }
 
-    if (country <= 1) { 
-      strCountry = 'result_country_low low low low low.'
-    }
-    else if (country <= 2) { 
-      strCountry = 'result_country_norm low low low low.'
+    if (score/2 <= 2) { 
+      strMean = 'You are less likely to get sick than ordinary people.'
     }
     else { 
-      strCountry = 'result_country_hig low low low low.'
+      strMean = 'You are more likely to get sick than ordinary people.'
     }
 
     return (
@@ -109,7 +106,7 @@ UNSAFE_componentWillReceiveProps(nextProps) {
   <Text style={{fontSize: 33, fontWeight: 'bold'}}>{score}%</Text>
 </Text>
 
-<Text style={styles.text}>{'Header'}
+<Text style={styles.text}>{'Your risk is '}
   <Text style={{fontWeight: 'bold'}}>{` `}{strMain}{'\n'}</Text>
 </Text>
 
@@ -118,16 +115,17 @@ UNSAFE_componentWillReceiveProps(nextProps) {
 {/*Compare to others?*/}
 <View style={styles.row}>
 <Text style={styles.title}>{'Compare to others'}</Text>
-<Text style={styles.text}>{'result_FRS_you_have'}
-  <Text style={{fontWeight: 'bold'}}>{score}%</Text>{'result_FRS_10y'}{strMain}
+<Text style={styles.text}>{'You have a '}
+  <Text style={{fontWeight: 'bold'}}>{score}%</Text>{' risk in next 20 years. Your risk is '}
+  <Text style={{fontWeight: 'bold'}}>{score/2}</Text>{' times higher than a normal person of your age.'}
 </Text>
 </View>
 
 {/*What does this mean for me?*/}
 <View style={styles.row}>
 <Text style={styles.title}>{'What does this mean for me?'}</Text>
-<Text style={styles.text}>{'result_FRS_you_have'}
-  <Text style={{fontWeight: 'bold'}}>{score}%</Text>{'result_FRS_10y'}{strCountry}
+<Text style={styles.text}>{'Your relative risk is '}
+  <Text style={{fontWeight: 'bold'}}>{score/2}</Text>{'. '}{strMean}
 </Text>
 </View>
 

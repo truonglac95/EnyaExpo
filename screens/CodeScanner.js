@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 //Enya
-import { Enya_QRSetCredentials } from '../EnyaSDK/SecureQR';
+import * as EnyaQR from '../EnyaSDK/EnyaQR'
 
 //visuals and UI
 import { Text, View } from 'react-native';
@@ -29,7 +29,7 @@ handleBarCodeScannedSim = () => {
   '9c72b528bc7e8e4a8519555da095326be635dfba5eee3131ad82e25113a11bd8' +
   '679441e9962f6a8c881db713d874bc78bef72e7532fd7e45';
 
-  Enya_QRSetCredentials( dataStringFromQRCodeScan ).then(UUID => {
+  EnyaQR.Enya_QRSetCredentials( dataStringFromQRCodeScan ).then(UUID => {
 
     SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
 
