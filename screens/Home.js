@@ -107,8 +107,8 @@ class Home extends React.Component {
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
     const { account } = this.props.user;
-    
-    dispatch( secureCompute(answers, account.UUID, account.id) );
+
+    dispatch( secureCompute(answers) );
 
   }
 

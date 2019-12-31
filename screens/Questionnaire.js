@@ -168,7 +168,7 @@ class Questionnaire extends React.Component {
     const { account } = this.props.user;
     const { localResult } = this.props.result;
 
-    dispatch( secureCompute(answers, account.UUID, account.id) );
+    dispatch( secureCompute(answers) );
 
     this.setState({ recalculating: true });
 
