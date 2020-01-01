@@ -117,8 +117,8 @@ class Home extends React.Component {
 <View style={styles.textBlock}>
 <Text style={styles.mediumDark}>{'We cannot calculate your score yet.'}</Text>
 <Text style={mS.smallGrayFP}>{'Please answer the questions about you. With that \
-information, we can VALUE_PROP Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed \
-do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}</Text>
+information, we can VALUE_PROP. Lorem ipsum dolor sit amet, consectetur adipiscing \
+elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}</Text>
 </View>
 }
 {current && (score < 10) &&
@@ -292,7 +292,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 }
 
 {!haveReport && downloadingReport &&
-<View style={styles.smc}>
+<View style={[styles.smc, {height: 72}]}>
   <ActivityIndicator size="large" color='#33337F'/>
 </View>
 }

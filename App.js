@@ -9,7 +9,6 @@ import { Animated, Dimensions, Image, Text, View, TouchableOpacity,
 
 import GestureRecognizer from 'react-native-swipe-gestures';
 
-import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
 
 import MainApp from './MainApp';
@@ -193,19 +192,15 @@ export default class App extends React.Component {
 
     const images = [
       require('./assets/images/logo.png'),
+      require('./assets/images/id.png'),
       require('./assets/images/valueProp1.png'),
       require('./assets/images/valueProp2.png'),
       require('./assets/images/valueProp3.png'),
       require('./assets/images/valueProp4.png'),
-      require('./assets/images/nav/nav_genes_g.png'),
       require('./assets/images/nav/nav_home_g.png'),
-      require('./assets/images/nav/nav_me_g.png'),
-      require('./assets/images/nav/nav_support_g.png'),
-      require('./assets/images/nav/nav_genes_b.png'),
       require('./assets/images/nav/nav_home_b.png'),
-      require('./assets/images/nav/nav_me_b.png'),
-      require('./assets/images/nav/nav_support_b.png'),
-      require('./assets/images/id.png')
+      require('./assets/images/nav/nav_me_g.png'),
+      require('./assets/images/nav/nav_me_b.png')
     ];
 
     const cacheImages = images.map((image) => {

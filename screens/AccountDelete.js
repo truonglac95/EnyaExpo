@@ -17,18 +17,7 @@ class AccountDelete extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle: () => (<Text 
-        style={{
-          fontSize: 19,
-          color: '#33337F',
-          marginLeft: 'auto', 
-          marginRight: 'auto',
-          textAlign: 'center',
-          alignSelf: 'center',
-        }}>
-          {'Wipe Account'}
-        </Text>
-      ),
+      headerTitle: () => (<Text style={mS.screenTitle}>{'Wipe Account'}</Text>),
       headerRight: (<View></View>),
     }
   };

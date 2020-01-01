@@ -36,16 +36,6 @@ class MainApp extends React.Component {
 
   UNSAFE_componentWillMount() {
 
-    FileSystem.getInfoAsync(pdfStore).then(({ exists }) => {
-      if( !exists ) {
-        FileSystem.makeDirectoryAsync(
-          pdfStore, { intermediates: true }
-        ).catch(err => {
-          if (__DEV__) console.log(err);
-        });
-      }
-    });
-
     //load account settings, if any
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(result => {
       if (result) {
@@ -104,7 +94,6 @@ class MainApp extends React.Component {
 const mapStateToProps = state => ({
   user: state.user,
   result: state.result,
-  whitelist: state.whitelist,
 });
 
 export default connect(mapStateToProps)(MainApp);

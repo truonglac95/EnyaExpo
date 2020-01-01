@@ -5,23 +5,13 @@ import Constants from 'expo-constants';
 import { View, Text, StyleSheet, Platform, Image, 
   Dimensions, ImageBackground } from 'react-native';
 import BasicButton from '../components/BasicButton';
+import mS from '../constants/masterStyle';
 
 class Account extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle: () => (<Text 
-        style={{
-          fontSize: 19,
-          color: '#33337F',
-          marginLeft: 'auto', 
-          marginRight: 'auto',
-          textAlign: 'center',
-          alignSelf: 'center',
-        }}>
-          {'Account'}
-        </Text>
-      ),
+      headerTitle: () => (<Text style={mS.screenTitle}>{'Account'}</Text>),
     }
   };
 
@@ -110,14 +100,6 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     color: '#404040',
     textAlign:'left',
-    justifyContent:'center',
-  },
-  textVER: {
-    fontSize: 14,
-    lineHeight: 22,
-    fontWeight: 'normal',
-    color: '#404040',
-    textAlign:'center',
     justifyContent:'center',
   },
 });
