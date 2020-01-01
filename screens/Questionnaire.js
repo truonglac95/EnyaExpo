@@ -72,7 +72,6 @@ class Questionnaire extends React.Component {
     super(props);
 
     const { answers, smc } = this.props.answer;
-    const { localResult } = this.props.result;
 
     this.state = {
 
@@ -110,7 +109,7 @@ class Questionnaire extends React.Component {
   }
 
   componentWillUnmount() {
-    
+
     this.inputRefs = {
       birthyearInput: null,
       countryInput: null,
@@ -165,8 +164,6 @@ class Questionnaire extends React.Component {
 
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
-    const { account } = this.props.user;
-    const { localResult } = this.props.result;
 
     dispatch( secureCompute(answers) );
 
@@ -177,8 +174,6 @@ class Questionnaire extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
 
     const { smc } = nextProps.answer;
-    const { localResult: nextLocalResult } = nextProps.result;
-    const { localResult } = this.props.result;
 
     this.setState({
       percentAnswered: (smc.percentAnswered || 0),
@@ -241,14 +236,14 @@ class Questionnaire extends React.Component {
 >
 
 {!SMC_computing && (numberAnswered < 7) &&
-  <View style={[styles.shadowBox, {alignItems: 'center', marginTop: 13, fontSize: 20}]}>
-    <Text style={styles.smallGray}>{'Please answer the questions to VALUE_PROP ' + 
-    'for you. All calculations use secure multiparty computation ' + 
-    'to preserve your privacy.'}</Text>
-  </View>
+<View style={[styles.shadowBox, {alignItems: 'center', marginTop: 13, fontSize: 20}]}>
+  <Text style={styles.smallGray}>{'Please answer the questions to VALUE_PROP ' + 
+  'for you. All calculations use secure multiparty computation ' + 
+  'to preserve your privacy.'}</Text>
+</View>
 }
 
-{(numberAnswered >= 7) && !current && !SMC_computing && 
+{!SMC_computing && (numberAnswered >= 7) && !current && 
 <View style={styles.shadowBoxClear}>
   <BasicButton 
     width={200}
@@ -296,7 +291,7 @@ class Questionnaire extends React.Component {
   placeholder={{label: 'Please select', value: 0}}
   onValueChange={(v)=>{this.handleSave('country',v)}}
   onDownArrow={()=>{this.inputRefs.birthyearInput.togglePicker();}}
-  ref={el => { this.inputRefs.countryInput = el;}}
+  ref={el => {this.inputRefs.countryInput = el;}}
   style={pickerStyle}
 />
 </View>
@@ -626,7 +621,6 @@ const mapStateToProps = state => ({
   user: state.user,
   answer: state.answer,
   result: state.result,
-  whitelist: state.whitelist,
 });
 
 export default connect(mapStateToProps)(Questionnaire);

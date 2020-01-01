@@ -5,80 +5,56 @@ import { Platform, StyleSheet, Text, TouchableOpacity,
   View, FlatList, Image, ActivityIndicator, Dimensions, 
   ScrollView, ImageBackground } from 'react-native';
 
-import * as Permissions from 'expo-permissions';
-
 import ProgressCircle from '../components/ProgressCircle';
 import BasicButton from '../components/BasicButton';
 import colors from '../constants/Colors';
 import mS from '../constants/masterStyle';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-//redux
 import { secureCompute, getResults, getAnswers } from '../redux/actions';
 
 class Home extends React.Component {  
 
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle: () => (<Text 
-        style={{
-          fontSize: 19,
-          color: '#33337F',
-          marginLeft: 'auto', 
-          marginRight: 'auto',
-          textAlign: 'center',
-          alignSelf: 'center',
-        }}>
-          {'Enya.ai Demonstrator'}
-        </Text>
-      ),
+      headerTitle: () => (<Text style={mS.screenTitle}>{'Enya.ai Demonstrator'}</Text>),
     }
-  };
+  }
 
   constructor (props) {
 
     super(props); 
 
-    scrollView : ScrollView;
-
     const { smc } = this.props.answer;
-    const { localResult } = this.props.result;
 
     this.state = {
-
-      //SMC details
-      percentAnswered: (smc.percentAnswered || 0), //0 to 100%
-      haveSMC: (smc.haveSMC || false), //is there an SMC result?
-      result: (smc.result || 0.0),  //e.g. 14.5%
+      percentAnswered: (smc.percentAnswered || 0), //0 to 100
+      result: (smc.result || 0.0), //e.g. 14.5
       current: (smc.current || false), //is the score valid/current?
 
-      haveDNA: (localResult.haveDNA || false),
-      downloadingReport: false,
-
-      haveReport: (this.props.result.downloaded || false),
-
-      //for the SMC progress indicator
       SMC_compute_progress: (this.props.answer.SMC_compute_progress || 0),
       SMC_computing: (this.props.answer.SMC_computing || false),
-
+      
+      haveReport: (this.props.result.downloaded || false),
+      downloadingReport: false,
     };
 
   }
 
   handleClickItem = (page) => {
 
-    if (page === 'RESULTS_SMC') {
+    if (page === 'RESULT_SMC') {
       this.props.navigation.navigate('ResultSMC');
     } else if (page === 'GIVE_ANSWERS') {
       this.props.navigation.navigate('Questionnaire');
     } else if (page === 'REPORT_SEE') {
       this.props.navigation.navigate('Result');
     } else if (page === 'REPORT_GET') {
-      //getting report
-      console.log('Getting report')
+      if (__DEV__) console.log('Getting report')
       this.setState({downloadingReport: true});
       this.props.dispatch(getResults(this.props.user.account.UUID));
     }
+
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -86,28 +62,22 @@ class Home extends React.Component {
     const { smc } = nextProps.answer;
 
     this.setState({
-
       percentAnswered: (smc.percentAnswered || 0.0),
       result: (smc.result || 0.0),
-      current: (smc.current || false), 
-      haveSMC: (smc.haveSMC || false),
+      current: (smc.current || false),
 
       SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
       SMC_computing: (nextProps.answer.SMC_computing || false),
 
-      haveDNA: (nextProps.result.localResult.haveDNA || false),
-
-      haveReport: (nextProps.result.downloaded || false),
-
+      haveReport: (nextProps.result.downloaded || false)
     });
+
   }
 
   handleCalculate = () => {
 
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
-    const { account } = this.props.user;
-
     dispatch( secureCompute(answers) );
 
   }
@@ -115,10 +85,9 @@ class Home extends React.Component {
   render() {
 
     const { current, percentAnswered, result, SMC_compute_progress, 
-      SMC_computing, haveDNA, haveSMC, downloadingReport,
-      haveReport } = this.state;
-
-    //console.log(haveReport)
+      SMC_computing, downloadingReport, haveReport } = this.state;
+    
+    var score = parseFloat(result).toFixed(1);
 
     return (
 
@@ -137,25 +106,37 @@ class Home extends React.Component {
 <View style={styles.shadowBox}>
 <View style={{width: '100%'}}>
 
-  <ImageBackground
-    source={require('../assets/images/id.png')}
-    style={{
-      width: '100%', 
-      height: 50,
-    }}
-  >
-    <Text style={styles.boxTitle}>{'Overview'}</Text>
-  </ImageBackground>
+<ImageBackground
+  source={require('../assets/images/id.png')}
+  style={{width: '100%', height: 50}}
+>
+  <Text style={styles.boxTitle}>{'Overview'}</Text>
+</ImageBackground>
+
 {!current &&
 <View style={styles.textBlock}>
-  <Text style={styles.mediumDark}>{'We cannot calculate your score yet.'}</Text>
-  <Text style={mS.smallGrayFP}>{'Please answer the questions about you. With that information, we can VALUE_PROP_HERE (match/score/estimate).'}</Text>
+<Text style={styles.mediumDark}>{'We cannot calculate your score yet.'}</Text>
+<Text style={mS.smallGrayFP}>{'Please answer the questions about you. With that \
+information, we can VALUE_PROP Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed \
+do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}</Text>
 </View>
 }
-{current &&
+{current && (score < 10) &&
 <View style={styles.textBlock}>
-  <Text style={styles.mediumDark}>{'We have securely calculated your score.'}</Text>
-<Text style={mS.smallGrayFP}>{'Your risk score is '}{result}%{'. \nYour relative risk score is '}{result/2}{'.'}</Text>
+<Text style={styles.mediumDark}>{'We have securely calculated your score.'}</Text>
+<Text style={mS.smallGrayFP}>{'\nYour score is '}
+<Text style={[mS.smallGrayFP, {fontWeight: 'bold'}]}>{score}%</Text>
+{'. Since your score is below 10, lorem ipsum dolor sit amet, \
+consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
+</View>
+}
+{current && (score > 10) &&
+<View style={styles.textBlock}>
+<Text style={styles.mediumDark}>{'We have securely calculated your score.'}</Text>
+<Text style={mS.smallGrayFP}>{'\nYour score is '}
+<Text style={[mS.smallGrayFP, {fontWeight: 'bold'}]}>{score}%</Text>
+{'. Since your score is above 10, lorem ipsum dolor sit amet, \
+consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 </View>
 }
 
@@ -169,27 +150,23 @@ class Home extends React.Component {
 <View style={styles.shadowBox}>
 <View style={{width: '100%'}}>
 
-  <ImageBackground
-    source={require('../assets/images/id.png')}
-    style={{
-      width: '100%', 
-      height: 50,
-    }}
-  >
-    <Text style={styles.boxTitle}>
-      {'Secure Computation'}
-    </Text>
-  </ImageBackground>
+<ImageBackground
+  source={require('../assets/images/id.png')}
+  style={{width: '100%', height: 50}}
+>
+  <Text style={styles.boxTitle}>{'Secure Computation'}</Text>
+</ImageBackground>
 
 <View style={{display: 'flex', flexDirection: 'row'}}>
-<View style={[styles.cardioLeft, {paddingTop: 20}]}>
+<View style={styles.smc}>
 
 {/*'there is an SMC result - allow people to view the result and to update their answers'*/}
-{current && <View>
+{current && 
+<View>
 <BasicButton 
   text={'View Result'}
   width="80%" 
-  onClick={()=>this.handleClickItem('RESULTS_SMC')}
+  onClick={()=>this.handleClickItem('RESULT_SMC')}
 />
 <TouchableOpacity 
   style={{marginTop: 20}}
@@ -201,20 +178,21 @@ class Home extends React.Component {
 }
 
 {/*'no SMC result - prompt people to answer questions and to give/update their answers'*/}
-{!current && (percentAnswered < 100) && <View>
+{!current && (percentAnswered < 100) && 
+<View>
 <TouchableOpacity 
-  //added this bc in android the sensitive region was very small
   hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
   onPress={()=>this.handleClickItem('GIVE_ANSWERS')}
 >
   <Text style={styles.largeAction}>{'Complete my information'}</Text>
 </TouchableOpacity>
-  <Text style={[mS.smallGrayFP, {marginTop: 5}]}>{'to get personalized recommendations.'}</Text>
+<Text style={[mS.smallGrayFP, {marginTop: 5}]}>{'to get personalized recommendations.'}</Text>
 </View>
 }
 
-{/*'no FRS result - but we have all the data and need to recalculate'*/}
-{!current && (percentAnswered === 100) && <View>
+{/*'no SMC result - but we have all the data and need to recalculate'*/}
+{!current && (percentAnswered === 100) && 
+<View>
 <Text style={mS.smallGrayFP}>{'All questions answered'}</Text>
 <View style={{marginTop: 20}}>
   <BasicButton 
@@ -228,13 +206,13 @@ class Home extends React.Component {
 
 </View>
 
-{/*the right side of the cardio panel*/}
+{/*the right side of the SMC panel*/}
 
-<View style={styles.cardioRight}>
+<View style={styles.smcRight}>
 
 {current &&
 <View>
-  <Text style={[styles.gray, {textAlign: 'center', fontWeight: 'bold', fontSize: result >= 10 ? 30 : 38}]}>{result}%</Text>
+  <Text style={[styles.gray, {textAlign: 'center', fontWeight: 'bold', fontSize: 30}]}>{score}%</Text>
   <Text style={[mS.smallGrayFP, {textAlign: 'center'}]}>{'Your Score'}</Text>
 </View>
 }
@@ -255,13 +233,13 @@ class Home extends React.Component {
 {SMC_computing && 
   <View style={styles.circleProgress}>
     <ProgressCircle percent={SMC_compute_progress}>
-      <Ionicons name={`ios-cog`} size={35} color={colors.gray}/>
+      <Ionicons name={`ios-cog`} size={35} color={colors.gray} style={{paddingTop:5,paddingLeft:2}}/>
     </ProgressCircle>
     <View>
       {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'Calculating Score'}</Text>}
       {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'Done'}</Text>}
     </View>
-</View>
+  </View>
 }
 
 </View>
@@ -277,27 +255,24 @@ class Home extends React.Component {
 <View style={styles.shadowBox}>
 <View style={{width: '100%'}}>
 
-  <ImageBackground
-    source={require('../assets/images/id.png')}
-    style={{
-      width: '100%', 
-      height: 50,
-    }}
-  >
-    <Text style={styles.boxTitle}>{'Secure Report Delivery'}</Text>
-  </ImageBackground>
+<ImageBackground
+  source={require('../assets/images/id.png')}
+  style={{width: '100%', height: 50}}
+>
+  <Text style={styles.boxTitle}>{'Secure Report Delivery'}</Text>
+</ImageBackground>
 
 <View style={styles.textBlock}>
 <Text style={mS.smallGrayFP}>
-  <Text style={{fontWeight: 'bold'}}>{'Status:'}{` `}</Text>
-  {'Your genotyping and microbiome analysis have been completed!'}
+  <Text style={{fontWeight: 'bold'}}>{'Status:'}</Text>
+  {' Your genotyping and microbiome analysis have been completed!'}
 </Text>
 </View>
 
 {/*BEGIN REPORT BUTTONS*/}
 
 {haveReport &&
-<View style={{width: '60%',padding: 12,paddingTop: 20}}>
+<View style={styles.smc}>
   <BasicButton 
     text={'View Report'}
     width="80%"
@@ -307,7 +282,7 @@ class Home extends React.Component {
 }
 
 {!haveReport && !downloadingReport &&
-<View style={{width: '60%',padding: 12,paddingTop: 20}}>
+<View style={styles.smc}>
   <BasicButton 
     text={'Download Report'}
     width="80%"
@@ -317,7 +292,7 @@ class Home extends React.Component {
 }
 
 {!haveReport && downloadingReport &&
-<View style={{width: '60%',padding: 12,paddingTop: 20}}>
+<View style={styles.smc}>
   <ActivityIndicator size="large" color='#33337F'/>
 </View>
 }
@@ -422,27 +397,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingBottom: 10, 
     borderColor: '#33337F',
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   geneStatusBox :{
     paddingTop: 0,
   },
-  cardioLeft: {
+  smc: {
     width: '60%',
     padding: 12,
+    paddingTop: 20
   },
-  cardioRight: {
+  smcRight: {
     flex: 1, 
     flexDirection: 'column', 
     justifyContent: 'center', 
     alignItems: 'center',
     width: '35%',
-    padding: 12,
+    padding: 12
   },
   circleProgress: {
     justifyContent: 'center',
-    alignItems: 'center', 
-  },
+    alignItems: 'center' 
+  }
 });
 
 const mapStateToProps = state => ({
