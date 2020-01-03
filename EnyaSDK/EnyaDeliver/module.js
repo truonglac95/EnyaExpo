@@ -131,7 +131,7 @@ exports.Enya_DecryptResult = async function () {
   return new Promise(function (resolve, reject) {
 
     FileSystem.readAsStringAsync(
-      pdfStore, 
+      kpl.ENresultPDF, 
       { encoding: FileSystem.EncodingType.Base64 }
     ).then((encrypted64) => {
       var decrypted64 = decryptFile( encrypted64, kpl.passwordForge )
