@@ -158,11 +158,11 @@ exports.Linear = async function(){
     
     var status_code = 404;
 
-    if (typeof user_info == "undefined") { console.log("Please input user info first"); return status_code; }
-    if (typeof model_name == "undefined") { console.log("Please enter the name of your algorithm"); return status_code; }
-    if (typeof valid_token == "undefined") { console.log("Please enter access token"); return status_code; }
+    if (typeof user_info == "undefined")   { if (__DEV__) console.log("Please input user info first"); return status_code; }
+    if (typeof model_name == "undefined")  { if (__DEV__) console.log("Please enter the name of your algorithm"); return status_code; }
+    if (typeof valid_token == "undefined") { if (__DEV__) console.log("Please enter access token"); return status_code; }
 
-    console.log("EnyaSMC: Now starting secure linear regression computation!")
+    if (__DEV__) console.log("EnyaSMC: Now starting secure linear regression computation!")
 
     decimal = compute_decimal(user_info);
     user_info = math.multiply(user_info, math.pow(10, decimal));
@@ -172,19 +172,19 @@ exports.Linear = async function(){
 
     // Generate random id
     id =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    console.log("EnyaSMC: Generated random id -- " + id)
+    if (__DEV__) console.log("EnyaSMC: Generated random id -- " + id)
 
     const API_Keys = await Request_Keys({token: valid_token})
-    if (API_Keys.status == 201){ console.log("EnyaSMC: Retrieved two API keys."); } 
-    else { console.log("EnyaSMC: Failed to retrieve two API keys, please check your token or contact blockdoc <help@blockdoc.com>"); return status_code; }
+    if (API_Keys.status == 201){ if (__DEV__) console.log("EnyaSMC: Retrieved two API keys."); } 
+    else { if (__DEV__) console.log("EnyaSMC: Failed to retrieve two API keys, please check your token or contact blockdoc <help@blockdoc.com>"); return status_code; }
     
     const beavertriple_token = API_Keys.data.token1;
     const blockdoc_token = API_Keys.data.token2;
     
     const beaver_triple = await get_beaver_triple(beavertriple_token, {token: valid_token, name:"user", coeff_name:model_name, bitlength:bitlength, id:id})
 
-    if (beaver_triple.status == 201){ console.log("EnyaSMC: Updated and retrieved user Beaver triple."); } 
-    else { console.log("EnyaSMC: Failed to update and retrieve user Beaver triple. " + beaver_triple.data); return status_code; }
+    if (beaver_triple.status == 201){ if (__DEV__) console.log("EnyaSMC: Updated and retrieved user Beaver triple."); } 
+    else { if (__DEV__) console.log("EnyaSMC: Failed to update and retrieve user Beaver triple. " + beaver_triple.data); return status_code; }
     
     const user_beaver_triple = beaver_triple.data;
     const user_beaver_triple_m1 = user_beaver_triple.m1;
@@ -192,18 +192,18 @@ exports.Linear = async function(){
 
     // Double check the length of user input data
     if (user_beaver_triple_m1.length != user_info.length) {
-        console.log("The length of user_input was different from the length of coefficients, please check!"); return status_code;
+        if (__DEV__) console.log("The length of user_input was different from the length of coefficients, please check!"); return status_code;
     }
 
     const other_beaver_triple = await ask_beaver_triple(blockdoc_token, {id:id});
 
-    if (other_beaver_triple.status == 201) { console.log("EnyaSMC: Server retrieved Beaver triple."); } 
-    else { console.log("EnyaSMC: Server failed to retrieve Beaver triple."); return status_code; }
+    if (other_beaver_triple.status == 201) { if (__DEV__) console.log("EnyaSMC: Server retrieved Beaver triple."); } 
+    else { if (__DEV__) console.log("EnyaSMC: Server failed to retrieve Beaver triple."); return status_code; }
 
     const random_share = await get_random_share(blockdoc_token, {id:id, token:valid_token, user_random_share:random_share_for_blockdoc, bitlength:bitlength, coeff_name:model_name});
 
-    if (random_share.status == 201) { console.log("EnyaSMC: Sent and got random share."); } 
-    else { console.log("EnyaSMC: Failed to send and get random share."); return status_code; }
+    if (random_share.status == 201) { if (__DEV__) console.log("EnyaSMC: Sent and got random share."); } 
+    else { if (__DEV__) console.log("EnyaSMC: Failed to send and get random share."); return status_code; }
 
     const random_share_from_blockdoc = random_share.data.blockdoc_share_for_user;
 
@@ -212,8 +212,8 @@ exports.Linear = async function(){
 
     const blockdoc_difference = await difference(blockdoc_token, {id:id, user_diff:[am1_user, bm2_user]});
 
-    if (blockdoc_difference.status == 201) { console.log("EnyaSMC: Sent and got am1, bm1."); } 
-    else { console.log("EnyaSMC: Failed to send and get am1, bm1."); return status_code; }
+    if (blockdoc_difference.status == 201) { if (__DEV__) console.log("EnyaSMC: Sent and got am1, bm1."); } 
+    else { if (__DEV__) console.log("EnyaSMC: Failed to send and get am1, bm1."); return status_code; }
     
     const am1_blockdoc = blockdoc_difference.data.blockdoc_a_diff;
     const bm2_blockdoc = blockdoc_difference.data.blockdoc_b_diff;
@@ -230,14 +230,14 @@ exports.Linear = async function(){
 
     const dot_product_from_blockdoc = await get_dot_product(blockdoc_token, {id:id});
 
-    if (dot_product_from_blockdoc.status == 201) { console.log("EnyaSMC: Got dot product from server."); } 
-    else { console.log("EnyaSMC: Failed to get dot product from blockdoc."); return status_code; }
+    if (dot_product_from_blockdoc.status == 201) { if (__DEV__) console.log("EnyaSMC: Got dot product from server."); } 
+    else { if (__DEV__) console.log("EnyaSMC: Failed to get dot product from blockdoc."); return status_code; }
 
     const blockdoc_dot_product = dot_product_from_blockdoc.data.blockdoc_dp;
     const dot_product_final = math.add(user_dot_product, blockdoc_dot_product) / math.pow(10, decimal)
     var status_code = 200;
 
-    console.log("EnyaSMC: Finished computation!")
+    if (__DEV__) console.log("EnyaSMC: Finished computation!")
 
     return {secure_result: dot_product_final, status_code: status_code}
 }
