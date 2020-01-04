@@ -73,18 +73,9 @@ async function GetKey() {
 async function prepareKey( privateKey, keyPayload, ENresultPDF ) {
 
   var passwordECIES = await ecies.decrypt(privateKey, keyPayload);
-  //if (__DEV__) console.log('passwordECIES:', passwordECIES);
-  
   var passwordHex = passwordECIES.toString();
-  //now we have a HEX string
-  
   var passwordForge = forge.util.hexToBytes(passwordHex);
-  //now we have a forge datastructure
-
-  var keyPayload = {
-    passwordForge,
-    ENresultPDF
-  };
+  var keyPayload = { passwordForge, ENresultPDF };
 
   return keyPayload
 
@@ -125,14 +116,15 @@ function decryptFile( encrypted64, password ) {
 }
 
 exports.BurnEverything = async function () {
+
   SecureStore.deleteItemAsync(ENYA_KEYS).then(() => {}).catch(() => {});
   SecureStore.deleteItemAsync(ENYA_RESULT).then(() => {}).catch(() => {});
-}
 
+}
 
 exports.DecryptResult = async function () {
 
-  let kpl = await Enya_GetKey();
+  let kpl = await GetKey();
 
   return new Promise(function (resolve, reject) {
 
