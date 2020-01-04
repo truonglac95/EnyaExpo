@@ -3,8 +3,8 @@ const initialStore = {
 	user: {
 		error: null,
 		loading: false,
-		deleted: false,
-		account: []
+		account: [],
+		deleted: false
 	},
 	answer: {
 		error: null,
@@ -16,8 +16,6 @@ const initialStore = {
 		error: null,
 		loading: false,
 		results: [],
-		localResult: [],
-		pleaseDownload: false
 	}
 };
 

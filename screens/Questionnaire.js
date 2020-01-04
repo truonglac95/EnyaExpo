@@ -157,7 +157,9 @@ class Questionnaire extends React.Component {
   };
 
   handleSeeResult = () => {
+
     this.props.navigation.navigate('ResultSMC');
+  
   }
 
   handleCalculate = () => {
@@ -193,8 +195,6 @@ class Questionnaire extends React.Component {
   }
 
   render() {
-
-    const { localResult } = this.props.result;
 
     const { birthyear, country, gender, height, weight, binary_1, binary_2,
             result, current, percentAnswered, numberAnswered, 
