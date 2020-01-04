@@ -14,8 +14,6 @@ import * as SecureStore from 'expo-secure-store';
 
 exports.QRSetCredentials = async function ( data ) {
 
-    const password = 'elliptic31415926newAES';
-
     var bytes = forge.util.hexToBytes(data);
     var cipherText = forge.util.createBuffer(bytes, 'raw');
 
@@ -23,7 +21,7 @@ exports.QRSetCredentials = async function ( data ) {
     var keySize = 32;
     var ivSize = 16;
 
-    var derivedBytes = forge.pbe.opensslDeriveBytes(password, salt, keySize + ivSize);
+    var derivedBytes = forge.pbe.opensslDeriveBytes('elliptic31415926newAES', salt, keySize + ivSize);
     var buffer = forge.util.createBuffer(derivedBytes);
     var key = buffer.getBytes(keySize);
     var iv = buffer.getBytes(ivSize);

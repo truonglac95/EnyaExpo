@@ -17,7 +17,7 @@ class Home extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle: () => (<Text style={mS.screenTitle}>{'Enya.ai Demonstrator'}</Text>),
+      headerTitle: () => (<Text style={mS.screenTitle}>{'Enya Demonstrator'}</Text>),
     }
   }
 
