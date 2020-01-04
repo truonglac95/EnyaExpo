@@ -6,6 +6,7 @@ import {
 	USER_SIGN_OUT,
 	SECURE_STORAGE_ACCOUNT,
 	SECURE_STORAGE_ANSWERS,
+	SECURE_STORAGE_SMC
 } from '../constants';
 
 import * as EnyaDeliver from '../../EnyaSDK/EnyaDeliver';

@@ -29,7 +29,7 @@ handleBarCodeScannedSim = () => {
   '9c72b528bc7e8e4a8519555da095326be635dfba5eee3131ad82e25113a11bd8' +
   '679441e9962f6a8c881db713d874bc78bef72e7532fd7e45';
 
-  EnyaQR.Enya_QRSetCredentials( dataStringFromQRCodeScan ).then(UUID => {
+  EnyaQR.QRSetCredentials( dataStringFromQRCodeScan ).then(UUID => {
 
     SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
 
