@@ -1,8 +1,18 @@
+/*
+
+EnyaDeliver provides the API and SDK for your 
+app enabling secure report delivery.
+
+Blockdoc
+help@blockdoc.com
+version 1.0.0 DEC 25, 2019
+
+*/
+
 import forge from 'node-forge';
 import * as SecureStore from 'expo-secure-store';
-
-//import { SECURE_STORAGE_RESULT } from '../redux/constants';
 import * as FileSystem from 'expo-file-system';
+
 const pdfStore = `${FileSystem.documentDirectory}User/PDFs`;
 var ENresultPDF = ``;
 var ecies = require('./ECIES.js');
@@ -27,23 +37,21 @@ async function Enya_GetKey() {
   
   //get the result information...
   let r1 = await SecureStore.getItemAsync('ENYA_RESULT').then(result => {
-    //if (__DEV__) console.log('Enya_Result_Decrypt: Result file check.')
+
     if (result) {
       if (__DEV__) console.log('Enya_Result_Decrypt: Yes we have a local file.')
       localResult = result ? JSON.parse(result) : {};
-      //if (__DEV__) console.log('localResult1:', localResult)
+
     }
   });
   
   let r2 = await SecureStore.getItemAsync('ENYA_KEYS').then(keys => {
-    //if (__DEV__) console.log('Enya_Result_Decrypt: Keys check.')
+
     if (keys) {
       if (__DEV__) console.log('Enya_Result_Decrypt: Yes we have local keys.')
       localKeys = keys ? JSON.parse(keys) : {};
-      //if (__DEV__) console.log('localKeys1:', localKeys)
       ECC_PRIV_KEY = localKeys.eccPrivKey; 
       privateKey = Buffer.from(ECC_PRIV_KEY, 'hex');
-      //if (__DEV__) console.log("ECC_PRIV_KEY bytes:", privateKey);
       keyPayload = {
         iv: Buffer.from(localResult.iv, 'hex'),
         ephemPublicKey: Buffer.from(localResult.epc, 'hex'),
@@ -117,15 +125,10 @@ function decryptFile( encrypted64, password ) {
 }
 
 exports.Enya_DecryptResult = async function () {
-  
-  //console.log('Enya_DecryptResult-passwordForge:', kpl.passwordForge)
-  //console.log('Enya_DecryptResult-ENresultPDF:', kpl.ENresultPDF)
 
   let kpl = await Enya_GetKey();
 
   return new Promise(function (resolve, reject) {
-
-    //if (__DEV__) console.log('passwordForge:', kpl.passwordForge);
 
     FileSystem.readAsStringAsync(
       kpl.ENresultPDF, 
@@ -241,7 +244,6 @@ return new Promise(function (resolve, reject) {
         if (__DEV__) console.log(`Enya_Result: r_state 8 - result already downloaded`);
         resolve('downloaded')
         //if (__DEV__) console.log(`actionResults: circulateLocalResults`);
-        //dispatch(circulateLocalResults(localResult));
       } else if( (localResultTime === latestDBResultTime) ) {
         //we already have a copy of the most recent results locally
         //BUT r_state != 8
@@ -249,7 +251,6 @@ return new Promise(function (resolve, reject) {
         if (__DEV__) console.log(`Enya_Result: Local copy is current`);
         resolve('downloaded')
         //if (__DEV__) console.log(`actionResults: circulateLocalResults`);
-        //dispatch(circulateLocalResults(localResult));
       } else {
         //there is a more recent file and we have not yet downloaded it
         //we need to update the local results
@@ -268,15 +269,11 @@ return new Promise(function (resolve, reject) {
             //we do not want to dispatch this message before the download is done - 
             //can lead to a bug in decrypt
             //if (__DEV__) console.log(`actionResults: circulateLocalResults after file downloaded`);
-            //dispatch(circulateLocalResults(newLocalResult));
             //let the server know we have this file or result
-            //dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
           });
         } else {
           if (__DEV__) console.log(`Enya_Result: circulateLocalResults`);
-          //dispatch(circulateLocalResults(newLocalResult));
           //let the server know we have this file or result
-          //dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
         }
       } //closes else
 
@@ -319,13 +316,9 @@ return new Promise(function (resolve, reject) {
             //can lead to a bug in decrypt
             if (__DEV__) console.log(`Enya_Result: circulateLocalResults after file downloaded`);
             resolve('downloaded')
-            //dispatch(circulateLocalResults(newLocalResult));
-            //dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
           });
         } else {
           if (__DEV__) console.log(`Enya_Result: circulateLocalResults non-file`);
-          //dispatch(circulateLocalResults(newLocalResult));
-          //dispatch(setResultDownloadFlag(uuid, newLocalResult.id));
         };
 
       } // if ( result[0].r_state > 5 ) {
