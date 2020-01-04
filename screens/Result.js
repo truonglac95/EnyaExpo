@@ -38,7 +38,7 @@ class Report extends React.Component {
       isMounted : true,
     }, () => {
       this.setState({cryptoState: 'decrypting'});
-      EnyaDeliver.Enya_DecryptResult().then(decrypted64 => {
+      EnyaDeliver.DecryptResult().then(decrypted64 => {
         if (this.state.isMounted) {
           this.setState({
             base64String: 'data:application/pdf;base64,' + decrypted64,

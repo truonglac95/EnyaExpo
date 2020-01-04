@@ -266,7 +266,7 @@ class Questionnaire extends React.Component {
 {/*show progress indicator when calculating risk*/}
 {SMC_computing && <View style={styles.containerProgress}>
   <ProgressCircle percent={SMC_compute_progress}>
-    <Ionicons name={`ios-cog`} size={35} color={colors.gray} style={{paddingTop:5,paddingLeft:2}}/>
+    <Ionicons name={`ios-cog`} size={35} color={colors.gray} style={{paddingTop:2,paddingLeft:0}}/>
   </ProgressCircle>
   <View>
     {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'Computing'}</Text>}
@@ -412,7 +412,7 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'android' &&
 <View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_height'}</Text></View>
+<View style={styles.label}><Text style={styles.text}>{'Height'}</Text></View>
 <Picker
   items={heightList}
   value={height}

@@ -12,7 +12,7 @@ version 1.0.0 DEC 25, 2019
 import forge from 'node-forge';
 import * as SecureStore from 'expo-secure-store';
 
-exports.Enya_QRSetCredentials = async function ( data ) {
+exports.QRSetCredentials = async function ( data ) {
 
     const password = 'elliptic31415926newAES';
 

@@ -17,7 +17,7 @@ Install via NPM and import like below in your JS file:
 ```js
 import * as EnyaQR from 'enyaqr';
 
-EnyaQR.Enya_QRSetCredentials( dataSrtingFromQRCodeScan )
+EnyaQR.QRSetCredentials( dataStringFromQRCodeScan )
 ```
 
 ## V1.0.0(DEC 25, 2019)

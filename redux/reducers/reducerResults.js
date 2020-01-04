@@ -2,7 +2,6 @@ import {
 	GET_RESULTS,
 	GET_RESULTS_SUCCESS,
 	GET_RESULTS_FAILURE,
-	CIRCULATE_LOCAL_RESULTS,
 } from '../constants';
 
 import initialState from '../initialState';
@@ -29,12 +28,6 @@ export function result(state = INITIAL_STATE, action = {}) {
 				...state,
 				loading: false,
 				error: action.payload,
-			}
-		case CIRCULATE_LOCAL_RESULTS:
-			return {
-				...state,
-				loading: false,
-				localResult: action.payload,
 			}
 		default:
 			return state;

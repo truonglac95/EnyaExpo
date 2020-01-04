@@ -205,6 +205,7 @@ export const secureCompute = (data) => async (dispatch) => {
       await new Promise(resolve => setTimeout(resolve, 5))
     }
   }
+
   var result = 0.0;
   var current = false;
   var haveSMC = false;
@@ -231,7 +232,6 @@ export const secureCompute = (data) => async (dispatch) => {
         SMC_computing: true 
       }))
       result = parseFloat(model.secure_result).toFixed(2);
-
       current = true; //because we just recomputed it
       haveSMC = true; //yes, we have result
     } else {

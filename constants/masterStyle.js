@@ -11,14 +11,14 @@ module.exports = StyleSheet.create({
       textAlign: 'center',
     	fontSize: 15,
     	fontWeight: '400',
-    	color: '#404040', //change this based on Jim's request
+    	color: '#404040',
   	},
     //same as the error text but not red
     forgot: {
       textAlign: 'center',
       fontSize: 15,
       fontWeight: '400',
-      color: colors.buttonColorText, //buttonColorText
+      color: colors.buttonColorText,
     },
     //the box that holds error or informational messages
   	errorBox: {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions, Platform, Alert } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, 
+  Dimensions, Platform, Alert } from 'react-native';
 
 import colors from '../constants/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';

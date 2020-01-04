@@ -11,7 +11,6 @@ version 1.0.0 DEC 25, 2019
 
 const math = require("mathjs");
 const fetch = require("node-fetch");
-
 var sourceFile = require('./src/auth')
 
 // ---------------------------------------------------------------
@@ -162,7 +161,7 @@ exports.Linear = async function(){
     if (typeof model_name == "undefined")  { if (__DEV__) console.log("Please enter the name of your algorithm"); return status_code; }
     if (typeof valid_token == "undefined") { if (__DEV__) console.log("Please enter access token"); return status_code; }
 
-    if (__DEV__) console.log("EnyaSMC: Now starting secure linear regression computation!")
+    if (__DEV__) console.log("EnyaSMC: Starting secure linear regression computation!")
 
     decimal = compute_decimal(user_info);
     user_info = math.multiply(user_info, math.pow(10, decimal));
@@ -175,8 +174,11 @@ exports.Linear = async function(){
     if (__DEV__) console.log("EnyaSMC: Generated random id -- " + id)
 
     const API_Keys = await Request_Keys({token: valid_token})
-    if (API_Keys.status == 201){ if (__DEV__) console.log("EnyaSMC: Retrieved two API keys."); } 
-    else { if (__DEV__) console.log("EnyaSMC: Failed to retrieve two API keys, please check your token or contact blockdoc <help@blockdoc.com>"); return status_code; }
+    if (API_Keys.status == 201){ 
+      if (__DEV__) console.log("EnyaSMC: Retrieved two API keys."); 
+    } 
+    else { 
+      if (__DEV__) console.log("EnyaSMC: Failed to retrieve two API keys, please check your token or contact blockdoc <help@blockdoc.com>"); return status_code; }
     
     const beavertriple_token = API_Keys.data.token1;
     const blockdoc_token = API_Keys.data.token2;
@@ -223,7 +225,7 @@ exports.Linear = async function(){
 
     const user_dp_1 = math.multiply(bm2, random_share_user_retain);
     const user_dp_2 = math.multiply(random_share_from_blockdoc, am1);
-    const user_dp_3 =  math.sum(user_beaver_triple.prod);
+    const user_dp_3 = math.sum(user_beaver_triple.prod);
     const user_dp_4 = math.multiply(bm2, am1);
 
     const user_dot_product = math.subtract(math.add(user_dp_1, user_dp_2, user_dp_3), user_dp_4);

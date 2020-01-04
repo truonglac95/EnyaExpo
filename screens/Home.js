@@ -233,7 +233,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 {SMC_computing && 
   <View style={styles.circleProgress}>
     <ProgressCircle percent={SMC_compute_progress}>
-      <Ionicons name={`ios-cog`} size={35} color={colors.gray} style={{paddingTop:5,paddingLeft:2}}/>
+      <Ionicons name={`ios-cog`} size={35} color={colors.gray} style={{paddingTop:2,paddingLeft:0}}/>
     </ProgressCircle>
     <View>
       {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'Calculating Score'}</Text>}

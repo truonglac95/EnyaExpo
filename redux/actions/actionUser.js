@@ -6,9 +6,9 @@ import {
 	USER_SIGN_OUT,
 	SECURE_STORAGE_ACCOUNT,
 	SECURE_STORAGE_ANSWERS,
-	SECURE_STORAGE_SMC,
-	SECURE_STORAGE_RESULT,
 } from '../constants';
+
+import * as EnyaDeliver from '../../EnyaSDK/EnyaDeliver';
 
 import * as SecureStore from 'expo-secure-store'
 
@@ -42,7 +42,7 @@ export const burnEverything = () => (dispatch) => {
 	SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(() => {}).catch(() => {});
 	SecureStore.deleteItemAsync(SECURE_STORAGE_ANSWERS).then(() => {}).catch(() => {});
 	SecureStore.deleteItemAsync(SECURE_STORAGE_SMC).then(() => {}).catch(() => {});
-	SecureStore.deleteItemAsync(SECURE_STORAGE_RESULT).then(() => {}).catch(() => {});
+	EnyaDeliver.BurnEverything();
 
     if (__DEV__) console.log('Cleared Secure Storage...')
 

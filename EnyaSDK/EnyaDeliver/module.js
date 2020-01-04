@@ -24,7 +24,7 @@ function getTimestamps(value, index, array) {
   return [index, unix_time]; 
 };
 
-async function Enya_GetKey() {
+async function GetKey() {
 
   let localKeys = {};
   let localResult = {};
@@ -124,7 +124,13 @@ function decryptFile( encrypted64, password ) {
 
 }
 
-exports.Enya_DecryptResult = async function () {
+exports.BurnEverything = async function () {
+  SecureStore.deleteItemAsync(ENYA_KEYS).then(() => {}).catch(() => {});
+  SecureStore.deleteItemAsync(ENYA_RESULT).then(() => {}).catch(() => {});
+}
+
+
+exports.DecryptResult = async function () {
 
   let kpl = await Enya_GetKey();
 
@@ -142,7 +148,7 @@ exports.Enya_DecryptResult = async function () {
 
 }
 
-exports.Enya_GetResult = function ( res ) {
+exports.GetResult = function ( res ) {
 
 return new Promise(function (resolve, reject) {
 

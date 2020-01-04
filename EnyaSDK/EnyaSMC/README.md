@@ -103,7 +103,7 @@ npm install enyasmc --save
 {status_code: status_code}
 ```
 
-The successfuly **status_code** is 200 and the failed **status_code** is 404. The reasons of calculation failed might be setting errors (error messages), server issuses (contact us).
+The successfull **status_code** is 200 and the failed **status_code** is 404. Calculations may fail because of settings errors (see error messages) or server issuses (please contact us).
 
 # Limitations
 
@@ -115,20 +115,20 @@ The successfuly **status_code** is 200 and the failed **status_code** is 404. Th
   enyasmc.configure({
       AccessToken: "s89ysydgsi6", // Secret token, given by us
       Algorithm: "your special name",
-    	Bitlength: 1 // Default is 8, it could be any positive integar 
+    	Bitlength: 1 // Default is 8 but it can be any positive integer 
   })
   ```
 
-* You should be aware of the decimals. It will drop decimals when the result is larger than 10^10.
+* Be aware of decimals. It will drop decimals when the result is larger than 10^10.
 
 #### Solutions for large parameters and small weights or small parameters and large weights
 
-1. If you have a coefficient as b * 10^15​ and a weight as ​a * 10^-5, you can adjust these two as ​b * 10^5​ and a * 10^5 to avoid error results.
-2. Or adjust **Bitlength** in configure settings.
+1. If you have a coefficient such as `b * 10^15`​ and a weight such as `a * 10^-5`, consider balancing them (i.e. `​b * 10^5​` and `a * 10^5` to faciliate calculations).
+2. Or, adjust **Bitlength** in configure settings.
 
 ## Note
 
-Our customers need to upload the name of their algorithm and parameters of their linear regression function to our server. We will give them a secret token to access our service. When they use our SMC module, they only need to provide user's data, the secret token and the name of thieir algorithm and EnySMC function will return the result. Later, I can add more different regression functions based on our customers' requests.
+Our customers need to upload the name of their algorithm and parameters of their linear regression function to our server. We will give them a secret token to access our service. When they use our SMC module, they only need to provide user's data, the secret token, and the name of their algorithm and the EnyaSMC function will return the result. Please contact us for access to different regression functions.
 
 ## V1.0.0(DEC 25, 2019)
 

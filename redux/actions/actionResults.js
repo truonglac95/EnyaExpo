@@ -1,20 +1,15 @@
 import { API_URL } from '../../settings';
+import * as EnyaDeliver from '../../EnyaSDK/EnyaDeliver';
 
 import {
 	GET_RESULTS,
 	GET_RESULTS_SUCCESS,
 	GET_RESULTS_FAILURE,
-	CIRCULATE_LOCAL_RESULTS,
 } from '../constants';
-
-import * as EnyaDeliver from '../../EnyaSDK/EnyaDeliver';
 
 export const getResultsBegin   = data  => ({ type: GET_RESULTS });
 export const getResultsSuccess = data  => ({ type: GET_RESULTS_SUCCESS });
 export const getResultsFailure = error => ({ type: GET_RESULTS_FAILURE, payload: error });
-
-export const circulateLocalResults = data => ({ type: CIRCULATE_LOCAL_RESULTS, payload: data });
-
 export const getResults = (uuid) => (dispatch) => {
 
 	dispatch(getResultsBegin());
@@ -46,11 +41,9 @@ export const getResults = (uuid) => (dispatch) => {
       		//which one is most current?
       		if (result.length > 0) {
         		//Send the result to Enya
-        		EnyaDeliver.Enya_GetResult(result).then(flag => {
-          			//console.log('Enya_Result( result ).then(flag => {')
-          			//console.log(flag)
+        		EnyaDeliver.GetResult(result).then(flag => {
           			if(flag == 'downloaded'){
-            			console.log('getResultsSuccess()')
+            			if (__DEV__) console.log('getResultsSuccess()')
             			dispatch(getResultsSuccess());
           			} else {
             			dispatch(getResultsFailure({error_type : 'download failure'}));

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions, Image } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, 
+  Dimensions, Image } from 'react-native';
 
 export default class Header extends Component {
 

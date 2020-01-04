@@ -9,13 +9,8 @@ const BDiconLightBlue = '#D9E3FC'; //light blue
 
 export default {
 
-  //all colors related to the header
   headerBackArrowColor: BDiconBlue,
   headerFontColor: BDiconBlue,
-  //headerFont: 'montserratSB',
-  //tabFont: 'montserrat',
-
-  //everything related to the main buttons
   buttonColorBack: '#FFFFFF',
   buttonColorBorder: BDiconBlue,
   buttonColorText: BDiconBlue,
