@@ -80,7 +80,7 @@ export default class App extends React.Component {
             onLoad={this._cacheResourcesAsync}
           />
           <View style={mS.msgBoxVP}>
-            <Text style={mS.titleTextVP}>{'Enya.ai\nSDK and API'}</Text>
+            <Text style={mS.titleTextVP}>{'Enya\nSDK and API'}</Text>
             <Text style={mS.tagTextVP}>{'Secure Content Delivery and Computation'}</Text>
           </View>
           <Slider value={0}/>
