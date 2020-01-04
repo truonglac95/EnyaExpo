@@ -1,3 +1,14 @@
+/*
+
+EnyaQR provides API and SDK for your app 
+enabling securely scanning the QR code.
+
+Blockdoc
+help@blockdoc.com
+version 1.0.0 DEC 25, 2019
+
+*/
+
 import forge from 'node-forge';
 import * as SecureStore from 'expo-secure-store';
 
