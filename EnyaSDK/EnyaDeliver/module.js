@@ -117,8 +117,8 @@ function decryptFile( encrypted64, password ) {
 
 exports.BurnEverything = async function () {
 
-  SecureStore.deleteItemAsync(ENYA_KEYS).then(() => {}).catch(() => {});
-  SecureStore.deleteItemAsync(ENYA_RESULT).then(() => {}).catch(() => {});
+  SecureStore.deleteItemAsync('ENYA_KEYS').then(() => {}).catch(() => {});
+  SecureStore.deleteItemAsync('ENYA_RESULT').then(() => {}).catch(() => {});
 
 }
 
