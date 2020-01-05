@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import { StyleSheet, Text, ScrollView, View, Dimensions, 
   ActivityIndicator } from 'react-native';
 
-import mS from '../constants/masterStyle';
-
 class ResultSMC extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
