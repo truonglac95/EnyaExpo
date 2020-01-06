@@ -1,37 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import appRoutes from "./AppRoutes";
+
+// UI
 import { Platform, StatusBar, View } from 'react-native';
-
-import * as Permissions from 'expo-permissions';
-import * as FileSystem from 'expo-file-system';
-
 import AppNavigator from './navigation/AppNavigator';
 import CodeScanner from './screens/CodeScanner';
 import AccountDeleted from './screens/AccountDeleted';
-import AccountDelete from './screens/AccountDelete';
 
-import appRoutes from "./AppRoutes";
-
-//redux
-import { 
-  setAccount,
-  resetError,
-  getAnswers
-} from './redux/actions';
-
+// Redux and Actions
+import { setAccount, resetError, getAnswers } from './redux/actions';
 import * as SecureStore from 'expo-secure-store';
-
-import { 
-  SECURE_STORAGE_ACCOUNT,
-  SECURE_STORAGE_RESULT,
-} from './redux/constants';
-
-const pdfStore = `${FileSystem.documentDirectory}User/PDFs`;
+import { SECURE_STORAGE_ACCOUNT } from './redux/constants';
 
 class MainApp extends React.Component {
 
   constructor (props) {
+
     super (props);
+
   }
 
   UNSAFE_componentWillMount() {
@@ -69,14 +56,14 @@ class MainApp extends React.Component {
     const { account } = this.props.user;
 
     if ( this.props.user.deleted ) {
-      console.log('User just wiped their account')
+      if (__DEV__) console.log('MainApp: User just wiped their account')
       return <AccountDeleted onWipeOut={this.props.onWipeOut}/>
     }
     else if ( typeof(account.loading) == 'undefined' ) {
       return null;
     }
     else if ( !account.UUID ) {
-      console.log('need to scan QR code')
+      if (__DEV__) console.log('MainApp: need to scan QR code')
       return <CodeScanner />
     }
     else {

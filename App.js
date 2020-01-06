@@ -13,8 +13,7 @@ import { Asset } from 'expo-asset';
 
 import MainApp from './MainApp';
 import BasicButton from './components/BasicButton';
-import colors from './constants/Colors';
-import mS from './constants/masterStyle';
+import {mS, mC} from './constants/masterStyle';
 
 import { SECURE_STORAGE_ACCOUNT } from './redux/constants';
 import * as SecureStore from 'expo-secure-store'
@@ -22,7 +21,7 @@ import * as SecureStore from 'expo-secure-store'
 const Slider = (props) => (
   <View style={mS.sliderVP}>
     {[0, 1, 2, 3].map(i => 
-      <View key={i} style={[styles.dot, i === props.value && { backgroundColor: colors.BDred }]}/>
+      <View key={i} style={[mS.dot, i === props.value && { backgroundColor: mC.red }]}/>
     )}
   </View>
 );
@@ -80,7 +79,7 @@ export default class App extends React.Component {
             onLoad={this._cacheResourcesAsync}
           />
           <View style={mS.msgBoxVP}>
-            <Text style={mS.titleTextVP}>{'Enya.ai\nSDK and API'}</Text>
+            <Text style={mS.titleTextVP}>{'Enya\nSDK and API'}</Text>
             <Text style={mS.tagTextVP}>{'Secure Content Delivery and Computation'}</Text>
           </View>
           <Slider value={0}/>
@@ -212,25 +211,4 @@ export default class App extends React.Component {
     this.setState({ isAppReady: true });
   }
 
-}  
-
-const styles = StyleSheet.create({
-  loadingIndicator: {
-    width: 100,
-    height: 90,
-    marginTop: 50,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginLeft: 5,
-    marginRight: 5,
-    backgroundColor: colors.lightGray,
-  },
-  loadingBackgroundStyle: {
-    backgroundColor: colors.BDred,
-  },
-});
+}

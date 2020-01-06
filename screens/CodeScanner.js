@@ -1,20 +1,18 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-//Enya
-import * as EnyaQR from '../EnyaSDK/EnyaQR'
-
-//visuals and UI
+// UI
 import { Text, View } from 'react-native';
 import BasicButton from '../components/BasicButton';
-import mS from '../constants/masterStyle';
+import { mS } from '../constants/masterStyle';
 
-//secure storage
+// Secure storage
 import * as SecureStore from 'expo-secure-store';
 import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
 
-//redux
+// Actions
 import { setAccount } from '../redux/actions';
+import * as EnyaDeliver from '../EnyaSDK/EnyaDeliver'
 
 class CodeScanner extends React.Component {
 
@@ -29,7 +27,12 @@ handleBarCodeScannedSim = () => {
   '9c72b528bc7e8e4a8519555da095326be635dfba5eee3131ad82e25113a11bd8' +
   '679441e9962f6a8c881db713d874bc78bef72e7532fd7e45';
 
-  EnyaQR.Enya_QRSetCredentials( dataStringFromQRCodeScan ).then(UUID => {
+  //in production app, this key would not be stored on GitHub
+  let QRkey = 'elliptic31415926newAES'; // 22 characters long
+
+  let QRid = 'blockdoc'; // 8 characters long
+
+  EnyaDeliver.QRSetCredentials( dataStringFromQRCodeScan, QRkey, QRid ).then(UUID => {
 
     SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
 

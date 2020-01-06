@@ -4,7 +4,7 @@ import { Platform, View, Text, StyleSheet, Image } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator, HeaderBackButton } from 'react-navigation-stack';
 
-import colors from '../constants/Colors';
+import { mS, mC } from '../constants/masterStyle';
 
 /* App overview */
 import Home from '../screens/Home';
@@ -22,7 +22,7 @@ import AccountDelete from '../screens/AccountDelete';
 import AccountDeleted from '../screens/AccountDeleted';
 
 const Label = (props) => (
-  <Text style={[styles.tabText, { color: (props.focused ? '#33337F' : colors.gray) }]}>
+  <Text style={[mS.tabText, { color: (props.focused ? mC.darkBlue : mC.gray) }]}>
     {props.text}
   </Text>
 );
@@ -51,7 +51,7 @@ const HomeStack = createStackNavigator(
   }, 
   {
     defaultNavigationOptions: {
-      headerTintColor: '#33337F',
+      headerTintColor: mC.darkBlue,
     },
   }
 );
@@ -86,7 +86,7 @@ const AccountStack = createStackNavigator(
     navigationOptions: ({navigation}) => ({
       headerLeft: 
         <HeaderBackButton 
-          tintColor={'#33337F'}
+          tintColor={mC.darkBlue}
           backTitleVisible={true}
           onPress={() => navigation.goBack(null)} 
         />
@@ -97,7 +97,7 @@ const AccountStack = createStackNavigator(
 },
 {
   defaultNavigationOptions: {
-    headerTintColor: '#33337F',
+    headerTintColor: mC.darkBlue,
   },
 });
 
@@ -114,15 +114,6 @@ AccountStack.navigationOptions = ({ navigation }) => {
     tabBarVisible,
   };
 };
-
-const styles = StyleSheet.create({
-  tabText: {
-    fontSize: 12,
-    fontFamily: colors.tabFont,
-    marginLeft: 'auto', 
-    marginRight: 'auto'
-  },
-});
 
 export default createBottomTabNavigator(
   {

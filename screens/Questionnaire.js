@@ -2,15 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 //UI
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, 
-  ScrollView, Platform, Dimensions, Keyboard, Image } from 'react-native';
-
+import { View, Text, TouchableOpacity, TextInput, ScrollView, Keyboard, Image, Dimensions } from 'react-native';
 import ProgressCircle from '../components/ProgressCircle';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import Picker from 'react-native-picker-select';
 import BasicButton from '../components/BasicButton';
-import colors from '../constants/Colors';
-import mS from '../constants/masterStyle';
+import { mS } from '../constants/masterStyle';
 
 //redux
 import { giveAnswer, secureCompute } from '../redux/actions';
@@ -150,14 +146,14 @@ class Questionnaire extends React.Component {
 
     let newAnswer = [{ question_id : key, answer : value }];
 
-    //if (__DEV__) console.log(newAnswer); 
-
     dispatch(giveAnswer(newAnswer));
 
   };
 
   handleSeeResult = () => {
+
     this.props.navigation.navigate('ResultSMC');
+  
   }
 
   handleCalculate = () => {
@@ -167,7 +163,7 @@ class Questionnaire extends React.Component {
 
     dispatch( secureCompute(answers) );
 
-    this.setState({ recalculating: true });
+    this.setState({recalculating: true });
 
   }
 
@@ -186,7 +182,7 @@ class Questionnaire extends React.Component {
 
     //go to fresh result once calculation is done
     if ( this.state.recalculating && nextProps.answer.SMC_compute_progress === 100 ) {
-      this.setState({ recalculating : false });
+      this.setState({recalculating: false });
       this.props.navigation.navigate('ResultSMC');
     }
 
@@ -194,39 +190,20 @@ class Questionnaire extends React.Component {
 
   render() {
 
-    const { localResult } = this.props.result;
-
     const { birthyear, country, gender, height, weight, binary_1, binary_2,
             result, current, percentAnswered, numberAnswered, 
             SMC_computing, SMC_compute_progress } = this.state;
 
     const pickerStyle = {
-      done: {
-        color: '#FB2E59',
-      },
-      icon: {
-        display: 'none',
-      },
-      inputIOS: {
-        fontSize: 18,
-        color: '#404040',
-        flex: 1,
-        width: 0,
-        height: 0,
-      },
-      inputAndroid: {
-        fontSize: 18,
-        color: '#404040',
-        flex: 1,
-        width: 270,
-        height: 45,
-      },
+      done: {color: '#FB2E59'},
+      icon: {display: 'none'},
+      inputIOS: {    fontSize: 18,color: '#404040',flex: 1,width:   0,height:  0},
+      inputAndroid: {fontSize: 18,color: '#404040',flex: 1,width: 270,height: 45},
     };
 
     return (
 
-<View style={styles.containerMain}>
-<View style={styles.containerContent}> 
+<View style={mS.containerMain}>
 
 <ScrollView 
   scrollEnabled={true}
@@ -236,15 +213,15 @@ class Questionnaire extends React.Component {
 >
 
 {!SMC_computing && (numberAnswered < 7) &&
-<View style={[styles.shadowBox, {alignItems: 'center', marginTop: 13, fontSize: 20}]}>
-  <Text style={styles.smallGray}>{'Please answer the questions to VALUE_PROP ' + 
+<View style={[mS.shadowBoxQ, {alignItems:'center',marginTop:13,fontSize:20,height:100}]}>
+  <Text style={mS.smallGray}>{'Please answer the questions to VALUE_PROP ' + 
   'for you. All calculations use secure multiparty computation ' + 
   'to preserve your privacy.'}</Text>
 </View>
 }
 
 {!SMC_computing && (numberAnswered >= 7) && !current && 
-<View style={styles.shadowBoxClear}>
+<View style={mS.shadowBoxClear}>
   <BasicButton 
     width={200}
     text={'Secure Compute'} 
@@ -254,7 +231,7 @@ class Questionnaire extends React.Component {
 }
 
 {(numberAnswered >= 7) && current && 
-<View style={styles.shadowBoxClear}>
+<View style={mS.shadowBoxClear}>
   <BasicButton
     width={200} 
     text={'See Result'} 
@@ -264,24 +241,22 @@ class Questionnaire extends React.Component {
 }
 
 {/*show progress indicator when calculating risk*/}
-{SMC_computing && <View style={styles.containerProgress}>
-  <ProgressCircle percent={SMC_compute_progress}>
-    <Ionicons name={`ios-cog`} size={35} color={colors.gray} style={{paddingTop:5,paddingLeft:2}}/>
-  </ProgressCircle>
+{SMC_computing && <View style={[mS.containerProgress, {marginTop: 100}]}>
+  <ProgressCircle percent={SMC_compute_progress} cog={true}/>
   <View>
-    {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'Computing'}</Text>}
-    {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'Done'}</Text>}
+    {(SMC_compute_progress   < 100) && <Text style={mS.progressText}>{'Computing'}</Text>}
+    {(SMC_compute_progress === 100) && <Text style={mS.progressText}>{'Done'}</Text>}
   </View>
 </View>
 }
 
 {/*ask questions when not computing*/}
-{!SMC_computing && <View style={styles.shadowBox}>
+{!SMC_computing && <View style={mS.shadowBoxQ}>
 
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.countryInput.togglePicker()}}>
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Country'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Country'}</Text></View>
 <Text style={this.state.country == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
   { this.state.country == 0 ? 'Please select' : countriesList[this.state.country-1].label }
 </Text>
@@ -299,8 +274,8 @@ class Questionnaire extends React.Component {
 }
 
 {Platform.OS == 'android' &&
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Country'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Country'}</Text></View>
 <Picker
   items={countriesList}
   value={country}
@@ -317,8 +292,8 @@ class Questionnaire extends React.Component {
   this.inputRefs.birthyearInput.togglePicker(); 
   this.state.birthyear == 0 && this.setState({ birthyear : yearsList[30].value });
 }}>
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Birthyear'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Birthyear'}</Text></View>
 <Text style={this.state.birthyear == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.birthyear == 0 ? 'Please select': this.state.birthyear }
 </Text>
@@ -337,8 +312,8 @@ class Questionnaire extends React.Component {
 }
 
 {Platform.OS == 'android' &&
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Birthday'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Birthday'}</Text></View>
 <Picker
   items={yearsList}
   value={birthyear}
@@ -352,8 +327,8 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.genderInput.togglePicker()}}>
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Gender'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Gender'}</Text></View>
 <Text style={this.state.gender == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.gender == 0 ? 'Please select': genderList[this.state.gender-1].label }
 </Text>
@@ -372,8 +347,8 @@ class Questionnaire extends React.Component {
 }
 
 {Platform.OS == 'android' &&
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Gender'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Gender'}</Text></View>
 <Picker
   items={genderList}
   value={gender}
@@ -390,8 +365,8 @@ class Questionnaire extends React.Component {
   this.inputRefs.heightInput.togglePicker(); 
   this.state.height == 0 && this.setState({ height : heightList[45].value });
 }}>
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Height'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Height'}</Text></View>
 <Text style={this.state.height == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.height == 0 ? 'Please select': this.state.height + ' cm' }
 </Text>
@@ -411,8 +386,8 @@ class Questionnaire extends React.Component {
 }
 
 {Platform.OS == 'android' &&
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'form_basic_height'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Height'}</Text></View>
 <Picker
   items={heightList}
   value={height}
@@ -430,8 +405,8 @@ class Questionnaire extends React.Component {
   this.state.weight == 0 && this.setState({ weight : weightList[45].value });
 }}
 >
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Weight'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Weight'}</Text></View>
 <Text style={this.state.weight == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.weight == 0 ? 'Please select': this.state.weight + ' kg'}
 </Text>
@@ -452,8 +427,8 @@ class Questionnaire extends React.Component {
 }
 
 {Platform.OS == 'android' &&
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Weight'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Weight'}</Text></View>
 <Picker
   items={weightList}
   value={weight}
@@ -468,8 +443,8 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.binary_1_Input.togglePicker()}}>
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Binary_1'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Binary_1'}</Text></View>
 <Text style={this.state.binary_1 == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.binary_1 == 0 ? 'No/Yes': Binary_1_List[this.state.binary_1-1].label }
 </Text>
@@ -490,8 +465,8 @@ class Questionnaire extends React.Component {
 }
 
 {Platform.OS == 'android' &&
-<View style={styles.row}>
-<View style={styles.label}><Text style={styles.text}>{'Binary_1'}</Text></View>
+<View style={mS.rowQ}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Binary_1'}</Text></View>
 <Picker
   items={Binary_1_List}
   value={binary_1}
@@ -505,8 +480,8 @@ class Questionnaire extends React.Component {
 
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.binary_2_Input.togglePicker()}}>
-<View style={[styles.row, {borderBottomColor: '#FFFFFF'}]}>
-<View style={styles.label}><Text style={styles.text}>{'Binary_2'}</Text></View>
+<View style={[mS.rowQ, {borderBottomColor: '#FFFFFF'}]}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Binary_2'}</Text></View>
 <Text style={this.state.binary_2 == 0 ? { fontSize: 18, opacity: 0.2 }:{ fontSize: 18 }}>
 { this.state.binary_2 == 0 ? 'No/Yes': Binary_2_List[this.state.binary_2-1].label }
 </Text>
@@ -524,8 +499,8 @@ class Questionnaire extends React.Component {
 }
 
 {Platform.OS == 'android' &&
-<View style={[styles.row, {borderBottomColor: '#FFFFFF'}]}>
-<View style={styles.label}><Text style={styles.text}>{'Binary_2'}</Text></View>
+<View style={[mS.rowQ, {borderBottomColor: '#FFFFFF'}]}>
+<View style={mS.labelQ}><Text style={mS.textQ}>{'Binary_2'}</Text></View>
 <Picker
   items={Binary_2_List}
   value={binary_2}
@@ -542,80 +517,8 @@ class Questionnaire extends React.Component {
 
 </ScrollView>
 </View>
-</View>);
+);
 }}
-
-const styles = StyleSheet.create({
-  smallGray: {
-    fontSize: 14,
-    lineHeight: 17,
-    color: colors.gray,
-  },
-  containerMain: {
-    flex: 1, 
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#EEF2F9',
-  },
-  containerContent: {
-    flex: 1, 
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  containerProgress: {
-    marginTop: 100,
-    alignItems:'center',
-    justifyContent:'center',
-    flex:1,
-  },
-  shadowBox: {
-    display: 'flex',
-    marginTop: 13, //spacing between boxes
-    backgroundColor: '#FFFFFF',
-    width: screenWidth * 0.96,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    padding: 10,
-    borderRadius: 9,
-    borderWidth: 1,
-    borderColor: '#33337F',
-  },
-  shadowBoxClear: {
-    display: 'flex',
-    marginTop: 13, //spacing between boxes
-    width: screenWidth * 0.96,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-    height: 100,
-  },
-  row: {
-    display: 'flex',
-    width: screenWidth * 0.85,
-    height: Platform.OS === 'ios' ? 60 : 'auto',
-    flexDirection: 'row',
-    alignItems:'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingLeft: 15,
-    paddingRight: 15,
-  },
-  label: {
-    marginRight: 10,
-    width: 0.35 * screenWidth,
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.questionText,
-  },
-});
 
 const mapStateToProps = state => ({
   user: state.user,

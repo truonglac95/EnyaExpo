@@ -37,4 +37,3 @@ export const SECURE_COMPUTE_PROGRESS = 'SECURE_COMPUTE_PROGRESS';
 export const SECURE_STORAGE_ACCOUNT = 'Account';
 export const SECURE_STORAGE_ANSWERS = 'Answers';
 export const SECURE_STORAGE_SMC = 'SMC';
-export const SECURE_STORAGE_RESULT = 'Result';

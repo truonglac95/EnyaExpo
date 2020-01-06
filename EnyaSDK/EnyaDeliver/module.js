@@ -1,7 +1,7 @@
 /*
 
-EnyaDeliver provides the API and SDK for your 
-app enabling secure report delivery.
+EnyaDeliver provides functions for handling 
+encrypted results.
 
 Blockdoc
 help@blockdoc.com

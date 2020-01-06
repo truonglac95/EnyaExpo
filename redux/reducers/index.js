@@ -29,9 +29,7 @@ const resetState = {
   result: {
     error: null,
     loading: false,
-    results: [],
-    localResult: [],
-    pleaseDownload: false
+    results: []
   }
 }
 

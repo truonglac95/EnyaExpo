@@ -1,6 +1,5 @@
 var enyasmc = require("../module")
 
-
 const user_input = [1,1,1,1,1,86792.0009]
 const parameters = [1,2,3,4,5,6]
 

@@ -2,7 +2,7 @@
 
 /*
 
-This is a heavily modified version of eccrypto's browser.js
+This is a modified version of eccrypto's browser.js
 rewritten to use forge random number generator
 and remove requirement for node crypto and subtle,
 as well as other packages
