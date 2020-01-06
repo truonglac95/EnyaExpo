@@ -1,4 +1,4 @@
-var enyasmc = require("../")
+var enyasmc = require("../module")
 
 
 const user_input = [1,1,1,1,1,86792.0009]
@@ -12,7 +12,5 @@ enyasmc.configure({
     //Bitlength: 1 // Not required
 })
 
-// Linear computation
+// Run linear module
 enyasmc.Linear().then(function(result){ console.log(result) })
-
-
