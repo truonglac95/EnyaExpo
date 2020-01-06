@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Constants from 'expo-constants';
 
-import { View, Text, Image, ImageBackground } from 'react-native';
+// UI
+import Constants from 'expo-constants';
+import { View, Text, Image, ImageBackground, ScrollView } from 'react-native';
 import BasicButton from '../components/BasicButton';
-import mS from '../constants/masterStyle';
+import { mS } from '../constants/masterStyle';
 
 class Account extends React.Component {
 
@@ -15,46 +16,38 @@ class Account extends React.Component {
   };
 
   constructor (props) {
+
     super(props);
+
   }
 
   render() {
 
     const uuid = this.props.user.account.UUID.substring(0, 8);
-    
+
     return (
 
-      <View style={mS.containerCenter}>
+      <View style={mS.containerCenterA}>
+      <ScrollView 
+        contentContainerStyle={{alignItems: 'center'}}
+        showsVerticalScrollIndicator={false}
+        overScrollMode={'always'}
+      >
 
         <View style={mS.shadowBox}>
-
-          <ImageBackground
-            source={require('../assets/images/id.png')}
-            style={{width: '100%', height: 50}}
-          >
+          <ImageBackground source={require('../assets/images/id.png')} style={{height: 50}}>
             <Text style={mS.boxTitle}>{'Support Information'}</Text>
           </ImageBackground>
-
           <View style={{marginLeft: 12, marginTop: 12}}>
-            <Text style={mS.textUUID}>
-              {'User ID'}: {uuid.toUpperCase()}
-            </Text>
-            <Text style={mS.textUUID}>
-              {'SDK Version'}: {`${Constants.manifest.version}`}
-            </Text>
+            <Text style={mS.textUUID}>{'User ID'}: {uuid.toUpperCase()}</Text>
+            <Text style={mS.textUUID}>{'SDK Version'}: {`${Constants.manifest.version}`}</Text>
           </View>
-
         </View>
 
         <View style={mS.shadowBox}>
-
-          <ImageBackground
-            source={require('../assets/images/id.png')}
-            style={{width: '100%', height: 50}}
-          >
+          <ImageBackground source={require('../assets/images/id.png')} style={{height: 50}}>
             <Text style={mS.boxTitle}>{'Account Functions'}</Text>
           </ImageBackground>
-
           <View style={{alignItems: 'center', justifyContent: 'flex-start'}}>
             <View style={{marginTop: 30, marginBottom: 20}}>
               <BasicButton 
@@ -65,6 +58,8 @@ class Account extends React.Component {
             </View>
           </View>
         </View>
+
+      </ScrollView>
       </View>
     );
   }

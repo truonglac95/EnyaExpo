@@ -1,7 +1,7 @@
 /*
 
-EnyaDeliver provides the API and SDK for your 
-app enabling secure report delivery.
+EnyaDeliver provides functions for handling 
+encrypted results.
 
 Blockdoc
 help@blockdoc.com
@@ -26,43 +26,40 @@ function getTimestamps(value, index, array) {
 
 async function GetKey() {
 
-  let localKeys = {};
-  let localResult = {};
-  let ECC_PRIV_KEY = {}; 
   let privateKey = {};
   let keyPayload = {};
-  var passwordECIES = {};
+  let localResult = {};
 
   try {
-  
-  //get the result information...
-  let r1 = await SecureStore.getItemAsync('ENYA_RESULT').then(result => {
+    
+    await SecureStore.getItemAsync('ENYA_RESULT').then(result => {
+      if (result) {
+        if (__DEV__) console.log('Enya_GetKey: Yes we have a local file.')
+        localResult = result ? JSON.parse(result) : {};
+      } else {
+        if (__DEV__) console.log('Enya_GetKey: No local file.')
+      }
+    })
+    
+    await SecureStore.getItemAsync('ENYA_KEYS').then(keys => {
+      if (keys) {
+        if (__DEV__) console.log('Enya_GetKey: Yes we have a local key.')
+        let localKeys = keys ? JSON.parse(keys) : {};
+        let ECC_PRIV_KEY = localKeys.eccPrivKey; 
+        privateKey = Buffer.from(ECC_PRIV_KEY, 'hex');
+        keyPayload = {
+          iv: Buffer.from(localResult.iv, 'hex'),
+          ephemPublicKey: Buffer.from(localResult.epc, 'hex'),
+          ciphertext: Buffer.from(localResult.ciphertext, 'hex'),
+          mac: Buffer.from(localResult.mac, 'hex'),
+        };
+      } else {
+        if (__DEV__) console.log('Enya_GetKey: No local key.')
+      }
+    })
 
-    if (result) {
-      if (__DEV__) console.log('Enya_Result_Decrypt: Yes we have a local file.')
-      localResult = result ? JSON.parse(result) : {};
-
-    }
-  });
-  
-  let r2 = await SecureStore.getItemAsync('ENYA_KEYS').then(keys => {
-
-    if (keys) {
-      if (__DEV__) console.log('Enya_Result_Decrypt: Yes we have local keys.')
-      localKeys = keys ? JSON.parse(keys) : {};
-      ECC_PRIV_KEY = localKeys.eccPrivKey; 
-      privateKey = Buffer.from(ECC_PRIV_KEY, 'hex');
-      keyPayload = {
-        iv: Buffer.from(localResult.iv, 'hex'),
-        ephemPublicKey: Buffer.from(localResult.epc, 'hex'),
-        ciphertext: Buffer.from(localResult.ciphertext, 'hex'),
-        mac: Buffer.from(localResult.mac, 'hex'),
-      };
-    }
-  });
-
-  return prepareKey( privateKey, keyPayload, localResult.ENresultPDF )
-  
+    return prepareKey( privateKey, keyPayload, localResult.ENresultPDF )
+    
   }
   catch(e) {
     console.log(e);
@@ -75,9 +72,8 @@ async function prepareKey( privateKey, keyPayload, ENresultPDF ) {
   var passwordECIES = await ecies.decrypt(privateKey, keyPayload);
   var passwordHex = passwordECIES.toString();
   var passwordForge = forge.util.hexToBytes(passwordHex);
-  var keyPayload = { passwordForge, ENresultPDF };
 
-  return keyPayload
+  return { passwordForge, ENresultPDF }
 
 }
 
@@ -101,15 +97,15 @@ function decryptFile( encrypted64, password ) {
     var decrypted64 = forge.util.encode64(decrypted);
 
     if (__DEV__) {
-      //console.log("CRYPTO decrypted pdf in base64 should be:\nJVBERi0xL");
-      //console.log("CRYPTO decrypted pdf in base64 actual:\n"+ decrypted64.substr(0,9));
+      console.log("Enya_decryptFile decrypted pdf in base64 should be:\nJVBERi0xL");
+      console.log("Enya_decryptFile decrypted pdf in base64 actual:\n"+ decrypted64.substr(0,9));
     }
 
     if (decipher.finish()) {
-      if (__DEV__) console.log('CRYPTO: Decipher ops just completed');
+      if (__DEV__) console.log('Enya_decryptFile: Decipher ops just completed');
       return(decrypted64)
     } else {
-      if (__DEV__) console.log('CRYPTO: Decipher ops did not complete');
+      if (__DEV__) console.log('Enya_decryptFile: Decipher ops did not complete');
       return ''
     };
 
@@ -161,7 +157,7 @@ return new Promise(function (resolve, reject) {
     }
   });
 
-  if (__DEV__) console.log(`Enya_Result: Most recent file/status is ${latest} at idx ${latestIndex}`);
+  if (__DEV__) console.log(`Enya_GetResult: Most recent file/status is ${latest} at idx ${latestIndex}`);
 
   result[latestIndex].haveDNA = true;
   result[latestIndex].unix_time = parseInt(result[latestIndex].unix_time);
@@ -171,12 +167,12 @@ return new Promise(function (resolve, reject) {
 
   //compute local results array
   if( result[0].r_state > 5 ) {
-    if (__DEV__) console.log('Enya_Result: Case 8');
+    if (__DEV__) console.log('Enya_GetResult: Case 8');
     newLocalResult = {};
   } 
   else if( result[0].r_state < 4 ) {
     //case 0, 1, 2, 3
-    if (__DEV__) console.log('Enya_Result: Simple report < 4');
+    if (__DEV__) console.log('Enya_GetResult: Simple report < 4');
     newLocalResult = {
       id: result[0].id,
       timestamp: parseInt(result[0].unix_time),
@@ -187,13 +183,12 @@ return new Promise(function (resolve, reject) {
   } 
   else {
     //case 4 or 5
-    if (__DEV__) console.log('Enya_Result: New file, 4 or 5');
+    if (__DEV__) console.log('Enya_GetResult: New file, 4 or 5');
 
     downloadURL = result[0].url_to_s3_crypto_pdf;
 
     var filename = result[0].url_to_s3_crypto_pdf;
 
-    //asking for trouble down the road...
     filename = filename.split('?')[0];
     filename = filename.split('/')[3];
 
@@ -238,14 +233,13 @@ return new Promise(function (resolve, reject) {
         //we already _should_ have a copy of the most recent results locally
         if (__DEV__) console.log(`Enya_Result: there is a newer result but it's already been downloaded`);
         if (__DEV__) console.log(`Enya_Result: this sometimes happens in testing but should not happen in production`);
-        if (__DEV__) console.log(`Enya_Result: need to fix in the backend`);
         if (__DEV__) console.log(`Enya_Result: r_state 8 - result already downloaded`);
         resolve('downloaded')
         //if (__DEV__) console.log(`actionResults: circulateLocalResults`);
       } else if( (localResultTime === latestDBResultTime) ) {
         //we already have a copy of the most recent results locally
         //BUT r_state != 8
-        //this is a strange case that will only happen during debug operations 
+        //this case that will only happen during debug operations 
         if (__DEV__) console.log(`Enya_Result: Local copy is current`);
         resolve('downloaded')
         //if (__DEV__) console.log(`actionResults: circulateLocalResults`);
@@ -326,3 +320,66 @@ return new Promise(function (resolve, reject) {
 })
 
 } //function
+
+/*
+Recover UUID and Elliptic private key (eccPrivKey) from QR code
+*/
+
+exports.QRSetCredentials = async function ( data, QRkey, QRid ) {
+
+    var bytes = forge.util.hexToBytes(data);
+    var cipherText = forge.util.createBuffer(bytes, 'raw');
+
+    var salt = cipherText.getBytes(8);
+    var keySize = 32;
+    var ivSize = 16;
+
+    var derivedBytes = forge.pbe.opensslDeriveBytes(QRkey, salt, keySize + ivSize);
+    var buffer = forge.util.createBuffer(derivedBytes);
+    var key = buffer.getBytes(keySize);
+    var iv = buffer.getBytes(ivSize);
+
+    var decipher = forge.cipher.createDecipher('AES-CBC', key);
+    decipher.start({iv: iv});
+    decipher.update(cipherText);
+    decipher.finish();
+    
+    try {
+
+      var decodedQR = await forge.util.decodeUtf8(decipher.output);
+
+      if( decodedQR.substring(0, 8) === QRid ) {
+
+        var QRversion = decodedQR.substring(9, 13);
+        var UUID = decodedQR.substring(14, 30);
+        var eccPrivKey = decodedQR.substring(31);
+
+        let newAccount = {
+          UUID,
+          QRversion,
+          eccPrivKey,
+        };
+
+        //the scanner should only ever be called 
+        //when there is no account in the first place
+        //wipe any old account just in case
+        SecureStore.deleteItemAsync('ENYA_KEYS').then(()=>{}).catch(()=>{});
+
+        //save to local secure storage
+        SecureStore.setItemAsync('ENYA_KEYS', JSON.stringify(newAccount));
+
+        return UUID;
+
+      } 
+      else {
+        
+        return {};
+      
+      }
+  } 
+  catch(e) {
+    console.log(e);
+    throw e;
+  }
+
+}

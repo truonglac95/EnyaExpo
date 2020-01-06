@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 // UI
 import { View, Text, Image } from 'react-native';
 import BasicButton from '../components/BasicButton';
-import mS from '../constants/masterStyle';
+import { mS } from '../constants/masterStyle';
 
 class AccountDeleted extends React.Component {
 

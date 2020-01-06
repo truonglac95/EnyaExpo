@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 // UI
 import { TouchableOpacity, View, Text } from 'react-native';
 import BasicButton from '../components/BasicButton';
-import mS from '../constants/masterStyle';
+import { mS } from '../constants/masterStyle';
 
 // Actions
 import { burnEverything } from '../redux/actions';

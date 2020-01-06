@@ -14,4 +14,12 @@ enyasmc.configure({
 // Linear computation
 enyasmc.Linear().then(function(result){ console.log(result) })
 
+enyasmc.ServerPing({uuid:'ServerConnectTest'}).then((server) => {
+  if (__DEV__) console.log('Server connection info: ' + (server.status == 201 ? 'connected' : 'error'))
+  if(server.status == 201) {
+    //this.props.dispatch(internetStatus({servers_reachable: true}))
+  } else {
+    //this.props.dispatch(internetStatus({servers_reachable: false}))
+  }
+})
 

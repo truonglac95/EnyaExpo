@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, 
   Dimensions, Platform, Alert } from 'react-native';
 
-import colors from '../constants/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {mS, mC} from '../constants/masterStyle';
 
 export default class BasicButton extends Component {
   
@@ -38,8 +38,8 @@ export default class BasicButton extends Component {
         <TouchableOpacity 
           style={[styles.button, {
             width: (width || defaultWidth), 
-            backgroundColor: colors.buttonColorBack,
-            borderColor: colors.buttonColorBorder}]} 
+            backgroundColor: mC.white,
+            borderColor: mC.darkBlue}]} 
           onPress={onClick}>
           <View style={styles.flex}> 
             {icon && iOS &&
@@ -47,7 +47,7 @@ export default class BasicButton extends Component {
                 <Ionicons
                   name={icon}
                   size={30}
-                  color={colors.buttonColorText}
+                  color={mC.darkBlue}
                 />
               </View>
             }
@@ -56,13 +56,13 @@ export default class BasicButton extends Component {
                 <Ionicons
                   name={icon}
                   size={30}
-                  color={colors.buttonColorText}
+                  color={mC.darkBlue}
                 />
               </View>
             }
             <Text style={[styles.buttonColorText, {
               fontSize: size || 16,
-              color: colors.buttonColorText}]}>{text}
+              color: mC.darkBlue}]}>{text}
             </Text>
           </View>
         </TouchableOpacity>
@@ -80,15 +80,15 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 40,
-    backgroundColor: colors.buttonColorBack,
+    backgroundColor: mC.white,
     borderRadius: 9,
     justifyContent: 'center',
     alignItems:'center',
     borderWidth: 1,
-    borderColor: colors.buttonColorBorder,
+    borderColor: mC.darkBlue,
   },
   buttonText: {
     textAlign: 'center',
-    color: colors.buttonColorText,
+    color: mC.darkBlue,
   },
 });

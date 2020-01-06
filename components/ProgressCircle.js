@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default class ProgressCircle extends React.Component {
   
@@ -15,6 +16,7 @@ export default class ProgressCircle extends React.Component {
       bgColor: '#FFFFFF', //color of indicator background
       borderWidth: 7,
       children: null,
+      cog: (this.props.cog || false),
     }
 
   }
@@ -85,7 +87,7 @@ export default class ProgressCircle extends React.Component {
     )
   }
 
-  renderInnerCircle() {
+  renderInnerCircle(cog) {
     
     const radiusMinusBorder = this.state.radius - this.state.borderWidth
     
@@ -103,13 +105,14 @@ export default class ProgressCircle extends React.Component {
         ]}
       >
         {this.props.children}
+        {!!cog && <Ionicons name={`ios-cog`} size={35} color={'#707070'} style={{paddingTop:2,paddingLeft:0}}/>}
       </View>
     )
   }
 
   render() {
 
-    const { radius, unfilledColor } = this.state
+    const { radius, unfilledColor, cog } = this.state
 
     const {
       halfCircle1Degree,
@@ -118,20 +121,15 @@ export default class ProgressCircle extends React.Component {
     } = this.computeDerivedState()
 
     return (
-      <View
-        style={[
-          styles.outerCircle,
-          {
-            width: radius * 2,
-            height: radius * 2,
-            borderRadius: radius,
-            backgroundColor: unfilledColor,
-          },
-        ]}
-      >
+      <View style={[styles.outerCircle, {
+        width: radius * 2, 
+        height: radius * 2, 
+        borderRadius: radius, 
+        backgroundColor: unfilledColor}]}
+      > 
         {this.renderHalfCircle(halfCircle1Degree)}
         {this.renderHalfCircle(halfCircle2Degree, halfCircle2Styles)}
-        {this.renderInnerCircle()}
+        {this.renderInnerCircle(cog)}
       </View>
     );
   }

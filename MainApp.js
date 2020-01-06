@@ -1,23 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Platform, StatusBar, View } from 'react-native';
+import appRoutes from "./AppRoutes";
 
+// UI
+import { Platform, StatusBar, View } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
 import CodeScanner from './screens/CodeScanner';
 import AccountDeleted from './screens/AccountDeleted';
 
-import appRoutes from "./AppRoutes";
-
-//redux
+// Redux and Actions
 import { setAccount, resetError, getAnswers } from './redux/actions';
-
 import * as SecureStore from 'expo-secure-store';
 import { SECURE_STORAGE_ACCOUNT } from './redux/constants';
 
 class MainApp extends React.Component {
 
   constructor (props) {
+
     super (props);
+
   }
 
   UNSAFE_componentWillMount() {

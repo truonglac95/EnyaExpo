@@ -2,7 +2,7 @@
 
 /*
 
-This is a heavily modified version of eccrypto's browser.js
+This is a modified version of eccrypto's browser.js
 rewritten to use forge random number generator
 and remove requirement for node crypto and subtle,
 as well as other packages
@@ -243,12 +243,11 @@ exports.encrypt = function(publicKeyTo, msg, opts) {
 };
 
 exports.decrypt = function(privateKey, opts) {
-  // Tmp variable to save context from flat promises;
-  var encryptionKey;
+  var decryptionKey;
   return derive(privateKey, opts.ephemPublicKey).then(function(Px) {
     return sha512(Px);
   }).then(function(hash) {
-    encryptionKey = hash.slice(0, 32);
+    decryptionKey = hash.slice(0, 32);
     var macKey = hash.slice(32);
     var dataToMac = Buffer.concat([
       opts.iv,
@@ -258,7 +257,7 @@ exports.decrypt = function(privateKey, opts) {
     return hmacSha256Verify(macKey, dataToMac, opts.mac);
   }).then(function(macGood) {
     assert(macGood, "Bad MAC");
-    var key = forge.util.createBuffer(encryptionKey);
+    var key = forge.util.createBuffer(decryptionKey);
     var decipher = forge.cipher.createDecipher('AES-CBC', key);
     decipher.start({iv: opts.iv.toString('binary')});
     decipher.update(forge.util.createBuffer(opts.ciphertext.toString('binary')));

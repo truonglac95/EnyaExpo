@@ -243,3 +243,21 @@ exports.Linear = async function(){
 
     return {secure_result: dot_product_final, status_code: status_code}
 }
+
+const ServerPing = async input_json => {
+  try { key =  await fetch(sourceFile.SECURE_PRS_CHANNEL_3 + 'uuid-whitelist', 
+        {
+          method:'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(input_json)
+        }
+      )
+    return { status:key.status }
+  }
+  catch ( error ) { 
+    return error 
+  }
+}

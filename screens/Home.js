@@ -1,16 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Platform, StyleSheet, Text, TouchableOpacity,
+import { Platform, Text, TouchableOpacity,
   View, FlatList, Image, ActivityIndicator, Dimensions, 
   ScrollView, ImageBackground } from 'react-native';
 
 import ProgressCircle from '../components/ProgressCircle';
 import BasicButton from '../components/BasicButton';
-import colors from '../constants/Colors';
-import mS from '../constants/masterStyle';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import {mS, mC} from '../constants/masterStyle';
 
+// Actions
 import { secureCompute, getResults, getAnswers } from '../redux/actions';
 
 class Home extends React.Component {  
@@ -34,6 +33,8 @@ class Home extends React.Component {
 
       SMC_compute_progress: (this.props.answer.SMC_compute_progress || 0),
       SMC_computing: (this.props.answer.SMC_computing || false),
+
+      recalculating: false,
       
       haveReport: (this.props.result.downloaded || false),
       downloadingReport: false,
@@ -72,6 +73,18 @@ class Home extends React.Component {
       haveReport: (nextProps.result.downloaded || false)
     });
 
+    //go to fresh result once calculation is done
+    if ( this.state.recalculating && nextProps.answer.SMC_compute_progress === 100 ) {
+      this.setState({recalculating: false});
+      this.props.navigation.navigate('ResultSMC');
+    }
+
+    //go to fresh result once calculation is done
+    if ( this.state.downloadingReport && nextProps.result.downloaded ) {
+      this.setState({downloadingReport: false});
+      this.props.navigation.navigate('Result');
+    }
+
   }
 
   handleCalculate = () => {
@@ -79,6 +92,7 @@ class Home extends React.Component {
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
     dispatch( secureCompute(answers) );
+    this.setState({recalculating: true});
 
   }
 
@@ -91,7 +105,7 @@ class Home extends React.Component {
 
     return (
 
-<View style={styles.mainContainer}>
+<View style={mS.containerCenterA}>
 
 <ScrollView 
   contentContainerStyle={{alignItems: 'center'}}
@@ -103,62 +117,53 @@ class Home extends React.Component {
       THE FIRST BOX - Summary
 **********************************************/}
 
-<View style={styles.shadowBox}>
-<View style={{width: '100%'}}>
+<View style={mS.shadowBox}>
 
-<ImageBackground
-  source={require('../assets/images/id.png')}
-  style={{width: '100%', height: 50}}
->
-  <Text style={styles.boxTitle}>{'Overview'}</Text>
+<ImageBackground source={require('../assets/images/id.png')} style={{width: '100%', height: 50}}>
+  <Text style={mS.boxTitle}>{'Overview'}</Text>
 </ImageBackground>
 
 {!current &&
-<View style={styles.textBlock}>
-<Text style={styles.mediumDark}>{'We cannot calculate your score yet.'}</Text>
-<Text style={mS.smallGrayFP}>{'Please answer the questions about you. With that \
+<View style={mS.textBlock}>
+<Text style={mS.mediumDark}>{'We cannot compute your score yet.'}</Text>
+<Text style={mS.smallGray}>{'Please answer the questions about you. With that \
 information, we can VALUE_PROP. Lorem ipsum dolor sit amet, consectetur adipiscing \
 elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}</Text>
 </View>
 }
 {current && (score < 10) &&
-<View style={styles.textBlock}>
-<Text style={styles.mediumDark}>{'We have securely calculated your score.'}</Text>
-<Text style={mS.smallGrayFP}>{'\nYour score is '}
-<Text style={[mS.smallGrayFP, {fontWeight: 'bold'}]}>{score}%</Text>
+<View style={mS.textBlock}>
+<Text style={mS.mediumDark}>{'We have securely computed your score.'}</Text>
+<Text style={mS.smallGray}>{'\nYour score is '}
+<Text style={[mS.smallGray, {fontWeight: 'bold'}]}>{score}%</Text>
 {'. Since your score is below 10, lorem ipsum dolor sit amet, \
 consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 </View>
 }
 {current && (score > 10) &&
-<View style={styles.textBlock}>
-<Text style={styles.mediumDark}>{'We have securely calculated your score.'}</Text>
-<Text style={mS.smallGrayFP}>{'\nYour score is '}
-<Text style={[mS.smallGrayFP, {fontWeight: 'bold'}]}>{score}%</Text>
+<View style={mS.textBlock}>
+<Text style={mS.mediumDark}>{'We have securely calculated your score.'}</Text>
+<Text style={mS.smallGray}>{'\nYour score is '}
+<Text style={[mS.smallGray, {fontWeight: 'bold'}]}>{score}%</Text>
 {'. Since your score is above 10, lorem ipsum dolor sit amet, \
 consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 </View>
 }
 
 </View>
-</View>
 
 {/********************************************
       THE SECOND BOX - SMC
 **********************************************/}
 
-<View style={styles.shadowBox}>
-<View style={{width: '100%'}}>
+<View style={mS.shadowBox}>
 
-<ImageBackground
-  source={require('../assets/images/id.png')}
-  style={{width: '100%', height: 50}}
->
-  <Text style={styles.boxTitle}>{'Secure Computation'}</Text>
+<ImageBackground source={require('../assets/images/id.png')} style={{height: 50}}>
+  <Text style={mS.boxTitle}>{'Secure Computation'}</Text>
 </ImageBackground>
 
 <View style={{display: 'flex', flexDirection: 'row'}}>
-<View style={styles.smc}>
+<View style={mS.smc}>
 
 {/*'there is an SMC result - allow people to view the result and to update their answers'*/}
 {current && 
@@ -172,7 +177,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
   style={{marginTop: 20}}
   hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
   onPress={()=>this.handleClickItem('GIVE_ANSWERS')}>
-  <Text style={styles.largeAction}>{'Update Answers'}</Text>
+  <Text style={mS.largeAction}>{'Update Answers'}</Text>
 </TouchableOpacity>
 </View>
 }
@@ -184,19 +189,19 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
   hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
   onPress={()=>this.handleClickItem('GIVE_ANSWERS')}
 >
-  <Text style={styles.largeAction}>{'Complete my information'}</Text>
+  <Text style={mS.largeAction}>{'Complete my information'}</Text>
 </TouchableOpacity>
-<Text style={[mS.smallGrayFP, {marginTop: 5}]}>{'to get personalized recommendations.'}</Text>
+<Text style={[mS.smallGray, {marginTop: 5}]}>{'to get personalized recommendations.'}</Text>
 </View>
 }
 
 {/*'no SMC result - but we have all the data and need to recalculate'*/}
 {!current && (percentAnswered === 100) && 
 <View>
-<Text style={mS.smallGrayFP}>{'All questions answered'}</Text>
+<Text style={mS.smallGray}>{'All questions answered'}</Text>
 <View style={{marginTop: 20}}>
   <BasicButton 
-    text={'Calculate Score'}
+    text={'Compute Score'}
     width="80%"
     onClick={this.handleCalculate}
   />
@@ -208,36 +213,34 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 
 {/*the right side of the SMC panel*/}
 
-<View style={styles.smcRight}>
+<View style={mS.smcRight}>
 
 {current &&
 <View>
-  <Text style={[styles.gray, {textAlign: 'center', fontWeight: 'bold', fontSize: 30}]}>{score}%</Text>
-  <Text style={[mS.smallGrayFP, {textAlign: 'center'}]}>{'Your Score'}</Text>
+  <Text style={[mS.gray, {textAlign: 'center', fontWeight: 'bold', fontSize: 30}]}>{score}%</Text>
+  <Text style={[mS.smallGray, {textAlign: 'center'}]}>{'Your Score'}</Text>
 </View>
 }
 
 {/*'not enough data - display progress answering questions'*/}
 {!current && !SMC_computing && 
-  <View style={styles.circleProgress}>
+  <View style={mS.circleProgress}>
     <ProgressCircle percent={percentAnswered}>
-      <Text style={styles.progressIconNumber}>{`${percentAnswered}%`}</Text>
+      <Text style={mS.progressIcon}>{`${percentAnswered}%`}</Text>
     </ProgressCircle>
     <View>
-      <Text style={styles.progressText}>{'Questions Answered'}</Text>
+      <Text style={mS.progressText}>{'Questions Answered'}</Text>
     </View>
   </View>
 }
 
 {/*'show progress indicator when calculating score'*/}
 {SMC_computing && 
-  <View style={styles.circleProgress}>
-    <ProgressCircle percent={SMC_compute_progress}>
-      <Ionicons name={`ios-cog`} size={35} color={colors.gray} style={{paddingTop:2,paddingLeft:0}}/>
-    </ProgressCircle>
+  <View style={mS.circleProgress}>
+    <ProgressCircle percent={SMC_compute_progress} cog={true}/>
     <View>
-      {(SMC_compute_progress   < 100) && <Text style={styles.progressText}>{'Calculating Score'}</Text>}
-      {(SMC_compute_progress === 100) && <Text style={styles.progressText}>{'Done'}</Text>}
+      {(SMC_compute_progress   < 100) && <Text style={mS.progressText}>{'Computing'}</Text>}
+      {(SMC_compute_progress === 100) && <Text style={mS.progressText}>{'Done'}</Text>}
     </View>
   </View>
 }
@@ -246,24 +249,19 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 </View>
 
 </View>
-</View>
 
 {/********************************************
   THIRD BOX - Secure Report Delivery
 **********************************************/}
 
-<View style={styles.shadowBox}>
-<View style={{width: '100%'}}>
+<View style={mS.shadowBox}>
 
-<ImageBackground
-  source={require('../assets/images/id.png')}
-  style={{width: '100%', height: 50}}
->
-  <Text style={styles.boxTitle}>{'Secure Report Delivery'}</Text>
+<ImageBackground source={require('../assets/images/id.png')} style={{height: 50}}>
+  <Text style={mS.boxTitle}>{'Secure Report Delivery'}</Text>
 </ImageBackground>
 
-<View style={styles.textBlock}>
-<Text style={mS.smallGrayFP}>
+<View style={mS.textBlock}>
+<Text style={mS.smallGray}>
   <Text style={{fontWeight: 'bold'}}>{'Status:'}</Text>
   {' Your genotyping and microbiome analysis have been completed!'}
 </Text>
@@ -272,7 +270,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 {/*BEGIN REPORT BUTTONS*/}
 
 {haveReport &&
-<View style={styles.smc}>
+<View style={mS.smc}>
   <BasicButton 
     text={'View Report'}
     width="80%"
@@ -282,7 +280,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 }
 
 {!haveReport && !downloadingReport &&
-<View style={styles.smc}>
+<View style={mS.smc}>
   <BasicButton 
     text={'Download Report'}
     width="80%"
@@ -292,134 +290,17 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 }
 
 {!haveReport && downloadingReport &&
-<View style={[styles.smc, {height: 72}]}>
+<View style={[mS.smc, {height: 72}]}>
   <ActivityIndicator size="large" color='#33337F'/>
 </View>
 }
 
-</View>
 </View>
 
 </ScrollView>
 
 </View>);
 }}
-
-const styles = StyleSheet.create({
-  boxTitle: {
-    fontSize: 19,
-    lineHeight: 25,
-    paddingTop: 10,
-    paddingLeft: 12,
-    paddingBottom: 10,
-    color: '#33337F',
-    fontFamily: colors.headerFont,
-  },
-  textBlock: {
-    paddingTop: 10, 
-    paddingLeft: 10, 
-    paddingRight: 10, 
-  },
-  //the blue "Update my answers text"
-  largeAction: {
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '500', // Regular
-    color: colors.buttonColorText,
-  },
-  //for most of the text
-  smallGray: {
-    fontSize: 14,
-    lineHeight: 17,
-    fontWeight: '400', // Regular
-    color: colors.gray,
-  },
-  smallGrayBold: {
-    fontSize: 14,
-    lineHeight: 17,
-    fontWeight: '700', // Bold
-    color: colors.gray,
-  },
-  //subheadings
-  mediumDark:{
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '400', // Regular
-    color: '#404040',
-  },
-  mediumSize: {
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '400', // Regular
-    color: colors.gray,
-  },
-  progressIconNumber: {
-    marginTop: 2, 
-    marginLeft: 1, 
-    fontSize: 16, 
-    fontWeight: '400', 
-    color: colors.gray,
-  },
-  progressText: {
-    fontSize: 14,
-    fontWeight: '400', 
-    marginTop: 10,
-    lineHeight: 20, 
-    textAlign: 'center',
-    color: colors.gray,
-    height: 40,
-    //don't change otherwise the progress indicator 
-    //text jumps when the result is done, since the legends 
-    //go from two lines to one line 
-  },
-  gray: {
-    color: colors.gray,
-  },
-  darkGray: {
-    color: '#404040',
-  },
-  mainContainer: {
-    flex: 1, 
-    flexDirection: 'column',
-    alignItems: 'center',
-    backgroundColor: '#EEF2F9',
-  },
-  contentContainerSV: {
-    alignItems: 'center',
-  },
-  shadowBox: {
-    display: 'flex',
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    width: '98%',
-    marginTop: 13, //spacing between boxes
-    borderRadius: 9,
-    borderWidth: 1,
-    paddingBottom: 10, 
-    borderColor: '#33337F',
-    overflow: 'hidden'
-  },
-  geneStatusBox :{
-    paddingTop: 0,
-  },
-  smc: {
-    width: '60%',
-    padding: 12,
-    paddingTop: 20
-  },
-  smcRight: {
-    flex: 1, 
-    flexDirection: 'column', 
-    justifyContent: 'center', 
-    alignItems: 'center',
-    width: '35%',
-    padding: 12
-  },
-  circleProgress: {
-    justifyContent: 'center',
-    alignItems: 'center' 
-  }
-});
 
 const mapStateToProps = state => ({
   user: state.user,
