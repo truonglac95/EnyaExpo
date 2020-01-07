@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Blockdoc",
-    "slug": "blockdoc-app",
+    "name": "EnyaExpoRN",
+    "slug": "EnyaExpoRN-app",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
