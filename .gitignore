@@ -6,3 +6,5 @@ assets/images/.DS_Store
 .expo/packager-info.json
 .expo/settings.json
 package-lock.json
+yarn.lock
+yarn-error.log
