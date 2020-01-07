@@ -12,7 +12,7 @@ import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
 
 // Actions
 import { setAccount } from '../redux/actions';
-import * as EnyaDeliver from '../EnyaSDK/EnyaDeliver'
+import * as EnyaDeliver from 'enyadeliver'
 
 class CodeScanner extends React.Component {
 

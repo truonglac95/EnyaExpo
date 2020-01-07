@@ -6,7 +6,7 @@ import { Text, View, Dimensions, ActivityIndicator, Platform } from 'react-nativ
 import { mS } from '../constants/masterStyle';
 
 // Actions
-import * as EnyaDeliver from '../EnyaSDK/EnyaDeliver'
+import * as EnyaDeliver from 'enyadeliver'
 import PDFReader from 'rn-pdf-reader-js';
 
 class Report extends React.Component {
