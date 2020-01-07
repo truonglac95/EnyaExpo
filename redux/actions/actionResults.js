@@ -1,5 +1,5 @@
 import { API_URL } from '../../settings';
-import * as EnyaDeliver from '../../EnyaSDK/EnyaDeliver';
+import * as EnyaDeliver from 'enyadeliver';
 
 import {
 	GET_RESULTS,

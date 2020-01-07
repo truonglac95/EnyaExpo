@@ -18,7 +18,7 @@ import {
   SECURE_STORAGE_ACCOUNT,
 } from '../constants';
 
-import * as EnyaSMC from '../../EnyaSDK/EnyaSMC'
+import * as EnyaSMC from 'enyasmc'
 import * as SecureStore from 'expo-secure-store'
 
 export const getAnswersBegin   = data  => ({ type: GET_ANSWERS });

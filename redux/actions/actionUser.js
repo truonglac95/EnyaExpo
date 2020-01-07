@@ -9,7 +9,7 @@ import {
 	SECURE_STORAGE_SMC
 } from '../constants';
 
-import * as EnyaDeliver from '../../EnyaSDK/EnyaDeliver';
+import * as EnyaDeliver from 'enyadeliver';
 
 import * as SecureStore from 'expo-secure-store'
 
