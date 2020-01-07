@@ -1,5 +1,9 @@
 # EnyaExpoRN
 
+This is an Expo app demonstrating use of the Enya SDK and API for secure multiparty computation. The app uses the Enya framework to securely compute scores/risks/results from an app user's answers. 
+
+This example App is also designed to be a suitable starting point for the development of content delivery and privacy preserving scoring and diagnosis apps that run on both iOS and android hardware. 
+
 ## Install the Expo CLI command line app
 
 `npm install -g expo-cli`
