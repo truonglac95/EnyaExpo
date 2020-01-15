@@ -84,7 +84,6 @@ exports.mS = StyleSheet.create({
     borderColor: c.darkBlue,overflow: 'hidden',justifyContent: 'center',
     alignItems: 'flex-start',padding: 10},
 
-
   //SMC Report
   containerReportSMC: {left: 0,top: 0,marginLeft: 10,marginRight: 10},
   rowTopSMC: {marginTop: 30, marginBottom: 30, alignItems: 'center', justifyContent: 'center'},
@@ -92,6 +91,5 @@ exports.mS = StyleSheet.create({
   textSMC:  {fontSize: 15, fontWeight: 'normal', color: c.gray},
   scoreSMC: {fontSize: 33, fontWeight: 'bold'},
   titleSMC: {fontSize: 18, fontWeight: 'bold'  , color: c.darkGray, marginRight:5, marginBottom: 10},
-
 
 });

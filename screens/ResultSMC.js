@@ -58,6 +58,8 @@ UNSAFE_componentWillReceiveProps(nextProps) {
        </View>);
      }
 
+    /*in most cases, you will need to manipulate the result that comes back 
+    from the secure computation - e.g. normalize or rescale*/
     var score = parseFloat(result).toFixed(1);
     var relativeR = score / 0.8;
     

@@ -131,7 +131,7 @@ information, we can VALUE_PROP. Lorem ipsum dolor sit amet, consectetur adipisci
 elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}</Text>
 </View>
 }
-{current && (score < 10) &&
+{current && (score <= 10) &&
 <View style={mS.textBlock}>
 <Text style={mS.mediumDark}>{'We have securely computed your score.'}</Text>
 <Text style={mS.smallGray}>{'\nYour score is '}
@@ -263,7 +263,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 <View style={mS.textBlock}>
 <Text style={mS.smallGray}>
   <Text style={{fontWeight: 'bold'}}>{'Status:'}</Text>
-  {' Your genotyping and microbiome analysis have been completed!'}
+  {' Your report/analysis/match is complete.'}
 </Text>
 </View>
 

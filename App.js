@@ -106,7 +106,7 @@ export default class App extends React.Component {
           />
           <View style={mS.msgBoxVP}>
             <Text style={mS.titleTextVP}>{'Private Computation'}</Text>
-            <Text style={mS.tagTextVP}>{'Data we exchange with you are cryptographically split, processed, and recombined so your medical information stays private.'}</Text>
+            <Text style={mS.tagTextVP}>{'Data we exchange with you are cryptographically split, processed, and recombined so your sensitive information stays private.'}</Text>
           </View>
           <Slider value={1} />
           <BasicButton 
