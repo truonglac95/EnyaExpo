@@ -186,7 +186,7 @@ export const secureComputeProgress = (data) => ({
   payload: data,
 });
 
-export const secureCompute = (data) => async (dispatch) => {
+export const secureCompute = (data, uuid) => async (dispatch) => {
 
 	dispatch( secureComputeBegin() );
 
@@ -217,8 +217,8 @@ export const secureCompute = (data) => async (dispatch) => {
     //----------- Configure settings ---------------------
     EnyaSMC.input.apply(this, Object.values(data))
     EnyaSMC.configure({
-        AccessToken: "s89ysydgsi6",
-        Algorithm: "test3",
+        AccessToken: uuid,
+        Algorithm: "SampleAlgorithm",
     })
     //-----------------------------------------------------
  
