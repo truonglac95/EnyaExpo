@@ -29,6 +29,7 @@
     "prop-types": "^15.7.2",
     "react": "16.12.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.1.tar.gz",
+    "react-native-confirmation-code-field": "^4.2.0",
     "react-native-elements": "^1.1.0",
     "react-native-gesture-handler": "~1.5.0",
     "react-native-picker-select": "^6.1.0",
