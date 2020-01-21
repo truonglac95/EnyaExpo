@@ -10,6 +10,7 @@ import * as EnyaDeliver from 'enyadeliver';
 import * as SecureStore from 'expo-secure-store';
 import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
 import { setAccount } from '../redux/actions';
+import { ThemeProvider } from 'react-native-elements';
 
 //import { verifyUser, signOut } from '../redux/actions';
 //import colors from '../constants/Colors';
@@ -20,10 +21,14 @@ class CodeScannerPin extends React.Component {
 
     super(props);
 
+    const { user } = this.props;
+
     this.state = {
       errorMessage: '',
+      status: user.account.status,
+      pin: 0,
     };
-  
+
   }
 
   UNSAFE_componentWillReceiveProps (nextProps) {
@@ -41,7 +46,7 @@ class CodeScannerPin extends React.Component {
 */
   }
 
-  handleSetPin = (code) => {
+  handleEnterPin = (code) => {
     
     const { user } = this.props;
     const string = user.account.string
@@ -66,20 +71,21 @@ class CodeScannerPin extends React.Component {
         this.props.dispatch(setAccount(newAccount));
 
       } else if (result.statuscode == 401){
+        let attempts = 3 - result.attempts
+        let error = "Password incorrect! You have " + attempts.toString() + " login attempts left.";
         Alert.alert(
           "Error",
-          "Wrong PIN code!",
+          error,
           [{text: 'Ok'}]
         );
         this.refs.codeInputRef.clear();
-      } else if (result.statuscode == 404){
+      } else if (result.statuscode == 403){
         Alert.alert(
           "Error",
-          "invalid qr code",
+          "Your account has been locked. Please contact the customer support to unlock it.",
           [{text: 'Ok'}]
         );
-        SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
-        this.props.dispatch(setAccount({}));
+        this.refs.codeInputRef.clear();
       }
   
   
@@ -96,55 +102,183 @@ class CodeScannerPin extends React.Component {
     //this.props.dispatch(verifyUser(this.props.user.token, code));
   }
 
+  handleSetPin = (code) => {
+    this.setState({
+      pin: code,
+    });
+  }
+
+  handleConfirmPin = (code) => {
+
+  console.log("confirm")
+  console.log(this.state.pin)
+  console.log(code)
+
+    if (this.state.pin != code){
+      Alert.alert(
+        "Error",
+        "Two passwords didn't match. Try again.",
+        [{text: 'Ok'}]
+      );
+      this.setState({
+        pin: 0,
+      })
+    }
+    if (this.state.pin == code){
+
+      const { user } = this.props;
+      const string = user.account.string
+      
+
+      EnyaDeliver.QRSetCredentials(string, code).then(result => {
+        
+        console.log(result)
+
+        if (result.statuscode == 201){
+  
+          SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
+    
+          const firstlogintime = new Date().getTime().toString();
+          const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
+          
+          let UUID = result.UUID;
+          
+          let newAccount = { UUID, id, string };
+
+          //save to secure storage
+          SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
+      
+          //circulate props
+          this.props.dispatch(setAccount(newAccount));
+  
+        }
+    })}
+  }
+
+
   handleLogout = () => {
 
-    //this.props.dispatch(signOut());
-  
+    newAccount = {}
+    SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
+    this.props.dispatch(setAccount(newAccount));
+
   }
 
   render () {
 
-    const { errorMessage } = this.state;
+    const { errorMessage, status, pin } = this.state;
 
     return (
-    <View style={styles.container}>
+    
+    <View style={styles.container}>      
       <Image 
         style={styles.topLogo} 
         source={require('../assets/images/logo.png')} 
       />
-      <View>
-        <Text style={styles.baseText}>Please set a PIN code:</Text>
+      {status == 1 &&
+      <View style={styles.container}>
+        <View>
+          <Text style={styles.baseText}>Please enter the PIN code:</Text>
+        </View>
+        <View style={{height: 80}}>
+          <CodeInput
+            ref="codeInputRef"
+            className="border-box"
+            secureTextEntry
+            activeColor='rgba(216, 45, 39, 1)'
+            inactiveColor='rgba(216, 45, 39, 1)'
+            autoFocus={false}
+            ignoreCase={true}
+            codeLength={6}
+            inputPosition='center'
+            keyboardType='numeric'
+            size={45}
+            onFulfill={this.handleEnterPin}
+            containerStyle={{ marginBottom: 10 }}
+            codeInputStyle={{ borderWidth: 1 }}
+          />
+        </View>
+        <View>
+          <TouchableOpacity style={{marginTop: 20}} 
+            onPress={this.handleLogout}>
+            <Text style={styles.redText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={{height: 80}}>
-        <CodeInput
-          ref="codeInputRef"
-          className="border-box"
-          secureTextEntry
-          activeColor='rgba(216, 45, 39, 1)'
-          inactiveColor='rgba(216, 45, 39, 1)'
-          autoFocus={false}
-          ignoreCase={true}
-          codeLength={6}
-          inputPosition='center'
-          keyboardType='numeric'
-          size={45}
-          onFulfill={this.handleSetPin}
-          containerStyle={{ marginBottom: 10 }}
-          codeInputStyle={{ borderWidth: 1 }}
-        />
+      }
+      {status == 0 && pin == 0 &&
+      <View style={styles.container}>
+        {
+        <View>
+          <Text style={styles.baseText}>Please set a PIN code:</Text>
+        </View>
+        }
+        <View style={{height: 80}}>
+          <CodeInput
+            ref="codeInputRef"
+            className="border-box"
+            secureTextEntry
+            activeColor='rgba(216, 45, 39, 1)'
+            inactiveColor='rgba(216, 45, 39, 1)'
+            autoFocus={false}
+            ignoreCase={true}
+            codeLength={6}
+            inputPosition='center'
+            keyboardType='numeric'
+            size={45}
+            onFulfill={this.handleSetPin}
+            containerStyle={{ marginBottom: 10 }}
+            codeInputStyle={{ borderWidth: 1 }}
+          />
+        </View>
+        <View>
+          <TouchableOpacity style={{marginTop: 20}} 
+            onPress={this.handleLogout}>
+            <Text style={styles.redText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View>
-        <TouchableOpacity style={{marginTop: 20}} 
-          onPress={this.handleLogout}>
-          <Text style={styles.redText}>Login with another user</Text>
-        </TouchableOpacity>
+      }
+      {status == 0 && pin != 0 &&
+      <View style={styles.container}>
+        {
+        <View>
+          <Text style={styles.baseText}>Please confirm the PIN code:</Text>
+        </View>
+        }
+        <View style={{height: 80}}>
+          <CodeInput
+            ref="codeInputRef"
+            className="border-box"
+            secureTextEntry
+            activeColor='rgba(216, 45, 39, 1)'
+            inactiveColor='rgba(216, 45, 39, 1)'
+            autoFocus={false}
+            ignoreCase={true}
+            codeLength={6}
+            inputPosition='center'
+            keyboardType='numeric'
+            size={45}
+            onFulfill={this.handleConfirmPin}
+            containerStyle={{ marginBottom: 10 }}
+            codeInputStyle={{ borderWidth: 1 }}
+          />
+        </View>
+        <View>
+          <TouchableOpacity style={{marginTop: 20}} 
+            onPress={this.handleLogout}>
+            <Text style={styles.redText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+      }      
       {!!errorMessage && 
         <View>
           <Text style={styles.redText}>{errorMessage}</Text>
         </View>
       }
-    </View>);
+    </View>
+    );
   }
 }
 

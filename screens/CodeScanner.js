@@ -29,9 +29,21 @@ handleBarCodeScannedSim = () => {
 
   let string = dataStringFromQRCodeScan;
   
-  this.props.dispatch(setAccount({string: string}));
-  
-  SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify({string}));
+  EnyaDeliver.QRGetStatus(string).then(result => {
+
+    if (result.statuscode == 201){
+      
+      let status = result.status
+
+      this.props.dispatch(setAccount({string: string, status: status}));
+      SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify({string, status}));
+
+    } else if (result.statuscode == 400){
+      console.log("EnyaDeliver: Failed to connect to server.")
+    } else {
+      console.log("EnyaDeliver: Invalid QR code.")
+    }
+  })
 
 };
 
