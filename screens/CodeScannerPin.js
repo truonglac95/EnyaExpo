@@ -1,8 +1,15 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, View, Text, TextInput, Image } from 'react-native';
+import { TouchableOpacity, StyleSheet, View, Text, TextInput, Image} from 'react-native';
 
 import { connect } from 'react-redux';
+import { Alert } from 'react-native';
+
 import CodeInput from 'react-native-confirmation-code-field';
+
+import * as EnyaDeliver from 'enyadeliver';
+import * as SecureStore from 'expo-secure-store';
+import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
+import { setAccount } from '../redux/actions';
 
 //import { verifyUser, signOut } from '../redux/actions';
 //import colors from '../constants/Colors';
@@ -24,7 +31,6 @@ class CodeScannerPin extends React.Component {
 /*
     const { user } = this.props;
     const { user: nextUser } = nextProps;
-
     if (user && user.verifyLoading && nextUser && !nextUser.verifyLoading && nextUser.verifyError) {
       this.setState({
         errorMessage: 'Verification Failed!',
@@ -37,6 +43,52 @@ class CodeScannerPin extends React.Component {
 
   handleSetPin = (code) => {
     
+    const { user } = this.props;
+    const string = user.account.string
+
+    EnyaDeliver.QRSetCredentials(string, code).then(result => {
+
+      if (result.statuscode == 201){
+
+        SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
+  
+        const firstlogintime = new Date().getTime().toString();
+        const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
+        
+        let UUID = result.UUID;
+
+        let newAccount = { UUID, id, string };
+    
+        //save to secure storage
+        SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
+    
+        //circulate props
+        this.props.dispatch(setAccount(newAccount));
+
+      } else if (result.statuscode == 401){
+        Alert.alert(
+          "Error",
+          "Wrong PIN code!",
+          [{text: 'Ok'}]
+        );
+        this.refs.codeInputRef.clear();
+      } else if (result.statuscode == 404){
+        Alert.alert(
+          "Error",
+          "invalid qr code",
+          [{text: 'Ok'}]
+        );
+        SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
+        this.props.dispatch(setAccount({}));
+      }
+  
+  
+    }).catch(err => {
+  
+      console.log(err)
+  
+    });
+
     this.setState({
       errorMessage: '',
     });
