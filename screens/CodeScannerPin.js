@@ -8,6 +8,7 @@ import CodeInput from 'react-native-confirmation-code-field';
 
 import * as EnyaDeliver from 'enyadeliver';
 import * as SecureStore from 'expo-secure-store';
+import sha1 from 'sha1';
 import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
 import { setAccount } from '../redux/actions';
 import { ThemeProvider } from 'react-native-elements';
@@ -26,7 +27,7 @@ class CodeScannerPin extends React.Component {
     this.state = {
       errorMessage: '',
       status: user.account.status,
-      pin: 0,
+      pin: '',
     };
 
   }
@@ -49,9 +50,10 @@ class CodeScannerPin extends React.Component {
   handleEnterPin = (code) => {
     
     const { user } = this.props;
-    const string = user.account.string
+    const string = user.account.string;
+    const hash_code = sha1(code);
 
-    EnyaDeliver.QRSetCredentials(string, code).then(result => {
+    EnyaDeliver.QRSetCredentials(string, hash_code).then(result => {
 
       if (result.statuscode == 201){
 
@@ -61,7 +63,6 @@ class CodeScannerPin extends React.Component {
         const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
         
         let UUID = result.UUID;
-
         let newAccount = { UUID, id, string };
     
         //save to secure storage
@@ -71,28 +72,32 @@ class CodeScannerPin extends React.Component {
         this.props.dispatch(setAccount(newAccount));
 
       } else if (result.statuscode == 401){
-        let attempts = 3 - result.attempts
+
+        let attempts = 3 - result.attempts;
         let error = "Password incorrect! You have " + attempts.toString() + " login attempts left.";
+        
         Alert.alert(
           "Error",
           error,
-          [{text: 'Ok'}]
-        );
+          [{text: 'Ok'}]    
+          );
+
         this.refs.codeInputRef.clear();
+      
       } else if (result.statuscode == 403){
+        
         Alert.alert(
           "Error",
           "Your account has been locked. Please contact the customer support to unlock it.",
           [{text: 'Ok'}]
         );
+
         this.refs.codeInputRef.clear();
+      
       }
   
-  
     }).catch(err => {
-  
       console.log(err)
-  
     });
 
     this.setState({
@@ -103,37 +108,39 @@ class CodeScannerPin extends React.Component {
   }
 
   handleSetPin = (code) => {
+    
+    const hash_code = sha1(code);
+    
     this.setState({
-      pin: code,
+      pin: hash_code,
     });
+
   }
 
   handleConfirmPin = (code) => {
 
-  console.log("confirm")
-  console.log(this.state.pin)
-  console.log(code)
-
-    if (this.state.pin != code){
+    const hash_code = sha1(code);
+    
+    if (this.state.pin != hash_code){
+      
       Alert.alert(
         "Error",
         "Two passwords didn't match. Try again.",
         [{text: 'Ok'}]
       );
+      
       this.setState({
-        pin: 0,
-      })
+        pin: '',
+      });
+
     }
-    if (this.state.pin == code){
+    if (this.state.pin == hash_code){
 
       const { user } = this.props;
-      const string = user.account.string
+      const string = user.account.string;
       
-
-      EnyaDeliver.QRSetCredentials(string, code).then(result => {
+      EnyaDeliver.QRSetCredentials(string, hash_code).then(result => {
         
-        console.log(result)
-
         if (result.statuscode == 201){
   
           SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
@@ -141,8 +148,7 @@ class CodeScannerPin extends React.Component {
           const firstlogintime = new Date().getTime().toString();
           const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
           
-          let UUID = result.UUID;
-          
+          let UUID = result.UUID;         
           let newAccount = { UUID, id, string };
 
           //save to secure storage
@@ -152,13 +158,14 @@ class CodeScannerPin extends React.Component {
           this.props.dispatch(setAccount(newAccount));
   
         }
-    })}
+      })
+    }
   }
 
 
   handleLogout = () => {
 
-    newAccount = {}
+    newAccount = {};
     SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
     this.props.dispatch(setAccount(newAccount));
 
