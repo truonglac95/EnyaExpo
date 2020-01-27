@@ -1,4 +1,4 @@
-# EnyaExpoRN
+# EnyaExpo
 
 This is an Expo app demonstrating use of the Enya SDK and API for secure multiparty computation. The app uses the Enya framework to securely compute scores/risks/results from an app user's answers. 
 
