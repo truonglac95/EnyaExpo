@@ -279,7 +279,7 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
       var token = "Bb9CEAe9A365Ac30FCE4d4AA";
       var name = "first_algo";
       /* Generate private key */
-      var privatekey = await EnyaFHE.PrivateKeyGen();
+      var privatekey = EnyaFHE.PrivateKeyGen();
       dispatch( secureComputeProgress({
         SMC_compute_progress: 10,
         SMC_computing: true 
