@@ -1,25 +1,28 @@
 import Home from './screens/Home';
 import CodeScanner from './screens/CodeScanner';
+
 import Account from './screens/Account';
 import AccountDelete from './screens/AccountDelete';
 import AccountDeleted from './screens/AccountDeleted';
+
 import Questionnaire from './screens/Questionnaire';
-import ResultSMC from './screens/ResultSMC';
+
 import Result from './screens/Result';
+import ResultSMC from './screens/ResultSMC';
 
 /* =============================================================================
 Screen Names:
 ============================================================================= */
 
 const SCREEN_NAMES = {
-  ACCOUNT_DELETED: "ACCOUNT_DELETED",
-  ACCOUNT_DELETE: "ACCOUNT_DELETE",
-  ACCOUNT: "ACCOUNT",
-  CODE_SCANNER: "CODE_SCANNER",
   HOME: "HOME",
+  CODE_SCANNER: "CODE_SCANNER",
+  ACCOUNT: "ACCOUNT",
+  ACCOUNT_DELETE: "ACCOUNT_DELETE",
+  ACCOUNT_DELETED: "ACCOUNT_DELETED",
   QUESTIONNAIRE: "QUESTIONNAIRE",
-  RESULT_SMC: "RESULT_SMC",
   RESULT: "RESULT",
+  RESULT_SMC: "RESULT_SMC"
 };
 
 /* =============================================================================
@@ -27,24 +30,16 @@ React Navigation Route Config
 ============================================================================= */
 
 const AppRouteConfig = {
-  [SCREEN_NAMES.ACCOUNT_DELETED]: {
-    screen: AccountDeleted,
+  [SCREEN_NAMES.ACCOUNT]: {
+    screen: Account,
     navigationOptions: {}
   },
   [SCREEN_NAMES.ACCOUNT_DELETE]: {
     screen: AccountDelete,
     navigationOptions: {}
   },
-  [SCREEN_NAMES.ACCOUNT]: {
-    screen: Account,
-    navigationOptions: {}
-  },
-  [SCREEN_NAMES.CODE_SCANNER]: {
-    screen: CodeScanner,
-    navigationOptions: {}
-  },
-  [SCREEN_NAMES.HOME]: {
-    screen: Home,
+  [SCREEN_NAMES.ACCOUNT_DELETED]: {
+    screen: AccountDeleted,
     navigationOptions: {}
   },
   [SCREEN_NAMES.QUESTIONNAIRE]: {

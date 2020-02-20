@@ -216,7 +216,7 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
   
     if (algo_name == "smc") {
 
-      if (__DEV__) console.log('Yes, there are enough data for SMC computation');
+      if (__DEV__) console.log('SMC: Yes, there are enough data for computation');
 
       //----------- Configure settings ---------------------
       EnyaSMC.input(Object.values(data))
@@ -276,6 +276,7 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
       // ------------------- Much more complicate ----------------------
       // ---- For details, plesae check enyafhe/__test__/__test__.js ---
       /* Give token and algorithm name */
+      //Should do this somewhere else
       EnyaFHE.configure({
         AccessToken: "Bb9CEAe9A365Ac30FCE4d4AA",
         AlgorithmName: "first_algo"
@@ -389,7 +390,7 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
   }
 	} else {
 
-    if (__DEV__) console.log('No, not enough data for Secure computation');
+    if (__DEV__) console.log('Not enough data for secure computation');
 
   }
 

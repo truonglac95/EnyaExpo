@@ -15,7 +15,7 @@ const initialStore = {
 	result: {
 		error: null,
 		loading: false,
-		results: [],
+		results: []
 	}
 };
 
