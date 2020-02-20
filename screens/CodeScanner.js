@@ -30,7 +30,6 @@ handleBarCodeScannedSim = () => {
   //in real app, this key would not be on GitHub
   //*****************************************************//
   let QRkey = 'elliptic31415926newAES'; // 22 characters long
-
   let QRid = 'blockdoc'; // 8 characters long
 
   EnyaDeliver.QRSetCredentials( dataStringFromQRCodeScan, QRkey, QRid ).then(UUID => {

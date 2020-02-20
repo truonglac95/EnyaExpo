@@ -215,7 +215,7 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
   
     if (algo_name == "smc") {
 
-      if (__DEV__) console.log('Yes, there are enough data for SMC computation');
+      if (__DEV__) console.log('SMC: Yes, there are enough data for computation');
 
       //----------- Configure settings ---------------------
       EnyaSMC.input.apply(this, Object.values(data))
@@ -250,7 +250,7 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
         SMC_computing: true 
       }))
       await EnyaFHE.sleep(1)
-      if (__DEV__) console.log('Yes, there are enough data for FHE computation');
+      if (__DEV__) console.log('FHE: Yes, there are enough data for computation');
 
       // ------------------- The first way -----------------------------
       //   ------------------ Simpler version ----------------------------
@@ -272,10 +272,11 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
 
       // ------------------- The second way ----------------------------
       // ------------------- Monitor the status ------------------------
-      // ------------------- Much more complicate ----------------------
-      // ---- For details, plesae check enyafhe/__test__/__test__.js ---
+      // ------------------- More complicated --------------------------
+      // ---- For details, please check enyafhe/__test__/__test__.js ---
 
-      /* Give token and algorithm name */
+      /* Set token and algorithm name */
+      //Should do this somewhere else
       var token = "Bb9CEAe9A365Ac30FCE4d4AA";
       var name = "first_algo";
       /* Generate private key */
@@ -371,8 +372,8 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
                 SMC_compute_progress: 80,
                 SMC_computing: true 
               }))
-              if (__DEV__) console.log("The calculation was finished.");
-              if (__DEV__) console.log("Start to retrieve encrypted result.");
+              if (__DEV__) console.log("Calculation finished.");
+              if (__DEV__) console.log("Retrieving encrypted result.");
               /* Retrieve the calculation result */
               const getresult = await EnyaFHE.GetResult({pcr: string_pcr}, token);
               const cipher_result = await getresult.json();
@@ -380,7 +381,7 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
                 SMC_compute_progress: 90,
                 SMC_computing: true 
               }))
-              if (__DEV__) console.log("Start to decrypt the ciphertext.");
+              if (__DEV__) console.log("Decrypting the ciphertext.");
               var [c0, c1] = EnyaFHE.ReadCiphertext(cipher_result.v0, cipher_result.v1);
               var text = EnyaFHE.DecryptVector(c0, c1, privatekey);
               dispatch( secureComputeProgress({
@@ -410,7 +411,7 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
   }
 	} else {
 
-    if (__DEV__) console.log('No, not enough data for Secure computation');
+    if (__DEV__) console.log('Not enough data for secure computation');
 
   }
 

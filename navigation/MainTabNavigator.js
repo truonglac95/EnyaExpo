@@ -121,7 +121,7 @@ export default createBottomTabNavigator(
     AccountStack,
   }, 
   {
-  resetOnBlur: true,
+    resetOnBlur: true,
   }
 );
 
