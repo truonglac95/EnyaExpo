@@ -87,11 +87,20 @@ class Home extends React.Component {
 
   }
 
-  handleCalculate = () => {
+  handleSMCCalculate = () => {
 
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
-    dispatch( secureCompute(answers, this.props.user.account.UUID) );
+    dispatch( secureCompute(answers, this.props.user.account.UUID, algo_name="smc") );
+    this.setState({recalculating: true});
+
+  }
+
+  handleFHECalculate = () => {
+
+    const { dispatch } = this.props;
+    const { answers } = this.props.answer;
+    dispatch( secureCompute(answers, this.props.user.account.UUID, algo_name="fhe") );
     this.setState({recalculating: true});
 
   }
@@ -201,9 +210,16 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 <Text style={mS.smallGray}>{'All questions answered'}</Text>
 <View style={{marginTop: 20}}>
   <BasicButton 
-    text={'Compute Score'}
+    text={'SMC Compute Score'}
     width="80%"
-    onClick={this.handleCalculate}
+    onClick={this.handleSMCCalculate}
+  />
+</View>
+<View style={{marginTop: 20}}>
+  <BasicButton 
+    text={'FHE Compute Score'}
+    width="80%"
+    onClick={this.handleFHECalculate}
   />
 </View>
 </View>
@@ -256,49 +272,48 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 
 <View style={mS.shadowBox}>
 
-<ImageBackground source={require('../assets/images/id.png')} style={{height: 50}}>
-  <Text style={mS.boxTitle}>{'Secure Report Delivery'}</Text>
-</ImageBackground>
+  <ImageBackground source={require('../assets/images/id.png')} style={{height: 50}}>
+    <Text style={mS.boxTitle}>{'Secure Report Delivery'}</Text>
+  </ImageBackground>
 
-<View style={mS.textBlock}>
-<Text style={mS.smallGray}>
-  <Text style={{fontWeight: 'bold'}}>{'Status:'}</Text>
-  {' Your report/analysis/match is complete.'}
-</Text>
-</View>
+  <View style={mS.textBlock}>
+    <Text style={mS.smallGray}>
+      <Text style={{fontWeight: 'bold'}}>{'Status:'}</Text>
+      {' Your report/analysis/match is complete.'}
+    </Text>
+  </View>
 
-{/*BEGIN REPORT BUTTONS*/}
+  {/*BEGIN REPORT BUTTONS*/}
 
-{haveReport &&
-<View style={mS.smc}>
-  <BasicButton 
-    text={'View Report'}
-    width="80%"
-    onClick={()=>this.handleClickItem('REPORT_SEE')}
-  />
-</View>
-}
+  {haveReport &&
+    <View style={mS.smc}>
+      <BasicButton 
+        text={'View Report'}
+        width="80%"
+        onClick={()=>this.handleClickItem('REPORT_SEE')}
+      />
+    </View>
+  }
 
-{!haveReport && !downloadingReport &&
-<View style={mS.smc}>
-  <BasicButton 
-    text={'Download Report'}
-    width="80%"
-    onClick={()=>this.handleClickItem('REPORT_GET')}
-  />
-</View>
-}
+  {!haveReport && !downloadingReport &&
+    <View style={mS.smc}>
+      <BasicButton 
+        text={'Download Report'}
+        width="80%"
+        onClick={()=>this.handleClickItem('REPORT_GET')}
+      />
+    </View>
+  }
 
-{!haveReport && downloadingReport &&
-<View style={[mS.smc, {height: 72}]}>
-  <ActivityIndicator size="large" color='#33337F'/>
-</View>
-}
+  {!haveReport && downloadingReport &&
+    <View style={[mS.smc, {height: 72}]}>
+      <ActivityIndicator size="large" color='#33337F'/>
+    </View>
+  }
 
 </View>
 
 </ScrollView>
-
 </View>);
 }}
 
