@@ -161,7 +161,7 @@ class Questionnaire extends React.Component {
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
 
-    dispatch( secureCompute(answers, this.props.user.account.UUID, algo_name="smc") );
+    dispatch( secureCompute(answers, algo_name="smc") );
 
     this.setState({recalculating: true });
 
@@ -172,7 +172,7 @@ class Questionnaire extends React.Component {
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
 
-    dispatch( secureCompute(answers, this.props.user.account.UUID, algo_name="fhe") );
+    dispatch( secureCompute(answers, algo_name="fhe") );
 
     this.setState({recalculating: true });
 
