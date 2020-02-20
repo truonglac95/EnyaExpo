@@ -87,11 +87,20 @@ class Home extends React.Component {
 
   }
 
-  handleCalculate = () => {
+  handleSMCCalculate = () => {
 
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
-    dispatch( secureCompute(answers, this.props.user.account.UUID) );
+    dispatch( secureCompute(answers, this.props.user.account.UUID, algo_name="smc") );
+    this.setState({recalculating: true});
+
+  }
+
+  handleFHECalculate = () => {
+
+    const { dispatch } = this.props;
+    const { answers } = this.props.answer;
+    dispatch( secureCompute(answers, this.props.user.account.UUID, algo_name="fhe") );
     this.setState({recalculating: true});
 
   }
@@ -201,9 +210,16 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 <Text style={mS.smallGray}>{'All questions answered'}</Text>
 <View style={{marginTop: 20}}>
   <BasicButton 
-    text={'Compute Score'}
+    text={'SMC Compute Score'}
     width="80%"
-    onClick={this.handleCalculate}
+    onClick={this.handleSMCCalculate}
+  />
+</View>
+<View style={{marginTop: 20}}>
+  <BasicButton 
+    text={'FHE Compute Score'}
+    width="80%"
+    onClick={this.handleFHECalculate}
   />
 </View>
 </View>

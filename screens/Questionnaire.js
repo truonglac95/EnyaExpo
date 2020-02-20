@@ -156,12 +156,23 @@ class Questionnaire extends React.Component {
   
   }
 
-  handleCalculate = () => {
+  handleSMCCalculate = () => {
 
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
 
-    dispatch( secureCompute(answers) );
+    dispatch( secureCompute(answers, this.props.user.account.UUID, algo_name="smc") );
+
+    this.setState({recalculating: true });
+
+  }
+
+  handleFHECalculate = () => {
+
+    const { dispatch } = this.props;
+    const { answers } = this.props.answer;
+
+    dispatch( secureCompute(answers, this.props.user.account.UUID, algo_name="fhe") );
 
     this.setState({recalculating: true });
 
@@ -224,14 +235,24 @@ class Questionnaire extends React.Component {
 <View style={mS.shadowBoxClear}>
   <BasicButton 
     width={200}
-    text={'Secure Compute'} 
-    onClick={this.handleCalculate}
+    text={'SMC Secure Compute'} 
+    onClick={this.handleSMCCalculate}
+  />
+  </View>
+}
+
+{!SMC_computing && (numberAnswered >= 7) && !current && 
+<View style={mS.shadowBoxBelow}>
+  <BasicButton 
+    width={200}
+    text={'FHE Secure Compute'} 
+    onClick={this.handleFHECalculate}
   />
   </View>
 }
 
 {(numberAnswered >= 7) && current && 
-<View style={mS.shadowBoxClear}>
+<View style={[mS.shadowBoxClear,{height:100}]}>
   <BasicButton
     width={200} 
     text={'See Result'} 

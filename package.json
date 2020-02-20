@@ -6,20 +6,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios"
   },
-  "jest": {
-    "preset": "jest-expo"
-  },
-  "devDependencies": {
-    "babel-preset-expo": "^8.0.0",
-    "jest-expo": "^36.0.0",
-    "react-test-renderer": "^16.8.6"
-  },
   "dependencies": {
     "@babel/core": "^7.4.0",
     "@react-native-community/netinfo": "^4.6.0",
     "babel-plugin-inline-import": "^3.0.0",
     "elliptic-expo": "https://github.com/enyalabs/elliptic-expo/archive/v6.5.3.tar.gz",
     "enyadeliver": "^1.0.0",
+    "enyafhe": "^0.0.1",
     "enyasmc": "^1.0.0",
     "expo": "^36.0.0",
     "expo-constants": "~8.0.0",
