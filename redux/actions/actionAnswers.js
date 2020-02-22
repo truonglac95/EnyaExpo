@@ -219,10 +219,11 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
       if (__DEV__) console.log('SMC: Yes, there are enough data for computation');
 
       //----------- Configure settings ---------------------
+
       EnyaSMC.input(Object.values(data))
       EnyaSMC.configure({
-        AccessToken: "f4a86a1a1515fa48",
-        AlgorithmName: "SampleAlgorithm",
+        AccessToken: "f7edB8a8A4D7dff85d2CB7E5",
+        AlgorithmName: "sample_algo"
       })
       //-----------------------------------------------------
   
@@ -278,8 +279,8 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
       /* Give token and algorithm name */
       //Should do this somewhere else
       EnyaFHE.configure({
-        AccessToken: "Bb9CEAe9A365Ac30FCE4d4AA",
-        AlgorithmName: "first_algo"
+        AccessToken: "f7edB8a8A4D7dff85d2CB7E5",
+        AlgorithmName: "sample_algo"
       })
 
       /* Generate private key */
