@@ -278,7 +278,7 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
       // ---- For details, plesae check enyafhe/__test__/__test__.js ---
       /* Give token and algorithm name */
       //Should do this somewhere else
-      EnyaFHE.configure({
+      EnyaFHE.Configure({
         AccessToken: "f7edB8a8A4D7dff85d2CB7E5",
         AlgorithmName: "sample_algo"
       })
@@ -288,47 +288,42 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
       if (__DEV__) console.log("Generated private key.")
 
       /* Generate public key */
-      var [[publickey_part1, publickey_part2], temp] =  await Promise.all([
-        EnyaFHE.PublicKeyGenRN(privatekey), 
+      var [publickey, temp] =  await Promise.all([
+        EnyaFHE.PublicKeyGenRN(), 
         circle_indicator(200, 20, 40)
       ]);
       if (__DEV__) console.log("Generated public key.")
 
       /* Generate multi key */
-      var [[multikey_part1, multikey_part2], temp] = await Promise.all([
-        EnyaFHE.MultiKeyGenRN(privatekey), 
+      var [multikey, temp] = await Promise.all([
+        EnyaFHE.MultiKeyGenRN(), 
         circle_indicator(500, 40, 40)
       ]);
       if (__DEV__) console.log("Generated multiple key.")
 
        /* Generate rotation key */
-      var [[rotakey_part1, rotakey_part2], temp] = await Promise.all([
-        EnyaFHE.RotaKeyGenRN(privatekey), 
+      var [rotakey, temp] = await Promise.all([
+        EnyaFHE.RotaKeyGenRN(), 
         circle_indicator(500, 60, 40)
       ]);
       if (__DEV__) console.log("Generated rotation key.")
       if (__DEV__) console.log("Finished key generations!")
 
       /* Pack the weight */
-      var ptxt = EnyaFHE.PackVector(Object.values(data));
+      var plaintext = EnyaFHE.PackVector(Object.values(data));
         
         /* Encrypt the plaintext */
-      var [ciphertext_part1, ciphertext_part2] = EnyaFHE.EncryptVector(
-        ptxt,
-        publickey_part1,
-        publickey_part2
+      var ciphertext = EnyaFHE.EncryptVector(
+        plaintext,
+        publickey,
       );
 
       /* Create JSON payload */
       var jsonpayload = EnyaFHE.JSONPayload(
-        publickey_part1,
-        publickey_part2,
-        ciphertext_part1,
-        ciphertext_part2,
-        multikey_part1,
-        multikey_part2,
-        rotakey_part1,
-        rotakey_part2,
+        publickey,
+        multikey,
+        rotakey,
+        ciphertext
       );
       /* Random String */
       var string_pcr = EnyaFHE.RandomPCR();
@@ -366,8 +361,8 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
               const cipher_result = await getresult.json();
 
               if (__DEV__) console.log("Start to decrypt the ciphertext.");
-              var [c0, c1] = EnyaFHE.ReadCiphertext(cipher_result.v0, cipher_result.v1);
-              var text = EnyaFHE.DecryptVector(c0, c1, privatekey);
+              var ciphertext = EnyaFHE.ReadCiphertext(cipher_result.ciphertext);
+              var text = EnyaFHE.DecryptVector(ciphertext);
               result = (text[0] / 100000).toFixed(2);
               current = true; 
               haveSMC = true; 
