@@ -222,8 +222,8 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
 
       EnyaSMC.input(Object.values(data))
       EnyaSMC.configure({
-        AccessToken: "f7edB8a8A4D7dff85d2CB7E5",
-        AlgorithmName: "sample_algo"
+        CLIENT_TOKEN: "f7edB8a8A4D7dff85d2CB7E5",
+        algo_name: "sample_algo"
       })
       //-----------------------------------------------------
   
@@ -279,8 +279,8 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
       /* Give token and algorithm name */
       //Should do this somewhere else
       EnyaFHE.Configure({
-        AccessToken: "f7edB8a8A4D7dff85d2CB7E5",
-        AlgorithmName: "sample_algo"
+        CLIENT_TOKEN: "f7edB8a8A4D7dff85d2CB7E5",
+        algo_name: "sample_algo"
       })
 
       /* Generate private key */
