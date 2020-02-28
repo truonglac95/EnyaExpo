@@ -18,9 +18,10 @@ import {
   SECURE_STORAGE_ACCOUNT,
 } from '../constants';
 
-import * as EnyaSMC from 'enyasmc'
+import EnyaSMC from 'enyasmc'
 import * as SecureStore from 'expo-secure-store'
 import EnyaFHE from 'enyafhe'
+
 
 export const getAnswersBegin   = data  => ({ type: GET_ANSWERS });
 export const getAnswersSuccess = data  => ({ type: GET_ANSWERS_SUCCESS, payload: data });
@@ -187,7 +188,7 @@ export const secureComputeProgress = (data) => ({
   payload: data,
 });
 
-export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
+export const secureCompute = (data, algo_name) => async (dispatch) => {
 
 	dispatch( secureComputeBegin() );
 
@@ -197,13 +198,13 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
     })
   );
 
-  const circle_indicator = async function(){
-    for (var i = 0; i < 200; i++) {
+  const circle_indicator = async function(t, start, bin){
+    for (var i = 0; i < bin; i++) {
       dispatch( secureComputeProgress({
-        SMC_compute_progress: i/2,
+        SMC_compute_progress: start + i/2,
         SMC_computing: true 
       }))
-      await new Promise(resolve => setTimeout(resolve, 5))
+      await new Promise(resolve => setTimeout(resolve, t))
     }
   }
 
@@ -218,15 +219,16 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
       if (__DEV__) console.log('SMC: Yes, there are enough data for computation');
 
       //----------- Configure settings ---------------------
-      EnyaSMC.input.apply(this, Object.values(data))
+
+      EnyaSMC.input(Object.values(data))
       EnyaSMC.configure({
-          AccessToken: uuid,
-          Algorithm: "SampleAlgorithm",
+        CLIENT_TOKEN: "f7edB8a8A4D7dff85d2CB7E5",
+        algo_name: "sample_algo"
       })
       //-----------------------------------------------------
   
       //----------- Running the model -----------------------
-      const [model, _] = await Promise.all([EnyaSMC.Linear(), circle_indicator()])
+      const [model, _] = await Promise.all([EnyaSMC.SMC(), circle_indicator(5, 0, 200)])
       //-----------------------------------------------------
 
       if(model.status_code == 200) {
@@ -245,115 +247,97 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
       }
 
     } else if (algo_name == "fhe") {
-      dispatch( secureComputeProgress({
-        SMC_compute_progress: 5,
-        SMC_computing: true 
-      }))
-      await EnyaFHE.sleep(1)
-      if (__DEV__) console.log('FHE: Yes, there are enough data for computation');
+
+      if (__DEV__) console.log('Yes, there are enough data for FHE computation');
 
       // ------------------- The first way -----------------------------
-      //   ------------------ Simpler version ----------------------------
+      // ------------------ Simpler version ----------------------------
+      // --------------- iPhone 11 needs 50s --------------------------- 
+      // --------------- You can't monitor status ----------------------
       /*
-        EnyaFHE.Access_token = "Bb9CEAe9A365Ac30FCE4d4AA";
-        EnyaFHE.Algorithm_name = "first_algo"
-        const [model, _] = await Promise.all([EnyaFHE.FHE(Object.values(data)), circle_indicator()])
+        EnyaFHE.configure({
+          AccessToken: "Bb9CEAe9A365Ac30FCE4d4AA",
+          AlgorithmName: "first_algo"
+        })
+        const [model, _] = await Promise.all([EnyaFHE.FHE(Object.values(data)), circle_indicator(200, 0, 200)]);
 
         dispatch( secureComputeProgress({
           SMC_compute_progress: 100,
           SMC_computing: true 
-        }))
-        result = parseFloat(model)
+        }));
+        result = (model / 100000).toFixed(2);
         current = true; //because we just recomputed it
         haveSMC = true; //yes, we have result
-        */
+      */
       //   --------------------------------------------------------------
       
 
       // ------------------- The second way ----------------------------
       // ------------------- Monitor the status ------------------------
-      // ------------------- More complicated --------------------------
-      // ---- For details, please check enyafhe/__test__/__test__.js ---
-
-      /* Set token and algorithm name */
+      // ------------------- Much more complicate ----------------------
+      // ---- For details, plesae check enyafhe/__test__/__test__.js ---
+      /* Give token and algorithm name */
       //Should do this somewhere else
-      var token = "Bb9CEAe9A365Ac30FCE4d4AA";
-      var name = "first_algo";
+      EnyaFHE.Configure({
+        CLIENT_TOKEN: "f7edB8a8A4D7dff85d2CB7E5",
+        algo_name: "sample_algo"
+      })
+
       /* Generate private key */
-      var privatekey = EnyaFHE.PrivateKeyGen();
-      dispatch( secureComputeProgress({
-        SMC_compute_progress: 10,
-        SMC_computing: true 
-      }))
+      var [privatekey, temp] = await Promise.all([EnyaFHE.PrivateKeyGenRN(), circle_indicator(1, 0, 40)]);
       if (__DEV__) console.log("Generated private key.")
+
       /* Generate public key */
-      var [publickey_part1, publickey_part2] = EnyaFHE.PublicKeyGen(privatekey);
-      dispatch( secureComputeProgress({
-        SMC_compute_progress: 20,
-        SMC_computing: true 
-      }))
-      await EnyaFHE.sleep(100)
+      var [publickey, temp] =  await Promise.all([
+        EnyaFHE.PublicKeyGenRN(), 
+        circle_indicator(200, 20, 40)
+      ]);
+      if (__DEV__) console.log("Generated public key.")
+
       /* Generate multi key */
-      var [multikey_part1, multikey_part2] = EnyaFHE.MultiKeyGen(privatekey);
-      dispatch( secureComputeProgress({
-        SMC_compute_progress: 30,
-        SMC_computing: true 
-      }))
-      await EnyaFHE.sleep(100)
+      var [multikey, temp] = await Promise.all([
+        EnyaFHE.MultiKeyGenRN(), 
+        circle_indicator(500, 40, 40)
+      ]);
+      if (__DEV__) console.log("Generated multiple key.")
+
        /* Generate rotation key */
-      var [rotakey_part1, rotakey_part2] = EnyaFHE.RotaKeyGen(privatekey);
-      dispatch( secureComputeProgress({
-        SMC_compute_progress: 30,
-        SMC_computing: true 
-      }))
-      await EnyaFHE.sleep(100)
+      var [rotakey, temp] = await Promise.all([
+        EnyaFHE.RotaKeyGenRN(), 
+        circle_indicator(500, 60, 40)
+      ]);
+      if (__DEV__) console.log("Generated rotation key.")
+      if (__DEV__) console.log("Finished key generations!")
+
       /* Pack the weight */
-      var ptxt = EnyaFHE.PackVector(Object.values(data));
-      dispatch( secureComputeProgress({
-        SMC_compute_progress: 40,
-        SMC_computing: true 
-      }))
-      await EnyaFHE.sleep(100)
+      var plaintext = EnyaFHE.PackVector(Object.values(data));
+        
         /* Encrypt the plaintext */
-      var [ciphertext_part1, ciphertext_part2] = EnyaFHE.EncryptVector(
-        ptxt,
-        publickey_part1,
-        publickey_part2
+      var ciphertext = EnyaFHE.EncryptVector(
+        plaintext,
+        publickey,
       );
-      await EnyaFHE.sleep(100)
-      dispatch( secureComputeProgress({
-        SMC_compute_progress: 50,
-        SMC_computing: true 
-      }))
+
       /* Create JSON payload */
       var jsonpayload = EnyaFHE.JSONPayload(
-        publickey_part1,
-        publickey_part2,
-        ciphertext_part1,
-        ciphertext_part2,
-        multikey_part1,
-        multikey_part2,
-        rotakey_part1,
-        rotakey_part2,
-        token,
-        name
+        publickey,
+        multikey,
+        rotakey,
+        ciphertext
       );
       /* Random String */
       var string_pcr = EnyaFHE.RandomPCR();
       if (__DEV__) console.log("Random PCR: ", string_pcr)
       
       /* Send the payload to the server */
-      const senddata = await EnyaFHE.SendData(
-        { pcr: string_pcr, data: jsonpayload },
-        token
-      );
+      var [senddata, temp] = await Promise.all([
+        EnyaFHE.SendData({ pcr: string_pcr, data: jsonpayload }),
+        circle_indicator(20, 80, 20)
+      ])
       const return_messgae = await senddata.json();
       if (return_messgae.status == true) { 
           if (__DEV__) console.log("Sent encryption keys.");
-          dispatch( secureComputeProgress({
-            SMC_compute_progress: 60,
-            SMC_computing: true 
-          }))
+
           var status = false;
           var count = 0;
           while ((status == false) & (count < 5)) {
@@ -361,36 +345,27 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
               /* Check the status of calculation */
               const checkstatus = await EnyaFHE.CheckStatus(
                   { pcr: string_pcr, data: jsonpayload },
-                  token
               );
               const return_message = await checkstatus.json();
               status = return_message.API_result_ready;
               count = count + 1;
           }
           if (status == true) {
-              dispatch( secureComputeProgress({
-                SMC_compute_progress: 80,
-                SMC_computing: true 
-              }))
-              if (__DEV__) console.log("Calculation finished.");
-              if (__DEV__) console.log("Retrieving encrypted result.");
+              if (__DEV__) console.log("The calculation was finished.");
+              if (__DEV__) console.log("Start to retrieve encrypted result.");
               /* Retrieve the calculation result */
-              const getresult = await EnyaFHE.GetResult({pcr: string_pcr}, token);
+              var [getresult, temp] = await Promise.all([
+                EnyaFHE.GetResult({pcr: string_pcr}),
+                circle_indicator(5, 90, 20)
+              ]);
               const cipher_result = await getresult.json();
-              dispatch( secureComputeProgress({
-                SMC_compute_progress: 90,
-                SMC_computing: true 
-              }))
-              if (__DEV__) console.log("Decrypting the ciphertext.");
-              var [c0, c1] = EnyaFHE.ReadCiphertext(cipher_result.v0, cipher_result.v1);
-              var text = EnyaFHE.DecryptVector(c0, c1, privatekey);
-              dispatch( secureComputeProgress({
-                SMC_compute_progress: 100,
-                SMC_computing: true 
-              }))
+
+              if (__DEV__) console.log("Start to decrypt the ciphertext.");
+              var ciphertext = EnyaFHE.ReadCiphertext(cipher_result.ciphertext);
+              var text = EnyaFHE.DecryptVector(ciphertext);
               result = (text[0] / 100000).toFixed(2);
-              current = true; //because we just recomputed it
-              haveSMC = true; //yes, we have result
+              current = true; 
+              haveSMC = true; 
           } else {
               /* Computation failed */
               if (__DEV__) console.log("Error: ", status);
@@ -406,7 +381,7 @@ export const secureCompute = (data, uuid, algo_name) => async (dispatch) => {
             SMC_compute_progress: 0,
             SMC_computing: false 
           }));
-      } 
+      }       
 
   }
 	} else {
