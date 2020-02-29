@@ -27,31 +27,23 @@ handleBarCodeScannedSim = () => {
   '9c72b528bc7e8e4a8519555da095326be635dfba5eee3131ad82e25113a11bd8' +
   '679441e9962f6a8c881db713d874bc78bef72e7532fd7e45';
 
-  //in real app, this key would not be on GitHub
-  //*****************************************************//
-  let QRkey = 'elliptic31415926newAES'; // 22 characters long
-  let QRid = 'blockdoc'; // 8 characters long
+  let string = dataStringFromQRCodeScan;
+  
+  EnyaDeliver.QRGetStatus(string).then(result => {
 
-  EnyaDeliver.QRSetCredentials( dataStringFromQRCodeScan, QRkey, QRid ).then(UUID => {
+    if (result.statuscode == 201){
+      
+      let status = result.status
 
-    SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(()=>{}).catch(()=>{});
+      this.props.dispatch(setAccount({string: string, status: status}));
+      SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify({string, status}));
 
-    const firstlogintime = new Date().getTime().toString();
-    const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
-
-    let newAccount = { UUID, id };
-
-    //save to secure storage
-    SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
-
-    //circulate props
-    this.props.dispatch(setAccount(newAccount));
-
-  }).catch(err => {
-
-    console.log(err)
-
-  });
+    } else if (result.statuscode == 400){
+      console.log("EnyaDeliver: Failed to connect to server.")
+    } else {
+      console.log("EnyaDeliver: Invalid QR code.")
+    }
+  })
 
 };
 

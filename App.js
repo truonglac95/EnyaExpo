@@ -21,7 +21,7 @@ import * as SecureStore from 'expo-secure-store'
 const Slider = (props) => (
   <View style={mS.sliderVP}>
     {[0, 1, 2, 3].map(i => 
-      <View key={i} style={[mS.dot, i === props.value && { backgroundColor: mC.red }]}/>
+      <View key={i} style={[mS.dot, i === props.value && {backgroundColor: mC.darkBlue}]}/>
     )}
   </View>
 );
