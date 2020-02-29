@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "EnyaExpoRN",
-    "slug": "EnyaExpoRN-app",
+    "name": "EnyaExpo",
+    "slug": "EnyaExpo-app",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [

@@ -1,18 +1,10 @@
 {
   "main": "node_modules/expo/AppEntry.js",
-  "name": "EnyaExpoRN",
+  "name": "EnyaExpo",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios"
-  },
-  "jest": {
-    "preset": "jest-expo"
-  },
-  "devDependencies": {
-    "babel-preset-expo": "^8.0.0",
-    "jest-expo": "^36.0.0",
-    "react-test-renderer": "^16.8.6"
   },
   "dependencies": {
     "@babel/core": "^7.4.0",
@@ -20,7 +12,8 @@
     "babel-plugin-inline-import": "^3.0.0",
     "elliptic-expo": "https://github.com/enyalabs/elliptic-expo/archive/v6.5.3.tar.gz",
     "enyadeliver": "^1.0.5",
-    "enyasmc": "^1.0.0",
+    "enyafhe": "^0.0.8",
+    "enyasmc": "^1.1.13",
     "expo": "^36.0.0",
     "expo-constants": "~8.0.0",
     "expo-file-system": "~8.0.0",

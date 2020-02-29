@@ -65,7 +65,8 @@ exports.mS = StyleSheet.create({
   sliderVP: {display: 'flex',marginBottom: 15,flexDirection: 'row'},
 
   shadowBox: {     display:'flex',flexDirection:'column',width: screenW-25,marginTop:13,backgroundColor: c.white,borderRadius: 9,borderWidth: 1,paddingBottom: 10,borderColor: c.darkBlue,overflow: 'hidden'},
-  shadowBoxClear: {display:'flex',flexDirection:'column',width: screenW-25,marginTop:13,justifyContent: 'center',alignItems: 'center',padding: 10,height: 100},
+  shadowBoxClear: {display:'flex',flexDirection:'column',width: screenW-25,marginTop:13,justifyContent: 'center',alignItems: 'center',padding: 10,height: 50},
+  shadowBoxBelow: {display:'flex',flexDirection:'column',width: screenW-25,marginTop:0,justifyContent: 'center',alignItems: 'center',padding: 0,height: 50},
 
   smc: {width: '60%',padding: 12,paddingTop: 20},
   smcRight: {flex: 1,flexDirection: 'column',justifyContent: 'center',alignItems: 'center',width: '35%',padding: 12},
