@@ -274,7 +274,7 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
 
       // ------------------- The second way ----------------------------
       // ------------------- Monitor the status ------------------------
-      // ------------------- Much more complicate ----------------------
+      // ------------------- More complicated --------------------------
       // ---- For details, plesae check enyafhe/__test__/__test__.js ---
       /* Give token and algorithm name */
       //Should do this somewhere else

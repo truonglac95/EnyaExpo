@@ -32,21 +32,6 @@ class CodeScannerPin extends React.Component {
 
   }
 
-  UNSAFE_componentWillReceiveProps (nextProps) {
-
-/*
-    const { user } = this.props;
-    const { user: nextUser } = nextProps;
-    if (user && user.verifyLoading && nextUser && !nextUser.verifyLoading && nextUser.verifyError) {
-      this.setState({
-        errorMessage: 'Verification Failed!',
-      });
-
-      this.refs.codeInputRef.clear();
-    }
-*/
-  }
-
   handleEnterPin = (code) => {
     
     const { user } = this.props;
@@ -74,7 +59,7 @@ class CodeScannerPin extends React.Component {
       } else if (result.statuscode == 401){
 
         let attempts = 3 - result.attempts;
-        let error = "Password incorrect! You have " + attempts.toString() + " login attempts left.";
+        let error = "PIN incorrect! You have " + attempts.toString() + " login attempts left.";
         
         Alert.alert(
           "Error",
@@ -148,7 +133,7 @@ class CodeScannerPin extends React.Component {
           const firstlogintime = new Date().getTime().toString();
           const id = 'id-' + Math.random().toString(36).substring(2, 15) + '-' + firstlogintime;
           
-          let UUID = result.UUID;         
+          let UUID = result.UUID;
           let newAccount = { UUID, id, string };
 
           //save to secure storage
@@ -185,7 +170,7 @@ class CodeScannerPin extends React.Component {
       {status == 1 &&
       <View style={styles.container}>
         <View>
-          <Text style={styles.baseText}>Please enter the PIN code:</Text>
+          <Text style={styles.baseText}>Please enter your PIN (set to '123456' for the example app):</Text>
         </View>
         <View style={{height: 80}}>
           <CodeInput

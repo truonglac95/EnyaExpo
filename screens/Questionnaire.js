@@ -27,8 +27,8 @@ for (var i = 120; i <= 215; i++) {
 }
 
 const countriesList = [
-  { label: 'Korea' , value: 1 },
-  { label: 'USA' , value: 2 },
+  { label: 'USA' , value: 1 },
+  { label: 'Other' , value: 2 },
 ];
 
 const genderList = [
