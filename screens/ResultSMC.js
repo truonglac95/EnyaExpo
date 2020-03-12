@@ -9,7 +9,7 @@ class ResultSMC extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle: () => (<Text style={mS.screenTitle}>{'SMC Result'}</Text>),
+      headerTitle: () => (<Text style={mS.screenTitle}>{'Secure Result'}</Text>),
       headerRight: (<View></View>),
     }
   };

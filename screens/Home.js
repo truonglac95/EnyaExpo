@@ -35,9 +35,7 @@ class Home extends React.Component {
       SMC_computing: (this.props.answer.SMC_computing || false),
 
       recalculating: false,
-      
-      haveReport: (this.props.result.downloaded || false),
-      downloadingReport: false,
+
     };
 
   }
@@ -48,14 +46,7 @@ class Home extends React.Component {
       this.props.navigation.navigate('ResultSMC');
     } else if (page === 'GIVE_ANSWERS') {
       this.props.navigation.navigate('Questionnaire');
-    } else if (page === 'REPORT_SEE') {
-      this.props.navigation.navigate('Result');
-    } else if (page === 'REPORT_GET') {
-      if (__DEV__) console.log('Getting report')
-      this.setState({downloadingReport: true});
-      this.props.dispatch(getResults(this.props.user.account.UUID));
     }
-
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -70,19 +61,12 @@ class Home extends React.Component {
       SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
       SMC_computing: (nextProps.answer.SMC_computing || false),
 
-      haveReport: (nextProps.result.downloaded || false)
     });
 
     //go to fresh result once calculation is done
     if ( this.state.recalculating && nextProps.answer.SMC_compute_progress === 100 ) {
       this.setState({recalculating: false});
       this.props.navigation.navigate('ResultSMC');
-    }
-
-    //go to fresh result once calculation is done
-    if ( this.state.downloadingReport && nextProps.result.downloaded ) {
-      this.setState({downloadingReport: false});
-      this.props.navigation.navigate('Result');
     }
 
   }
@@ -263,53 +247,6 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 
 </View>
 </View>
-
-</View>
-
-{/********************************************
-  THIRD BOX - Secure Report Delivery
-**********************************************/}
-
-<View style={mS.shadowBox}>
-
-  <ImageBackground source={require('../assets/images/id.png')} style={{height: 50}}>
-    <Text style={mS.boxTitle}>{'Secure Report Delivery'}</Text>
-  </ImageBackground>
-
-  <View style={mS.textBlock}>
-    <Text style={mS.smallGray}>
-      <Text style={{fontWeight: 'bold'}}>{'Status:'}</Text>
-      {' Your report/analysis/match is complete.'}
-    </Text>
-  </View>
-
-  {/*BEGIN REPORT BUTTONS*/}
-
-  {haveReport &&
-    <View style={mS.smc}>
-      <BasicButton 
-        text={'View Report'}
-        width="80%"
-        onClick={()=>this.handleClickItem('REPORT_SEE')}
-      />
-    </View>
-  }
-
-  {!haveReport && !downloadingReport &&
-    <View style={mS.smc}>
-      <BasicButton 
-        text={'Download Report'}
-        width="80%"
-        onClick={()=>this.handleClickItem('REPORT_GET')}
-      />
-    </View>
-  }
-
-  {!haveReport && downloadingReport &&
-    <View style={[mS.smc, {height: 72}]}>
-      <ActivityIndicator size="large" color='#33337F'/>
-    </View>
-  }
 
 </View>
 

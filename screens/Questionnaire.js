@@ -226,8 +226,8 @@ class Questionnaire extends React.Component {
 {!SMC_computing && (numberAnswered < 7) &&
 <View style={[mS.shadowBoxQ, {alignItems:'center',marginTop:13,fontSize:20,height:100}]}>
   <Text style={mS.smallGray}>{'Please answer the questions to VALUE_PROP ' + 
-  'for you. All calculations use secure multiparty computation ' + 
-  'to preserve your privacy.'}</Text>
+  'for you. All calculations use secure computation ' + 
+  'to ensure your privacy.'}</Text>
 </View>
 }
 

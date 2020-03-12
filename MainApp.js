@@ -5,8 +5,6 @@ import appRoutes from "./AppRoutes";
 // UI
 import { Platform, StatusBar, View } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
-import CodeScanner from './screens/CodeScanner';
-import CodeScannerPin from './screens/CodeScannerPin';
 import AccountDeleted from './screens/AccountDeleted';
 
 // Redux and Actions
@@ -62,14 +60,6 @@ class MainApp extends React.Component {
     }
     else if ( typeof(account.loading) == 'undefined' ) {
       return null;
-    }
-    else if ( !account.string ) {
-      if (__DEV__) console.log('MainApp: need to scan QR code')
-      return <CodeScanner />
-    }
-    else if ( !account.UUID ) {
-      if (__DEV__) console.log('MainApp: need to set PIN')
-      return <CodeScannerPin />
     }
     else {
       return (

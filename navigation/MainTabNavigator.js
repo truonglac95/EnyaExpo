@@ -14,7 +14,6 @@ import Questionnaire from '../screens/Questionnaire';
 
 /* Results */
 import ResultSMC from '../screens/ResultSMC';
-import Result from '../screens/Result';
 
 /* User actions */
 import Account from '../screens/Account';
@@ -46,8 +45,7 @@ const HomeStack = createStackNavigator(
   {
     Home: Home,
     Questionnaire: Questionnaire,
-    ResultSMC: ResultSMC,
-    Result: Result,
+    ResultSMC: ResultSMC
   }, 
   {
     defaultNavigationOptions: {

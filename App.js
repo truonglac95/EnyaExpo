@@ -20,7 +20,7 @@ import * as SecureStore from 'expo-secure-store'
 
 const Slider = (props) => (
   <View style={mS.sliderVP}>
-    {[0, 1, 2, 3].map(i => 
+    {[0, 1].map(i => 
       <View key={i} style={[mS.dot, i === props.value && {backgroundColor: mC.darkBlue}]}/>
     )}
   </View>
@@ -46,7 +46,7 @@ export default class App extends React.Component {
       if(result) {
         if (__DEV__) ('This is a signed-up user - no need to show value prop slides')
         this.setState({
-          active: 4, // go straight to login window
+          active: 2, // go straight to login window
         });
       } else {
         if (__DEV__) console.log('First sign up - show value prop slides')
@@ -111,58 +111,6 @@ export default class App extends React.Component {
           <Slider value={1} />
           <BasicButton 
             text={'Next'} 
-            onClick={this.moveOn} 
-          />
-        </GestureRecognizer>
-      );
-    }
-
-    if (active === 2) {
-      return (
-        <GestureRecognizer 
-          style={mS.containerCenter} 
-          onSwipeLeft={() => { this.setState({ active: 3 }) }}
-          onSwipeRight={() => { this.setState({ active: 1 }) }} 
-          config={config}
-        >
-          <Image
-            style={mS.valuePropVP}
-            source={require('./assets/images/valueProp3.png')}
-            onLoad={this._cacheResourcesAsync}
-          />
-          <View style={mS.msgBoxVP}>
-            <Text style={mS.titleTextVP}>{'Create an Account'}</Text>
-            <Text style={mS.tagTextVP}>{'by scanning your QR key card and setting your password.'}</Text>
-          </View>
-          <Slider value={2} />
-          <BasicButton 
-            text={'Next'} 
-            onClick={this.moveOn} 
-          />
-        </GestureRecognizer>
-      );
-    }
-
-    if (active === 3) {
-      return (
-        <GestureRecognizer 
-          style={mS.containerCenter} 
-          onSwipeLeft={() => { this.setState({ active: 4 }) }}
-          onSwipeRight={() => { this.setState({ active: 2 }) }} 
-          config={config}
-        >
-          <Image
-            style={mS.valuePropVP}
-            source={require('./assets/images/valueProp4.png')}
-            onLoad={this._cacheResourcesAsync}
-          />
-          <View style={mS.msgBoxVP}>
-            <Text style={mS.titleTextVP}>{'Your QR key card'}</Text>
-            <Text style={mS.tagTextVP}>{'allows only you to access your results.'}</Text>
-          </View>
-          <Slider value={3} />
-          <BasicButton 
-            text={'Sign up'} 
             onClick={this.moveOn} 
           />
         </GestureRecognizer>

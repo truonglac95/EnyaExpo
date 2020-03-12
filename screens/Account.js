@@ -23,8 +23,6 @@ class Account extends React.Component {
 
   render() {
 
-    const uuid = this.props.user.account.UUID.substring(0, 8);
-
     return (
 
       <View style={mS.containerCenterA}>
@@ -39,7 +37,6 @@ class Account extends React.Component {
             <Text style={mS.boxTitle}>{'Support Information'}</Text>
           </ImageBackground>
           <View style={{marginLeft: 12, marginTop: 12}}>
-            <Text style={mS.textUUID}>{'User ID'}: {uuid.toUpperCase()}</Text>
             <Text style={mS.textUUID}>{'SDK Version'}: {`${Constants.manifest.version}`}</Text>
           </View>
         </View>
