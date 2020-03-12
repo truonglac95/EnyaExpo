@@ -30,7 +30,7 @@ class Home extends React.Component {
       percentAnswered: (smc.percentAnswered || 0), //0 to 100
       result: (smc.result || 0.0), //e.g. 14.5
       current: (smc.current || false), //is the score valid/current?
-
+      FHE_key: (smc.FHE_key || false),
       SMC_compute_progress: (this.props.answer.SMC_compute_progress || 0),
       SMC_computing: (this.props.answer.SMC_computing || false),
 
@@ -57,6 +57,7 @@ class Home extends React.Component {
       percentAnswered: (smc.percentAnswered || 0.0),
       result: (smc.result || 0.0),
       current: (smc.current || false),
+      FHE_key: (smc.FHE_key || false),
       SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
       SMC_computing: (nextProps.answer.SMC_computing || false),
 
@@ -74,7 +75,7 @@ class Home extends React.Component {
 
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
-    dispatch( secureCompute(answers, algo_name="smc") );
+    dispatch( secureCompute(answers, 'smc') );
     this.setState({recalculating: true});
 
   }
@@ -83,15 +84,14 @@ class Home extends React.Component {
 
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
-    dispatch( secureCompute(answers, algo_name="fhe") );
+    dispatch( secureCompute(answers, 'fhe') );
     this.setState({recalculating: true});
 
   }
 
   render() {
 
-    const { current, percentAnswered, result, SMC_compute_progress, 
-      SMC_computing, downloadingReport, haveReport } = this.state;
+    const { current, percentAnswered, result, SMC_compute_progress, SMC_computing, FHE_key } = this.state;
     
     var score = parseFloat(result).toFixed(1);
 
@@ -203,6 +203,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
     text={'FHE Compute Score'}
     width="100%"
     onClick={this.handleFHECalculate}
+    key_process = {!FHE_key}
   />
 </View>
 </View>

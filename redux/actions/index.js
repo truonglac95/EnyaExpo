@@ -9,6 +9,7 @@ import {
 import {
 	getAnswers,
 	giveAnswer,
+	FHEKeyGen,
 	secureCompute,
 	secureComputeProgress
 } from './actionAnswers';
@@ -24,6 +25,7 @@ export {
 	//questionaire functions
 	getAnswers,
 	giveAnswer,
+	FHEKeyGen,
 	secureCompute,
 	secureComputeProgress
 };

@@ -1,27 +1,28 @@
 import {
-	//basic ops
-	GET_ANSWERS,
-	GET_ANSWERS_SUCCESS,
-	GET_ANSWERS_FAILURE,
-	GIVE_ANSWER,
-	GIVE_ANSWER_SUCCESS,
-	GIVE_ANSWER_FAILURE,
-	//scoring
+  //basic ops
+  GET_ANSWERS,
+  GET_ANSWERS_SUCCESS,
+  GET_ANSWERS_FAILURE,
+  GIVE_ANSWER,
+  GIVE_ANSWER_SUCCESS,
+  GIVE_ANSWER_FAILURE,
+  //scoring
   GET_SMC_SUCCESS,
-	SECURE_COMPUTE,
-	SECURE_COMPUTE_SUCCESS,
-	SECURE_COMPUTE_FAILURE,
+  SECURE_COMPUTE,
+  SECURE_COMPUTE_SUCCESS,
+  SECURE_COMPUTE_FAILURE,
   SECURE_COMPUTE_PROGRESS,
-	//stored answers
+  //stored answers
   SECURE_STORAGE_SMC,
-	SECURE_STORAGE_ANSWERS,
+  SECURE_STORAGE_ANSWERS,
   SECURE_STORAGE_ACCOUNT,
 } from '../constants';
 
 import EnyaSMC from 'enyasmc'
-import EnyaFHE from 'enyafhe'
-
 import * as SecureStore from 'expo-secure-store'
+import EnyaFHE from 'enyafhe'
+import * as  forge from 'node-forge';
+import { AsyncStorage } from 'react-native';
 
 export const getAnswersBegin   = data  => ({ type: GET_ANSWERS });
 export const getAnswersSuccess = data  => ({ type: GET_ANSWERS_SUCCESS, payload: data });
@@ -87,15 +88,15 @@ const NumGoodAnswers = function ( data ) {
 
 export const getAnswers = () => (dispatch) => {
 
-	dispatch(getAnswersBegin());
+  dispatch(getAnswersBegin());
 
-	SecureStore.getItemAsync(SECURE_STORAGE_ANSWERS).then(result => {
-	  if (result) {
+  SecureStore.getItemAsync(SECURE_STORAGE_ANSWERS).then(result => {
+    if (result) {
         if (__DEV__) console.log('Answers: Previous answers found.');
         const data = JSON.parse(result);
         dispatch(getAnswersSuccess(data));
       } else {
-      	//create the file structure
+        //create the file structure
         if (__DEV__) console.log('Answers: No previous answers found.');
         SecureStore.setItemAsync(SECURE_STORAGE_ANSWERS, JSON.stringify(answers));
       }
@@ -121,7 +122,7 @@ export const getAnswers = () => (dispatch) => {
 
 export const giveAnswer = (answer) => (dispatch) => {
 
-	dispatch(giveAnswerBegin());
+  dispatch(giveAnswerBegin());
 
   SecureStore.getItemAsync(SECURE_STORAGE_ANSWERS).then(res1 => {
     
@@ -174,13 +175,13 @@ export const secureComputeBegin = () => ({
 });
 
 export const secureComputeSuccess = (data) => ({
-	type: SECURE_COMPUTE_SUCCESS,
-	payload: data,
+  type: SECURE_COMPUTE_SUCCESS,
+  payload: data,
 });
 
 export const secureComputeFailure = (error) => ({
-	type: SECURE_COMPUTE_FAILURE,
-	payload: error,
+  type: SECURE_COMPUTE_FAILURE,
+  payload: error,
 });
 
 export const secureComputeProgress = (data) => ({
@@ -188,9 +189,84 @@ export const secureComputeProgress = (data) => ({
   payload: data,
 });
 
+export const FHEKeyGen = () => async(dispatch) => {
+
+  var AccountInfo = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT)
+  AccountInfo = AccountInfo ? JSON.parse(AccountInfo) : {};
+
+  if (( typeof(AccountInfo.Key_id) == 'undefined' ) || (AccountInfo.Key_id.length < 10)) {
+
+    var key_number = typeof(AccountInfo.Key_id) == 'undefined' ? 0 : AccountInfo.Key_id.length;
+    
+    while ( key_number < 10 ) {
+      var rand_key_id = Math.random().toString(36).substring(2, 5) + 
+        Math.random().toString(36).substring(2, 5);
+        
+      /* Generate private key */
+      var privatekey = await EnyaFHE.PrivateKeyGenRN()
+
+      /* Generate public key */
+      var publickey=  await EnyaFHE.PublicKeyGenRN(privatekey);
+
+      /* Generate multi key */
+      var multikey = await EnyaFHE.MultiKeyGenRN(privatekey);
+   
+      /* Generate rotation key */
+      var rotakey = await EnyaFHE.RotaKeyGenRN(privatekey);
+
+      var key = {
+        privatekey: privatekey,
+        publickey: publickey, 
+        multikey: multikey, 
+        rotakey: rotakey
+      }
+
+      console.log("EnyaFHE: Generated ", key_number + 1, " FHE key, id -- ", rand_key_id)
+
+      /* 
+      Prevent use of the old AES key if the user deletes their account and generates a new AES key.
+      */
+      
+      var account = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT);
+      account = JSON.parse(account);
+
+      /* aes encryptes fhe keys */
+      var aes_key = account.aes_key;
+      var aes_iv = forge.random.getBytesSync(16);
+      var aes_iv_hex = forge.util.bytesToHex(aes_iv);
+      
+      var cipher = forge.cipher.createCipher('AES-CBC', aes_key);
+      cipher.start({iv: aes_iv});
+      cipher.update(forge.util.createBuffer(JSON.stringify(key),'utf8'));
+      cipher.finish();
+      var encrypted = cipher.output;
+      encrypted = aes_iv_hex + encrypted.toHex();
+      await AsyncStorage.setItem(rand_key_id, encrypted) 
+
+      /* update the number of fhe keys */
+      if ( typeof(account.Key_id) == 'undefined' ) {
+        account.Key_id = [];
+        account.Key_id.push(rand_key_id);
+        key_number = account.Key_id.length;
+      } else {
+        account.Key_id.push(rand_key_id);
+        key_number = account.Key_id.length;
+      }
+      await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account))
+
+      /* Ready to compute */
+      var smc =  await SecureStore.getItemAsync(SECURE_STORAGE_SMC);
+      smc = smc ? JSON.parse(smc) : {};
+      smc.FHE_key = true;
+      dispatch( get_SMC_Success(smc) )
+      await SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(smc));
+    }
+  }
+}
+
 export const secureCompute = (data, algo_name) => async (dispatch) => {
 
-	dispatch( secureComputeBegin() );
+  dispatch( secureComputeBegin() );
 
   dispatch( secureComputeProgress({
       SMC_compute_progress: 0,
@@ -212,9 +288,9 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
   var current = false;
   var haveSMC = false;
 
-	if ( CanCompute( data ) ) {
+  if ( CanCompute( data ) ) {
   
-    if (algo_name == "smc") {
+    if (algo_name == 'smc') {
 
       if (__DEV__) console.log('SMC: Yes, there are enough data for computation');
 
@@ -246,7 +322,7 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
         }))
       }
 
-    } else if (algo_name == "fhe") {
+    } else if (algo_name == 'fhe') {
 
       if (__DEV__) console.log('Yes, there are enough data for FHE computation');
 
@@ -260,7 +336,6 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
           AlgorithmName: "first_algo"
         })
         const [model, _] = await Promise.all([EnyaFHE.FHE(Object.values(data)), circle_indicator(200, 0, 200)]);
-
         dispatch( secureComputeProgress({
           SMC_compute_progress: 100,
           SMC_computing: true 
@@ -275,123 +350,155 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
       // ------------------- The second way ----------------------------
       // ------------------- Monitor the status ------------------------
       // ------------------- More complicated --------------------------
-      // ---- For details, plesae check enyafhe/__test__/__test__.js ---
+      // ---- For details, please check enyafhe/__test__/__test__.js ---
       /* Give token and algorithm name */
+
       EnyaFHE.Configure({
         CLIENT_TOKEN: "f7edB8a8A4D7dff85d2CB7E5",
         algo_name: "sample_algo"
       })
 
-      /* Generate private key */
-      var [privatekey, temp] = await Promise.all([EnyaFHE.PrivateKeyGenRN(), circle_indicator(1, 0, 40)]);
-      if (__DEV__) console.log("Generated private key.")
+      /* Get fhe key id */
+      var account = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT);
+      account = account ? JSON.parse(account):{};
+      var Key_id_update = account.Key_id;
+      
+      /* randomly pick one fhe key */
+      var random_id = Key_id_update[Math.floor(Math.random()*Key_id_update.length)];
+      var aes_encrypt = await AsyncStorage.getItem(random_id)
+      var aes_iv_hex = aes_encrypt.slice(0,32);
+      var aes_fhe_key = aes_encrypt.slice(32);
+      var bytes = forge.util.hexToBytes(aes_fhe_key);
+      aes_fhe_key = forge.util.createBuffer(bytes);
 
-      /* Generate public key */
-      var [publickey, temp] =  await Promise.all([
-        EnyaFHE.PublicKeyGenRN(), 
-        circle_indicator(200, 20, 40)
-      ]);
-      if (__DEV__) console.log("Generated public key.")
+      /* Delete the used fhe key */
+      Key_id_update = Key_id_update.filter(Key_id_update => !random_id.includes(Key_id_update))
+      account.Key_id = Key_id_update
+      await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account));
+      await AsyncStorage.removeItem(random_id)
 
-      /* Generate multi key */
-      var [multikey, temp] = await Promise.all([
-        EnyaFHE.MultiKeyGenRN(), 
-        circle_indicator(500, 40, 40)
-      ]);
-      if (__DEV__) console.log("Generated multiple key.")
-
-       /* Generate rotation key */
-      var [rotakey, temp] = await Promise.all([
-        EnyaFHE.RotaKeyGenRN(), 
-        circle_indicator(500, 60, 40)
-      ]);
-      if (__DEV__) console.log("Generated rotation key.")
-      if (__DEV__) console.log("Finished key generations!")
+      /* aes decrypt fhe keys */
+      var aes_key = account.aes_key;
+      var aes_iv = forge.util.hexToBytes(aes_iv_hex);
+      var decipher = forge.cipher.createDecipher('AES-CBC', aes_key);
+      decipher.start({iv: aes_iv});
+      decipher.update(aes_fhe_key);
+      var decipher_status = decipher.finish();
+      var fhe_keys = JSON.parse(decipher.output.data);
+  
+      /* load fhe keys */
+      var privatekey_fhe = fhe_keys.privatekey;
+      var publickey_fhe = fhe_keys.publickey;
+      var multikey_fhe = fhe_keys.multikey;
+      var rotakey_fhe = fhe_keys.rotakey;
 
       /* Pack the weight */
       var plaintext = EnyaFHE.PackVector(Object.values(data));
-        
-        /* Encrypt the plaintext */
-      var ciphertext = EnyaFHE.EncryptVector(
-        plaintext,
-        publickey,
-      );
 
+      /* Encrypt the plaintext */
+      var ciphertext_fhe = EnyaFHE.EncryptVector(
+        plaintext,
+        publickey_fhe,
+      );
+      
       /* Create JSON payload */
       var jsonpayload = EnyaFHE.JSONPayload(
-        publickey,
-        multikey,
-        rotakey,
-        ciphertext
+        publickey_fhe,
+        multikey_fhe,
+        rotakey_fhe,
+        ciphertext_fhe
       );
-      /* Random String */
-      var string_pcr = EnyaFHE.RandomPCR();
-      if (__DEV__) console.log("Random PCR: ", string_pcr)
       
-      /* Send the payload to the server */
-      var [senddata, temp] = await Promise.all([
-        EnyaFHE.SendData({ pcr: string_pcr, data: jsonpayload }),
-        circle_indicator(20, 80, 20)
-      ])
-      const return_messgae = await senddata.json();
-      if (return_messgae.status == true) { 
-          if (__DEV__) console.log("Sent encryption keys.");
+    /* Random String */
+    var string_pcr = EnyaFHE.RandomPCR();
+    if (__DEV__) console.log("EnyaFHE: Random PCR -- ", string_pcr)
+    
+    /* Send the payload to the server */
+    var [senddata, temp] = await Promise.all([
+      EnyaFHE.SendData({ pcr: string_pcr, data: jsonpayload }),
+      circle_indicator(50, 0, 80)
+    ])
+    const return_message = await senddata.json();
+    if (return_message.status == true) { 
+        if (__DEV__) console.log("EnyaFHE: Sent encryption keys.");
 
-          var status = false;
-          var count = 0;
-          while ((status == false) & (count < 5)) {
-              await EnyaFHE.sleep(1000);
-              /* Check the status of calculation */
-              const checkstatus = await EnyaFHE.CheckStatus(
-                  { pcr: string_pcr, data: jsonpayload },
-              );
-              const return_message = await checkstatus.json();
-              status = return_message.API_result_ready;
-              count = count + 1;
-          }
-          if (status == true) {
-              if (__DEV__) console.log("The calculation was finished.");
-              if (__DEV__) console.log("Start to retrieve encrypted result.");
-              /* Retrieve the calculation result */
-              var [getresult, temp] = await Promise.all([
-                EnyaFHE.GetResult({pcr: string_pcr}),
-                circle_indicator(5, 90, 20)
-              ]);
-              const cipher_result = await getresult.json();
+        var status = false;
+        var count = 0;
+        while ((status == false) & (count < 5)) {
+            await EnyaFHE.sleep(1000);
+            /* Check the status of calculation */
+            const checkstatus = await EnyaFHE.CheckStatus(
+                { pcr: string_pcr, data: jsonpayload },
+            );
+            const return_message = await checkstatus.json();
+            status = return_message.API_result_ready;
+            count = count + 1;
+        }
+        if (status == true) {
+            if (__DEV__) console.log("EnyaFHE: Calculation finished.");
+            if (__DEV__) console.log("EnyaFHE: Start to retrieve encrypted result.");
+            /* Retrieve the calculation result */
+            var [getresult, temp] = await Promise.all([
+              EnyaFHE.GetResult({pcr: string_pcr}),
+              circle_indicator(100, 40, 80)
+            ]);
+            const cipher_result = await getresult.json();
 
-              if (__DEV__) console.log("Start to decrypt the ciphertext.");
-              var ciphertext = EnyaFHE.ReadCiphertext(cipher_result.ciphertext);
-              var text = EnyaFHE.DecryptVector(ciphertext);
-              result = (text[0] / 100000).toFixed(2);
-              current = true; 
-              haveSMC = true; 
-          } else {
-              /* Computation failed */
-              if (__DEV__) console.log("Error: ", status);
-              dispatch( secureComputeProgress({ 
-                SMC_compute_progress: 0,
-                SMC_computing: false 
-              }));
-          }
-      } else {
-          /* Computation failed */
-          if (__DEV__) console.log("Failed to send encryption keys");
-          dispatch( secureComputeProgress({ 
-            SMC_compute_progress: 0,
-            SMC_computing: false 
-          }));
-      }       
+            if (__DEV__) console.log("EnyaFHE: Decrypting.");
+            var ciphertext_res = EnyaFHE.ReadCiphertext(cipher_result.ciphertext);
 
-  }
-	} else {
+            var [text, temp] = await Promise.all([
+              EnyaFHE.DecryptVector(ciphertext_res, privatekey_fhe),
+              circle_indicator(20, 80, 40)
+            ])
+            
+            if (__DEV__) console.log("EnyaFHE: Finished decryption.")
+
+            result = (text[0] / 100000).toFixed(2);
+            current = true; 
+            haveSMC = true;
+
+            /* 
+            Read the number of keys
+            If there is no keys in storage,
+            then it can't compute.
+            */
+            var account = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT);
+            account = account ? JSON.parse(account):{};
+            if ( account.Key_id.length == 0 ) {
+              var smc =  await SecureStore.getItemAsync(SECURE_STORAGE_SMC);
+              smc = smc ? JSON.parse(smc) : {};
+              smc.FHE_key = false;
+              dispatch( get_SMC_Success(smc) )
+              await SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(smc));
+            }
+        } else {
+            /* Computation failed */
+            if (__DEV__) console.log("Error: ", status);
+            dispatch( secureComputeProgress({ 
+              SMC_compute_progress: 0,
+              SMC_computing: false 
+            }));
+        }
+    } else {
+        /* Computation failed */
+        if (__DEV__) console.log("Failed to send encryption keys");
+        dispatch( secureComputeProgress({ 
+          SMC_compute_progress: 0,
+          SMC_computing: false 
+        }));
+    } 
+    
+}
+  } else {
 
     if (__DEV__) console.log('Not enough data for secure computation');
 
   }
 
-	SecureStore.getItemAsync(SECURE_STORAGE_SMC).then(res => {
+  SecureStore.getItemAsync(SECURE_STORAGE_SMC).then(res => {
 
-		const smc = res ? JSON.parse(res) : {};
+    const smc = res ? JSON.parse(res) : {};
 
     let updatedSMC = {
       ...smc,
@@ -405,7 +512,7 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
 
     if ( haveSMC ) {
     
-    	dispatch( secureComputeSuccess( updatedSMC ) );
+      dispatch( secureComputeSuccess( updatedSMC ) );
       
       dispatch( secureComputeProgress({ 
           SMC_compute_progress: 100,
@@ -415,7 +522,7 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
     
     } else {
 
-    	dispatch( secureComputeFailure({error: 'Not enough data for secure computation'}) );
+      dispatch( secureComputeFailure({error: 'Not enough data for secure computation'}) );
 
     }
 

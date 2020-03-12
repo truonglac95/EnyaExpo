@@ -84,7 +84,7 @@ class Questionnaire extends React.Component {
 
       result: (smc.result || 0.0),
       current: (smc.current || false),
-
+      FHE_key: (smc.FHE_key || false),
       SMC_compute_progress: (this.props.answer.SMC_compute_progress|| 0),
       SMC_computing: (this.props.answer.SMC_computing || false),
       
@@ -161,7 +161,7 @@ class Questionnaire extends React.Component {
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
 
-    dispatch( secureCompute(answers, algo_name="smc") );
+    dispatch( secureCompute(answers, 'smc') );
 
     this.setState({recalculating: true });
 
@@ -172,7 +172,7 @@ class Questionnaire extends React.Component {
     const { dispatch } = this.props;
     const { answers } = this.props.answer;
 
-    dispatch( secureCompute(answers, algo_name="fhe") );
+    dispatch( secureCompute(answers, 'fhe') );
 
     this.setState({recalculating: true });
 
@@ -187,6 +187,7 @@ class Questionnaire extends React.Component {
       numberAnswered: (smc.numberAnswered || 0),
       result: (smc.result || 0.0),
       current: (smc.current || false),
+      FHE_key: (smc.FHE_key || false),
       SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
       SMC_computing: (nextProps.answer.SMC_computing || false),
     });
@@ -203,7 +204,7 @@ class Questionnaire extends React.Component {
 
     const { birthyear, country, gender, height, weight, binary_1, binary_2,
             result, current, percentAnswered, numberAnswered, 
-            SMC_computing, SMC_compute_progress } = this.state;
+            SMC_computing, SMC_compute_progress, FHE_key } = this.state;
 
     const pickerStyle = {
       done: {color: '#FB2E59'},
@@ -247,6 +248,7 @@ class Questionnaire extends React.Component {
     width={200}
     text={'FHE Secure Compute'} 
     onClick={this.handleFHECalculate}
+    key_process = {!FHE_key}
   />
   </View>
 }

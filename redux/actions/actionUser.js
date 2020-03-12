@@ -10,6 +10,7 @@ import {
 } from '../constants';
 
 import * as SecureStore from 'expo-secure-store'
+import { AsyncStorage } from 'react-native';
 
 export const setAccount = data => ({
 	type: SET_ACCOUNT,
@@ -41,6 +42,7 @@ export const burnEverything = () => (dispatch) => {
 	SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(() => {}).catch(() => {});
 	SecureStore.deleteItemAsync(SECURE_STORAGE_ANSWERS).then(() => {}).catch(() => {});
 	SecureStore.deleteItemAsync(SECURE_STORAGE_SMC).then(() => {}).catch(() => {});
+	AsyncStorage.clear().then(() => {}).catch(() => {});
 
     if (__DEV__) console.log('Cleared Secure Storage...')
 
