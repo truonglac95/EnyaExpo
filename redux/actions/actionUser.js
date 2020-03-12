@@ -9,17 +9,15 @@ import {
 	SECURE_STORAGE_SMC
 } from '../constants';
 
-import * as EnyaDeliver from 'enyadeliver';
-
 import * as SecureStore from 'expo-secure-store'
-
-export const resetApp = () => ({
-	type: RESET_APP,
-});
 
 export const setAccount = data => ({
 	type: SET_ACCOUNT,
 	payload: data,
+});
+
+export const resetApp = () => ({
+	type: RESET_APP,
 });
 
 export const resetError = data => ({
@@ -43,7 +41,6 @@ export const burnEverything = () => (dispatch) => {
 	SecureStore.deleteItemAsync(SECURE_STORAGE_ACCOUNT).then(() => {}).catch(() => {});
 	SecureStore.deleteItemAsync(SECURE_STORAGE_ANSWERS).then(() => {}).catch(() => {});
 	SecureStore.deleteItemAsync(SECURE_STORAGE_SMC).then(() => {}).catch(() => {});
-	EnyaDeliver.BurnEverything();
 
     if (__DEV__) console.log('Cleared Secure Storage...')
 

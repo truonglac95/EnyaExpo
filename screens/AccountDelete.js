@@ -33,7 +33,7 @@ class AccountDelete extends React.Component {
 
         <View style={[mS.marTop20, {width: '84%'}]}>
           <Text style={mS.descriptionSmall}>{'This function will wipe all' + 
-          'your information from this phone and reset the App.'}</Text>
+          ' your information from this phone and reset the App.'}</Text>
         </View>
 
         <View style={mS.marTop20}>

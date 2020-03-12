@@ -10,7 +10,6 @@
     "@babel/core": "^7.4.0",
     "@react-native-community/netinfo": "^4.6.0",
     "babel-plugin-inline-import": "^3.0.0",
-    "elliptic-expo": "https://github.com/enyalabs/elliptic-expo/archive/v6.5.3.tar.gz",
     "enyafhe": "^0.0.8",
     "enyasmc": "^1.1.13",
     "expo": "^36.0.0",
@@ -37,7 +36,6 @@
     "react-redux": "^7.1.3",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
-    "rn-pdf-reader-js": "https://github.com/wiadev/rn-pdf-reader-js/archive/0.2.7.tar.gz",
     "sha1": "^1.1.1"
   },
   "private": true

@@ -19,9 +19,9 @@ import {
 } from '../constants';
 
 import EnyaSMC from 'enyasmc'
-import * as SecureStore from 'expo-secure-store'
 import EnyaFHE from 'enyafhe'
 
+import * as SecureStore from 'expo-secure-store'
 
 export const getAnswersBegin   = data  => ({ type: GET_ANSWERS });
 export const getAnswersSuccess = data  => ({ type: GET_ANSWERS_SUCCESS, payload: data });
@@ -277,7 +277,6 @@ export const secureCompute = (data, algo_name) => async (dispatch) => {
       // ------------------- More complicated --------------------------
       // ---- For details, plesae check enyafhe/__test__/__test__.js ---
       /* Give token and algorithm name */
-      //Should do this somewhere else
       EnyaFHE.Configure({
         CLIENT_TOKEN: "f7edB8a8A4D7dff85d2CB7E5",
         algo_name: "sample_algo"

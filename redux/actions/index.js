@@ -13,11 +13,6 @@ import {
 	secureComputeProgress
 } from './actionAnswers';
 
-import {
-	getResults,
-	circulateLocalResults
-} from './actionResults';
-
 export {
 	//user account ops
 	signinSuccess,
@@ -30,9 +25,5 @@ export {
 	getAnswers,
 	giveAnswer,
 	secureCompute,
-	secureComputeProgress,
-
-	//get new encrypted results from server
-	getResults,
-	circulateLocalResults
+	secureComputeProgress
 };

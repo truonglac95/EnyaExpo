@@ -11,11 +11,6 @@ const initialStore = {
 		loading: false,
 		answers: [],
 		smc: []
-	},
-	result: {
-		error: null,
-		loading: false,
-		results: []
 	}
 };
 

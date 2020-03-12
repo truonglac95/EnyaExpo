@@ -1,12 +1,10 @@
 import { combineReducers } from 'redux';
 import { user } from './reducerUser';
 import { answer } from './reducerAnswers';
-import { result } from './reducerResults';
 
 const reducers = {
 	user,
-	answer,
-	result,
+	answer
 };
 
 const appReducer = combineReducers(reducers);
@@ -25,11 +23,6 @@ const resetState = {
     loading: false,
     answers: [],
     smc: []
-  },
-  result: {
-    error: null,
-    loading: false,
-    results: []
   }
 }
 

@@ -80,7 +80,7 @@ export default class App extends React.Component {
           />
           <View style={mS.msgBoxVP}>
             <Text style={mS.titleTextVP}>{'Enya\nSDK and API'}</Text>
-            <Text style={mS.tagTextVP}>{'Secure Content Delivery and Computation'}</Text>
+            <Text style={mS.tagTextVP}>{'Secure Edge Computation'}</Text>
           </View>
           <Slider value={0}/>
           <BasicButton 
@@ -125,7 +125,6 @@ export default class App extends React.Component {
     );
   }
 
-  
   render() {
 
     return (
@@ -133,6 +132,7 @@ export default class App extends React.Component {
         {this.renderApp(this.state.active)}
       </View>
     );
+
   }
 
   _cacheResourcesAsync = async () => {
@@ -142,8 +142,6 @@ export default class App extends React.Component {
       require('./assets/images/id.png'),
       require('./assets/images/valueProp1.png'),
       require('./assets/images/valueProp2.png'),
-      require('./assets/images/valueProp3.png'),
-      require('./assets/images/valueProp4.png'),
       require('./assets/images/nav/nav_home_g.png'),
       require('./assets/images/nav/nav_home_b.png'),
       require('./assets/images/nav/nav_me_g.png'),

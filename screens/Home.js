@@ -57,7 +57,6 @@ class Home extends React.Component {
       percentAnswered: (smc.percentAnswered || 0.0),
       result: (smc.result || 0.0),
       current: (smc.current || false),
-
       SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
       SMC_computing: (nextProps.answer.SMC_computing || false),
 
@@ -170,7 +169,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
   style={{marginTop: 20}}
   hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
   onPress={()=>this.handleClickItem('GIVE_ANSWERS')}>
-  <Text style={mS.largeAction}>{'Update Answers'}</Text>
+  <Text style={mS.largeAction}>{'Change Answers and Recompute'}</Text>
 </TouchableOpacity>
 </View>
 }
@@ -195,14 +194,14 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 <View style={{marginTop: 20}}>
   <BasicButton 
     text={'SMC Compute Score'}
-    width="80%"
+    width="100%"
     onClick={this.handleSMCCalculate}
   />
 </View>
 <View style={{marginTop: 20}}>
   <BasicButton 
     text={'FHE Compute Score'}
-    width="80%"
+    width="100%"
     onClick={this.handleFHECalculate}
   />
 </View>
