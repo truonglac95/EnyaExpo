@@ -40,7 +40,7 @@ export default class BasicButton extends Component {
             width: (width || defaultWidth), 
             backgroundColor: key_process? mC.lightGray : mC.white,
             borderColor: key_process? mC.lightGray : mC.darkBlue}]} 
-            onPress={key_process ? () => this.handleAlert("Initial key generation", "Be patient"): onClick}>
+            onPress={key_process ? () => this.handleAlert("To try FHE, you first need to generate your FHE keys. Please do so in the account tab.", "No FHE keys"): onClick}>
           <View style={styles.flex}> 
             {icon && iOS &&
               <View style={{marginRight: 10, marginTop: 3}}>

@@ -20,6 +20,8 @@ import Account from '../screens/Account';
 import AccountDelete from '../screens/AccountDelete';
 import AccountDeleted from '../screens/AccountDeleted';
 
+import FHEKeyGen from '../screens/FHEKeyGen';
+
 const Label = (props) => (
   <Text style={[mS.tabText, { color: (props.focused ? mC.darkBlue : mC.gray) }]}>
     {props.text}
@@ -92,6 +94,7 @@ const AccountStack = createStackNavigator(
   },
   AccountDelete: AccountDelete,
   AccountDeleted: AccountDeleted,
+  FHEKeyGen: FHEKeyGen,
 },
 {
   defaultNavigationOptions: {

@@ -45,8 +45,18 @@ class Account extends React.Component {
           <ImageBackground source={require('../assets/images/id.png')} style={{height: 50}}>
             <Text style={mS.boxTitle}>{'Account Functions'}</Text>
           </ImageBackground>
+          <View style={{marginLeft: 14, marginTop: 12}}>
+            <Text style={[mS.textUUID, {fontSize: 14}]}>{'To use FHE, you need to first generate various keys. Depending on your phone hardware, this could take several minutes. You only need to do this once.'}</Text>
+          </View>
           <View style={{alignItems: 'center', justifyContent: 'flex-start'}}>
-            <View style={{marginTop: 30, marginBottom: 20}}>
+            <View style={{marginTop: 30, marginBottom: 10}}>
+              <BasicButton 
+                text={'Generate FHE Keyset'} 
+                icon="ios-key" 
+                onClick={()=>{this.props.navigation.navigate('FHEKeyGen')}} 
+              />
+            </View>
+            <View style={{marginTop: 20, marginBottom: 20}}>
               <BasicButton 
                 text={'Wipe Account'} 
                 icon="ios-trash" 

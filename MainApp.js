@@ -26,8 +26,10 @@ class MainApp extends React.Component {
     //load account settings, if any
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(result => {
       if (result) {
-        const account = result ? JSON.parse(result) : {};
+        //const account = result ? JSON.parse(result) : {};
         if (__DEV__) console.log('MainApp: Previous account found.');
+        const account = JSON.parse(result);
+        console.log('previous account:', account)
         let updatedAccount = {
           ...account,
           loading: false,
@@ -36,7 +38,14 @@ class MainApp extends React.Component {
       } else {
         //need to set up account
         if (__DEV__) console.log('MainApp: No account found - set up new account.');
-        this.props.dispatch(setAccount({loading: false}));
+        var aes_key = forge.random.getBytesSync(16);
+        let newAccount = {
+          aes_key,
+          fhe_ready: false, //no FHE keys stored yet
+          loading: false,
+        };
+        SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
+        this.props.dispatch(setAccount(newAccount));
         //In production app triggers flow through QR code, T&C, and password, etc.
       }
     }).catch(err => {
@@ -46,12 +55,14 @@ class MainApp extends React.Component {
   }
 
   componentDidMount() {
+
     //resets everything after app delete
     this.props.dispatch(resetError());
     this.props.dispatch(getAnswers());
-
+/*
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(res => {
-       if (res) {
+      if (res) {
+        const AccountInfo = JSON.parse(res);
          if (__DEV__) console.log('MainApp: Previous AES key found.')
          const AccountInfo = res ? JSON.parse(res) : {};
          this.props.dispatch(setAccount(AccountInfo));
@@ -74,6 +85,7 @@ class MainApp extends React.Component {
          this.props.dispatch(FHEKeyGen())
        }
      })
+  */
   }
 
   render() {

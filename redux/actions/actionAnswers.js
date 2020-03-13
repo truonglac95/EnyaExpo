@@ -192,6 +192,7 @@ export const secureComputeProgress = (data) => ({
 export const FHEKeyGen = () => async(dispatch) => {
 
   var AccountInfo = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT)
+  
   AccountInfo = AccountInfo ? JSON.parse(AccountInfo) : {};
 
   if (( typeof(AccountInfo.Key_id) == 'undefined' ) || (AccountInfo.Key_id.length < 10)) {

@@ -23,7 +23,7 @@ class AccountDeleted extends React.Component {
         <Text style={mS.titleTextVP}>{'Account Wiped'}</Text>
       </View>
 
-      <View style={{height: 40}}/>
+      <View style={{height: 24}}/>
 
       <BasicButton 
         text={'Ok'} 

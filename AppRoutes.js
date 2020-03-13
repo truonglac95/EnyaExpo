@@ -7,6 +7,7 @@ import AccountDeleted from './screens/AccountDeleted';
 import Questionnaire from './screens/Questionnaire';
 
 import ResultSMC from './screens/ResultSMC';
+import FHEKeyGen from './screens/FHEKeyGen';
 
 /* =============================================================================
 Screen Names:
@@ -18,7 +19,8 @@ const SCREEN_NAMES = {
   ACCOUNT_DELETE: "ACCOUNT_DELETE",
   ACCOUNT_DELETED: "ACCOUNT_DELETED",
   QUESTIONNAIRE: "QUESTIONNAIRE",
-  RESULT_SMC: "RESULT_SMC"
+  RESULT_SMC: "RESULT_SMC",
+  FHE_GEN: "FHE_GEN"
 };
 
 /* =============================================================================
@@ -36,6 +38,10 @@ const AppRouteConfig = {
   },
   [SCREEN_NAMES.ACCOUNT_DELETED]: {
     screen: AccountDeleted,
+    navigationOptions: {}
+  },
+  [SCREEN_NAMES.FHE_GEN]: {
+    screen: FHEKeyGen,
     navigationOptions: {}
   },
   [SCREEN_NAMES.QUESTIONNAIRE]: {
