@@ -205,15 +205,31 @@ export const FHEKeyGen = () => async(dispatch) => {
         
       /* Generate private key */
       var privatekey = await EnyaFHE.PrivateKeyGenRN()
+      
+      dispatch( secureComputeProgress({
+        FHE_key_progress: 20
+      }))
 
       /* Generate public key */
-      var publickey=  await EnyaFHE.PublicKeyGenRN(privatekey);
+      var publickey =  await EnyaFHE.PublicKeyGenRN(privatekey);
+
+      dispatch( secureComputeProgress({
+        FHE_key_progress: 50
+      }))
 
       /* Generate multi key */
       var multikey = await EnyaFHE.MultiKeyGenRN(privatekey);
    
+      dispatch( secureComputeProgress({
+        FHE_key_progress: 75
+      }))
+
       /* Generate rotation key */
       var rotakey = await EnyaFHE.RotaKeyGenRN(privatekey);
+
+      dispatch( secureComputeProgress({
+        FHE_key_progress: 100
+      }))
 
       var key = {
         privatekey: privatekey,
@@ -253,6 +269,14 @@ export const FHEKeyGen = () => async(dispatch) => {
         account.Key_id.push(rand_key_id);
         key_number = account.Key_id.length;
       }
+
+      /* Used for loading computation status */
+      if (key_number != 3) {
+        account.FHE_indicator = true;
+      } else {
+        account.FHE_indicator = false;
+      }
+
       await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account))
 
       /* Ready to compute */
