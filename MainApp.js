@@ -59,20 +59,13 @@ class MainApp extends React.Component {
     //resets everything after app delete
     this.props.dispatch(resetError());
     this.props.dispatch(getAnswers());
-/*
+
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(res => {
       if (res) {
         const AccountInfo = JSON.parse(res);
+        console.log(AccountInfo)
          if (__DEV__) console.log('MainApp: Previous AES key found.')
-         const AccountInfo = res ? JSON.parse(res) : {};
          this.props.dispatch(setAccount(AccountInfo));
-         if (( typeof(AccountInfo.Key_id ) == 'undefined') || 
-             ( AccountInfo.Key_id.length < 10 )) {
-             this.props.dispatch(FHEKeyGen())
-           if (__DEV__) console.log('MainApp: Generating FHE keys...')
-         } else {
-           if (__DEV__) console.log('MainApp: Found sufficient FHE keys')
-         }
        } else {
          if (__DEV__) console.log('MainApp: Generating AES key')
          const AccountInfo = res ? JSON.parse(res) : {};
@@ -82,10 +75,9 @@ class MainApp extends React.Component {
            aes_key,
          }
          SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(Account));
-         this.props.dispatch(FHEKeyGen())
        }
      })
-  */
+  
   }
 
   render() {

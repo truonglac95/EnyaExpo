@@ -6,10 +6,28 @@ import { TouchableOpacity, View, Text } from 'react-native';
 import BasicButton from '../components/BasicButton';
 import { mS } from '../constants/masterStyle';
 
+// Redux and Actions
+import { setAccount, FHEKeyGen as FHEKey} from '../redux/actions';
+import * as SecureStore from 'expo-secure-store';
+import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
+
 class FHEKeyGen extends React.Component {
   
   constructor (props) {
     super(props);
+  }
+  
+  componentDidMount() {
+    SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(res => {
+
+      const AccountInfo = JSON.parse(res);
+
+      if (( typeof(AccountInfo.Key_id ) == 'undefined') || 
+          ( AccountInfo.Key_id.length < 3 )) {
+          this.props.dispatch(FHEKey())
+       }
+
+     })
   }
 
   static navigationOptions = ({ navigation }) => {

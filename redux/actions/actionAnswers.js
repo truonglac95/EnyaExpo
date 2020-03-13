@@ -195,7 +195,7 @@ export const FHEKeyGen = () => async(dispatch) => {
   
   AccountInfo = AccountInfo ? JSON.parse(AccountInfo) : {};
 
-  if (( typeof(AccountInfo.Key_id) == 'undefined' ) || (AccountInfo.Key_id.length < 10)) {
+  if (( typeof(AccountInfo.Key_id) == 'undefined' ) || (AccountInfo.Key_id.length < 3)) {
 
     var key_number = typeof(AccountInfo.Key_id) == 'undefined' ? 0 : AccountInfo.Key_id.length;
     
