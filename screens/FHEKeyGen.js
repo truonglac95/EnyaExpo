@@ -21,27 +21,32 @@ class FHEKeyGen extends React.Component {
     const { smc } = this.props.answer;
 
     this.state = {
-      FHE_key_progress: (smc.FHE_key_progress || 0),
+      FHE_key_progress: (this.props.answer.FHE_key_progress || 0),
     };
+
 
   }
   
   componentDidMount() {
 
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(res => {
-
+      
       const AccountInfo = JSON.parse(res);
 
-      if (( typeof(AccountInfo.FHE_indicator == "undefined") ) || 
-          ( AccountInfo.FHE_indicator == false ) || 
-          ( typeof(AccountInfo.Key_id ) == 'undefined' ) || 
-          ( AccountInfo.Key_id.length < 3 )) {
+      if (( typeof(AccountInfo.FHE_indicator) == "undefined" ) || 
+          ( AccountInfo.FHE_indicator == false )) {
 
-          this.props.dispatch(FHEKey())
+        if (( AccountInfo.Key_id.length < 3 )) {
 
-       }
+          this.props.dispatch(FHEKey());
 
-     })
+        }
+      } else if ( AccountInfo.Key_id.length == 3 ){
+
+        this.state.FHE_key_progress = 100;
+      
+      }
+    })
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -50,7 +55,7 @@ class FHEKeyGen extends React.Component {
 
     this.setState({
 
-      FHE_key_progress: (smc.FHE_key_progress || 0),
+      FHE_key_progress: (this.props.answer.FHE_key_progress || 0),
 
     });    
 

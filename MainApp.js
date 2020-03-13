@@ -26,10 +26,9 @@ class MainApp extends React.Component {
     //load account settings, if any
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(result => {
       if (result) {
-        //const account = result ? JSON.parse(result) : {};
         if (__DEV__) console.log('MainApp: Previous account found.');
-        const account = JSON.parse(result);
-        console.log('previous account:', account)
+        var account = JSON.parse(result);
+        account.FHE_indicator = false;
         let updatedAccount = {
           ...account,
           loading: false,
@@ -42,6 +41,8 @@ class MainApp extends React.Component {
         let newAccount = {
           aes_key,
           fhe_ready: false, //no FHE keys stored yet
+          FHE_indicator: false,
+          Key_id: [],
           loading: false,
         };
         SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
@@ -62,13 +63,15 @@ class MainApp extends React.Component {
 
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(res => {
       if (res) {
-        const AccountInfo = JSON.parse(res);
-        console.log(AccountInfo)
-         if (__DEV__) console.log('MainApp: Previous AES key found.')
-         this.props.dispatch(setAccount(AccountInfo));
+        var AccountInfo = JSON.parse(res);
+        AccountInfo.FHE_indicator = false;       
+        if (__DEV__) console.log('MainApp: Previous AES key found.')
+        SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(AccountInfo));
+        this.props.dispatch(setAccount(AccountInfo));
        } else {
          if (__DEV__) console.log('MainApp: Generating AES key')
-         const AccountInfo = res ? JSON.parse(res) : {};
+         var AccountInfo = res ? JSON.parse(res) : {};
+         AccountInfo.Key_id = [];
          var aes_key = forge.random.getBytesSync(16);
          let Account ={
            ...AccountInfo,

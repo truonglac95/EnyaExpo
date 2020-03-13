@@ -195,10 +195,19 @@ export const FHEKeyGen = () => async(dispatch) => {
   
   AccountInfo = AccountInfo ? JSON.parse(AccountInfo) : {};
 
-  if (( typeof(AccountInfo.Key_id) == 'undefined' ) || (AccountInfo.Key_id.length < 3)) {
+  if ((AccountInfo.Key_id.length < 3)) {
 
-    var key_number = typeof(AccountInfo.Key_id) == 'undefined' ? 0 : AccountInfo.Key_id.length;
+    var key_number = AccountInfo.Key_id.length;
     
+    /* Used for loading computation status */
+    if (key_number != 3) {
+      AccountInfo.FHE_indicator = true;
+    } else {
+      AccountInfo.FHE_indicator = false;
+    }
+
+    await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(AccountInfo))
+
     while ( key_number < 10 ) {
       var rand_key_id = Math.random().toString(36).substring(2, 5) + 
         Math.random().toString(36).substring(2, 5);
@@ -238,8 +247,6 @@ export const FHEKeyGen = () => async(dispatch) => {
         rotakey: rotakey
       }
 
-      console.log("EnyaFHE: Generated ", key_number + 1, " FHE key, id -- ", rand_key_id)
-
       /* 
       Prevent use of the old AES key if the user deletes their account and generates a new AES key.
       */
@@ -261,21 +268,9 @@ export const FHEKeyGen = () => async(dispatch) => {
       await AsyncStorage.setItem(rand_key_id, encrypted) 
 
       /* update the number of fhe keys */
-      if ( typeof(account.Key_id) == 'undefined' ) {
-        account.Key_id = [];
-        account.Key_id.push(rand_key_id);
-        key_number = account.Key_id.length;
-      } else {
-        account.Key_id.push(rand_key_id);
-        key_number = account.Key_id.length;
-      }
 
-      /* Used for loading computation status */
-      if (key_number != 3) {
-        account.FHE_indicator = true;
-      } else {
-        account.FHE_indicator = false;
-      }
+      account.Key_id.push(rand_key_id);
+      key_number = account.Key_id.length;
 
       await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account))
 
