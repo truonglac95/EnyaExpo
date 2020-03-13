@@ -19,8 +19,10 @@ import {
 } from '../constants';
 
 import EnyaSMC from 'enyasmc'
-import * as SecureStore from 'expo-secure-store'
 import EnyaFHE from 'enyafhe'
+
+import * as SecureStore from 'expo-secure-store'
+
 import * as  forge from 'node-forge';
 import { AsyncStorage } from 'react-native';
 
@@ -191,54 +193,69 @@ export const secureComputeProgress = (data) => ({
 
 export const FHEKeyGen = () => async(dispatch) => {
 
-  var AccountInfo = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT)
-  
-  AccountInfo = AccountInfo ? JSON.parse(AccountInfo) : {};
+  //how many fresh keys do we have right now?
+  var account = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT)
+  account = account ? JSON.parse(account) : {};
+  var key_number = account.Key_id.length;
 
-  if ((AccountInfo.Key_id.length < 3)) {
+  dispatch(secureComputeProgress({
+    FHE_key_progress: 5,
+    FHE_key_inventory: key_number,
+    FHE_key_statusMSG: 'Preparing to compute keys...\n'
+  }))
 
-    var key_number = AccountInfo.Key_id.length;
-    
-    /* Used for loading computation status */
-    if (key_number != 3) {
-      AccountInfo.FHE_indicator = true;
-    } else {
-      AccountInfo.FHE_indicator = false;
-    }
+  while ( key_number < 3 ) {
 
-    await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(AccountInfo))
+    //update key_number
+    account = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT)
+    account = account ? JSON.parse(account) : {};
+    key_number = account.Key_id.length;
 
-    while ( key_number < 10 ) {
-      var rand_key_id = Math.random().toString(36).substring(2, 5) + 
-        Math.random().toString(36).substring(2, 5);
+    dispatch( secureComputeProgress({
+      FHE_key_progress: 10,
+      FHE_key_inventory: key_number,
+      FHE_key_statusMSG: 'Computing private key...\n'
+    }))
+
+    //generate new key
+    var rand_key_id = Math.random().toString(36).substring(2, 5) + 
+      Math.random().toString(36).substring(2, 5);
         
-      /* Generate private key */
-      var privatekey = await EnyaFHE.PrivateKeyGenRN()
+    /* Generate private key */
+    var privatekey = await EnyaFHE.PrivateKeyGenRN()
       
-      dispatch( secureComputeProgress({
-        FHE_key_progress: 20
-      }))
+    dispatch( secureComputeProgress({
+      FHE_key_progress: 20,
+      FHE_key_inventory: key_number,
+      FHE_key_statusMSG: 'Generated private key.\nComputing public key...\n'
+    }))
 
-      /* Generate public key */
-      var publickey =  await EnyaFHE.PublicKeyGenRN(privatekey);
+    /* Generate public key */
+    var publickey =  await EnyaFHE.PublicKeyGenRN(privatekey);
 
-      dispatch( secureComputeProgress({
-        FHE_key_progress: 50
-      }))
+    dispatch( secureComputeProgress({
+      FHE_key_progress: 50,
+      FHE_key_inventory: key_number,
+      FHE_key_statusMSG: 'Generated public key.\nComputing multiplication key...\n'
+    }))
 
-      /* Generate multi key */
-      var multikey = await EnyaFHE.MultiKeyGenRN(privatekey);
+    /* Generate multi key */
+    var multikey = await EnyaFHE.MultiKeyGenRN(privatekey);
    
-      dispatch( secureComputeProgress({
-        FHE_key_progress: 75
-      }))
+    dispatch( secureComputeProgress({
+      FHE_key_progress: 75,
+      FHE_key_inventory: key_number,
+      FHE_key_statusMSG: 'Generated multiplication key.\nComputing rotation key...\n'
+    }))
 
-      /* Generate rotation key */
-      var rotakey = await EnyaFHE.RotaKeyGenRN(privatekey);
+    /* Generate rotation key */
+    var rotakey = await EnyaFHE.RotaKeyGenRN(privatekey);
 
-      dispatch( secureComputeProgress({
-        FHE_key_progress: 100
-      }))
+    dispatch( secureComputeProgress({
+      FHE_key_progress: 100,
+      FHE_key_inventory: key_number,
+      FHE_key_statusMSG: 'Generated rotation key.\nKeyGen complete.\n'
+    }))
 
       var key = {
         privatekey: privatekey,
@@ -251,10 +268,10 @@ export const FHEKeyGen = () => async(dispatch) => {
       Prevent use of the old AES key if the user deletes their account and generates a new AES key.
       */
       
-      var account = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT);
-      account = JSON.parse(account);
+      //var account = await SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT);
+      //account = JSON.parse(account);
 
-      /* aes encryptes fhe keys */
+      /* AES encrypt the FHE keys */
       var aes_key = account.aes_key;
       var aes_iv = forge.random.getBytesSync(16);
       var aes_iv_hex = forge.util.bytesToHex(aes_iv);
@@ -263,24 +280,26 @@ export const FHEKeyGen = () => async(dispatch) => {
       cipher.start({iv: aes_iv});
       cipher.update(forge.util.createBuffer(JSON.stringify(key),'utf8'));
       cipher.finish();
+
       var encrypted = cipher.output;
       encrypted = aes_iv_hex + encrypted.toHex();
       await AsyncStorage.setItem(rand_key_id, encrypted) 
 
-      /* update the number of fhe keys */
-
+      /* update the number of FHE keys */
+      //add the new key
       account.Key_id.push(rand_key_id);
+      //update the number of keys in buffer
       key_number = account.Key_id.length;
-
+      //and write the new data to storage
       await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account))
 
       /* Ready to compute */
+      //fire this even after only one key computed?
       var smc =  await SecureStore.getItemAsync(SECURE_STORAGE_SMC);
       smc = smc ? JSON.parse(smc) : {};
       smc.FHE_key = true;
       dispatch( get_SMC_Success(smc) )
       await SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(smc));
-    }
   }
 }
 
