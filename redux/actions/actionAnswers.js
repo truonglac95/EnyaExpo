@@ -211,6 +211,11 @@ export const FHEKeyGen = () => async(dispatch) => {
     account = account ? JSON.parse(account) : {};
     key_number = account.Key_id.length;
 
+    //update key generation process, prevent from
+    //running multiple key gen process
+    account.FHE_indicator = true;
+    await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account))
+
     dispatch( secureComputeProgress({
       FHE_key_progress: 10,
       FHE_key_inventory: key_number,
@@ -290,17 +295,14 @@ export const FHEKeyGen = () => async(dispatch) => {
       account.Key_id.push(rand_key_id);
       //update the number of keys in buffer
       key_number = account.Key_id.length;
+      //update key generation status
+      if (key_number == 3) {
+        account.FHE_indicator = false;
+      }
       //and write the new data to storage
       await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account))
 
       //console.log("Key number:", key_number)
-      /* Ready to compute */
-      //fire this even after only one key computed?
-      var smc =  await SecureStore.getItemAsync(SECURE_STORAGE_SMC);
-      smc = smc ? JSON.parse(smc) : {};
-      smc.FHE_key = true;
-      dispatch( get_SMC_Success(smc) )
-      await SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(smc));
 
       if(key_number >= 3) {
         //to change the page structure in the FHEKeyGen page
@@ -309,6 +311,13 @@ export const FHEKeyGen = () => async(dispatch) => {
           FHE_key_inventory: 3,
           FHE_key_statusMSG: 'Key store filled.'
         }))
+        /* Ready to compute */
+        var smc =  await SecureStore.getItemAsync(SECURE_STORAGE_SMC);
+        smc = smc ? JSON.parse(smc) : {};
+        smc.FHE_key = true;
+        dispatch( get_SMC_Success(smc) )
+        await SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(smc));
+
       }
   }
 }

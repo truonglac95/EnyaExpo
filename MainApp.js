@@ -72,6 +72,7 @@ class MainApp extends React.Component {
          if (__DEV__) console.log('MainApp: Generating AES key')
          var AccountInfo = res ? JSON.parse(res) : {};
          AccountInfo.Key_id = [];
+         AccountInfo.FHE_indicator = false;
          var aes_key = forge.random.getBytesSync(16);
          let Account ={
            ...AccountInfo,
