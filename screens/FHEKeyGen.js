@@ -77,10 +77,10 @@ class FHEKeyGen extends React.Component {
 
         <View style={[mS.marTop20, {width: '84%'}]}>
           { FHE_key_inventory < 3 &&
-            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'Generating FHE keys'}</Text>
+            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'Generating FHE keys.\nThis may take several minutes.'}</Text>
           }
           { FHE_key_inventory >= 3 &&
-            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'FHE keys generated'}</Text>
+            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'FHE keys generated.'}</Text>
           }
           { FHE_key_inventory != 1 &&
             <Text style={mS.progressText}>{'There are '}
