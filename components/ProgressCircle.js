@@ -105,7 +105,7 @@ export default class ProgressCircle extends React.Component {
         ]}
       >
         {this.props.children}
-        {!!cog && <Ionicons name={`ios-cog`} size={35} color={'#707070'} style={{paddingTop:2,paddingLeft:0}}/>}
+        {!!cog && <Ionicons name={`ios-cog`} size={35} color={'#707070'} style={{paddingTop:3,paddingLeft:1}}/>}
       </View>
     )
   }

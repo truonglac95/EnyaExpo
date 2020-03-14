@@ -225,9 +225,9 @@ class Questionnaire extends React.Component {
 >
 
 {!SMC_computing && (numberAnswered < 7) &&
-<View style={[mS.shadowBoxQ, {alignItems:'center',marginTop:13,fontSize:20,height:100}]}>
-  <Text style={mS.smallGray}>{'Please answer the questions to VALUE_PROP ' + 
-  'for you. All calculations use secure computation ' + 
+<View style={[mS.shadowBoxQ, {alignItems:'center',marginTop:13,fontSize:20,height:70}]}>
+  <Text style={mS.smallGray}>{'Please answer the questions. ' + 
+  'All calculations use secure computation ' + 
   'to ensure your privacy.'}</Text>
 </View>
 }
@@ -260,6 +260,13 @@ class Questionnaire extends React.Component {
     text={'See Result'} 
     onClick={this.handleSeeResult}
   />
+</View>
+}
+
+{(numberAnswered >= 7) && current && 
+<View style={[mS.shadowBoxQ, {alignItems:'center',marginTop:-15,fontSize:20,height:70}]}>
+  <Text style={mS.smallGray}>{'If you would like to recompute your score ' +
+  'or try a different API, change one of the values below.'}</Text>
 </View>
 }
 
