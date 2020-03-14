@@ -23,7 +23,7 @@ export default class BasicButton extends Component {
   render() {
     
     const { text, onClick, leftEdge, topEdge, width, icon, 
-      size, todo, title, key_process} = this.props;
+      size, todo, title, key_process } = this.props;
 
     const defaultWidth = Dimensions.get('window').width * 0.7;
     
@@ -38,8 +38,8 @@ export default class BasicButton extends Component {
         <TouchableOpacity 
           style={[styles.button, {
             width: (width || defaultWidth), 
-            backgroundColor: key_process? mC.lightGray : mC.white,
-            borderColor: key_process? mC.lightGray : mC.darkBlue}]} 
+            backgroundColor: key_process ? mC.lightGray : mC.white,
+            borderColor: key_process ? mC.lightGray : mC.darkBlue}]} 
             onPress={key_process ? () => this.handleAlert("To try FHE, you first need to generate your FHE keys. Please do so in the account tab.", "No FHE keys"): onClick}>
           <View style={styles.flex}> 
             {icon && iOS &&
@@ -61,8 +61,9 @@ export default class BasicButton extends Component {
               </View>
             }
             <Text style={[styles.buttonColorText, {
-              fontSize: size || 16,
-              color: mC.darkBlue}]}>{text}
+                fontSize: size || 16,
+                color: key_process ? mC.darkGray : mC.darkBlue
+              }]}>{text}
             </Text>
           </View>
         </TouchableOpacity>

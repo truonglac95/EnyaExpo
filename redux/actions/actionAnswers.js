@@ -293,6 +293,7 @@ export const FHEKeyGen = () => async(dispatch) => {
       //and write the new data to storage
       await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account))
 
+      //console.log("Key number:", key_number)
       /* Ready to compute */
       //fire this even after only one key computed?
       var smc =  await SecureStore.getItemAsync(SECURE_STORAGE_SMC);
@@ -300,6 +301,15 @@ export const FHEKeyGen = () => async(dispatch) => {
       smc.FHE_key = true;
       dispatch( get_SMC_Success(smc) )
       await SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(smc));
+
+      if(key_number >= 3) {
+        //to change the page structure in the FHEKeyGen page
+        dispatch( secureComputeProgress({
+          FHE_key_progress: 100,
+          FHE_key_inventory: 3,
+          FHE_key_statusMSG: 'Key store filled.'
+        }))
+      }
   }
 }
 

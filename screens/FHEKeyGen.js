@@ -21,10 +21,10 @@ class FHEKeyGen extends React.Component {
     const { smc } = this.props.answer;
 
     this.state = {
-      FHE_key_progress: (smc.FHE_key_progress || 0), //this always goes from 0 to 100, and is a per key indicator 
+      FHE_key_progress: (smc.FHE_key_progress || 0), //ranges from 0 to 100 and is a per key indicator 
       FHE_key_inventory: (smc.FHE_key_inventory || 0),
       FHE_key_statusMSG: (smc.FHE_key_statusMSG || 'no idea')
-    };
+    }
 
   }
   
@@ -34,8 +34,9 @@ class FHEKeyGen extends React.Component {
       
       const account = JSON.parse(res);
 
-      if (( typeof(account.Key_id) == "undefined" ) || 
+      if (( typeof(account.Key_id) == 'undefined' ) || 
           ( account.Key_id.length < 3 )) {
+          console.log('Generating more keys...')
           this.props.dispatch(FHEKey());
       } else {
         //we have enough keys!
@@ -45,18 +46,18 @@ class FHEKeyGen extends React.Component {
           FHE_key_statusMSG: 'Key store filled.',
         })
       }
+
     })
+
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
 
-    //const { smc } = nextProps.answer;
-
     this.setState({
-      FHE_key_progress:  (nextProps.answer.FHE_key_progress  || 0),
+      FHE_key_progress: (nextProps.answer.FHE_key_progress || 0),
       FHE_key_inventory: (nextProps.answer.FHE_key_inventory || 0),
       FHE_key_statusMSG: (nextProps.answer.FHE_key_statusMSG || 'Unknown'),
-    });
+    })
 
   }
 
@@ -79,7 +80,7 @@ class FHEKeyGen extends React.Component {
             <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'Generating FHE keys'}</Text>
           }
           { FHE_key_inventory >= 3 &&
-            <Text style={[mS.progressText,,{fontWeight: 'bold'}]}>{'Local FHE Keys computed.'}</Text>
+            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'FHE keys generated'}</Text>
           }
           { FHE_key_inventory != 1 &&
             <Text style={mS.progressText}>{'There are '}
