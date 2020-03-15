@@ -314,7 +314,7 @@ export const FHEKeyGen = () => async(dispatch) => {
         /* Ready to compute */
         var smc =  await SecureStore.getItemAsync(SECURE_STORAGE_SMC);
         smc = smc ? JSON.parse(smc) : {};
-        smc.FHE_key = true;
+        smc.FHE_keys_ready = true;
         dispatch( get_SMC_Success(smc) )
         await SecureStore.setItemAsync(SECURE_STORAGE_SMC, JSON.stringify(smc));
 

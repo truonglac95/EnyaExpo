@@ -84,7 +84,7 @@ class Questionnaire extends React.Component {
 
       result: (smc.result || 0.0),
       current: (smc.current || false),
-      FHE_key: (smc.FHE_key || false),
+      FHE_keys_ready: (smc.FHE_keys_ready || false),
       SMC_compute_progress: (this.props.answer.SMC_compute_progress|| 0),
       SMC_computing: (this.props.answer.SMC_computing || false),
       
@@ -187,7 +187,7 @@ class Questionnaire extends React.Component {
       numberAnswered: (smc.numberAnswered || 0),
       result: (smc.result || 0.0),
       current: (smc.current || false),
-      FHE_key: (smc.FHE_key || false),
+      FHE_keys_ready: (smc.FHE_keys_ready || false),
       SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
       SMC_computing: (nextProps.answer.SMC_computing || false),
     });
@@ -204,7 +204,7 @@ class Questionnaire extends React.Component {
 
     const { birthyear, country, gender, height, weight, binary_1, binary_2,
             result, current, percentAnswered, numberAnswered, 
-            SMC_computing, SMC_compute_progress, FHE_key } = this.state;
+            SMC_computing, SMC_compute_progress, FHE_keys_ready } = this.state;
 
     const pickerStyle = {
       done: {color: '#FB2E59'},
@@ -224,14 +224,6 @@ class Questionnaire extends React.Component {
   ref={scrollView => this.scrollView = scrollView}
 >
 
-{!SMC_computing && (numberAnswered < 7) &&
-<View style={[mS.shadowBoxQ, {alignItems:'center',marginTop:13,fontSize:20,height:70}]}>
-  <Text style={mS.smallGray}>{'Please answer the questions. ' + 
-  'All calculations use secure computation ' + 
-  'to ensure your privacy.'}</Text>
-</View>
-}
-
 {!SMC_computing && (numberAnswered >= 7) && !current && 
 <View style={mS.shadowBoxClear}>
   <BasicButton 
@@ -248,25 +240,18 @@ class Questionnaire extends React.Component {
     width={200}
     text={'FHE Secure Compute'} 
     onClick={this.handleFHECalculate}
-    key_process = {!FHE_key}
+    enable = {FHE_keys_ready}
   />
   </View>
 }
 
 {(numberAnswered >= 7) && current && 
-<View style={[mS.shadowBoxClear,{height:100}]}>
+<View style={[mS.shadowBoxClear]}>
   <BasicButton
     width={200} 
     text={'See Result'} 
     onClick={this.handleSeeResult}
   />
-</View>
-}
-
-{(numberAnswered >= 7) && current && 
-<View style={[mS.shadowBoxQ, {alignItems:'center',marginTop:-15,fontSize:20,height:70}]}>
-  <Text style={mS.smallGray}>{'If you would like to recompute your score ' +
-  'or try a different API, change one of the values below.'}</Text>
 </View>
 }
 
@@ -282,6 +267,20 @@ class Questionnaire extends React.Component {
 
 {/*ask questions when not computing*/}
 {!SMC_computing && <View style={mS.shadowBoxQ}>
+
+{(numberAnswered < 7) && 
+<View style={[mS.rowQ,{height:90, paddingLeft:5, paddingRight:5, paddingBottom: 10}]}>
+  <Text style={[mS.smallGray,{fontSize:16, fontWeight: 'bold'}]}>{'Please answer the questions. ' + 
+  'All calculations use secure computation to ensure your privacy.'}</Text>
+</View>
+}
+
+{(numberAnswered >= 7) && current && 
+<View style={[mS.rowQ,{height:90, paddingLeft:5, paddingRight:5, paddingBottom: 10}]}>
+  <Text style={[mS.smallGray,{fontSize:16, fontWeight: 'bold'}]}>{'If you would like to recompute your score ' +
+  'or try a different API, change one or more of the values below.'}</Text>
+</View>
+}
 
 {Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.countryInput.togglePicker()}}>

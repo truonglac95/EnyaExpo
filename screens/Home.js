@@ -30,7 +30,7 @@ class Home extends React.Component {
       percentAnswered: (smc.percentAnswered || 0), //0 to 100
       result: (smc.result || 0.0), //e.g. 14.5
       current: (smc.current || false), //is the score valid/current?
-      FHE_key: (smc.FHE_key || false),
+      FHE_keys_ready: (smc.FHE_keys_ready || false),
       SMC_compute_progress: (this.props.answer.SMC_compute_progress || 0),
       SMC_computing: (this.props.answer.SMC_computing || false),
 
@@ -57,7 +57,7 @@ class Home extends React.Component {
       percentAnswered: (smc.percentAnswered || 0.0),
       result: (smc.result || 0.0),
       current: (smc.current || false),
-      FHE_key: (smc.FHE_key || false),
+      FHE_keys_ready: (smc.FHE_keys_ready || false),
       SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
       SMC_computing: (nextProps.answer.SMC_computing || false),
 
@@ -91,8 +91,9 @@ class Home extends React.Component {
 
   render() {
 
-    const { current, percentAnswered, result, SMC_compute_progress, SMC_computing, FHE_key } = this.state;
-    
+    const { current, percentAnswered, result, SMC_compute_progress, 
+      SMC_computing, FHE_keys_ready } = this.state;
+
     var score = parseFloat(result).toFixed(1);
 
     return (
@@ -203,7 +204,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
     text={'FHE Compute Score'}
     width="100%"
     onClick={this.handleFHECalculate}
-    key_process = {!FHE_key}
+    enable = {FHE_keys_ready}
   />
 </View>
 </View>
