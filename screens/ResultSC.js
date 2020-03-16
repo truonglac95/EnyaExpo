@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Text, ScrollView, View, Dimensions, ActivityIndicator } from 'react-native';
 import { mS } from '../constants/masterStyle';
 
-class ResultSMC extends React.Component {
+class ResultSC extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
@@ -18,10 +18,11 @@ class ResultSMC extends React.Component {
 
     super(props);
   
-    const { answers, smc } = this.props.answer;
+    const { answers } = this.props.answer;
+    const { compute } = this.props;
 
     this.state = {
-      result: (smc.result || 0.0),
+      result: (compute.result || 0.0),
       binary_1: (answers.binary_1 || 0),
       binary_2: (answers.binary_2 || 0),
       birthyear: (answers.birthyear || 0),
@@ -33,15 +34,16 @@ class ResultSMC extends React.Component {
 
 UNSAFE_componentWillReceiveProps(nextProps) {
 
-    const { answers: nextAnswers, smc: nextSMC } = nextProps.answer;
+    const { answers } = nextProps.answer;
+    const { compute } = nextProps;
 
     this.setState({
-      result: (nextSMC.result || 0.0),
-      binary_1: (nextAnswers.binary_1 || 0),
-      binary_2: (nextAnswers.binary_2 || 0),
-      birthyear: (nextAnswers.birthyear || 0),
-      gender: (nextAnswers.gender || 0),
-      country: (nextAnswers.country || 0)
+      result: (compute.result || 0.0),
+      binary_1: (answers.binary_1 || 0),
+      binary_2: (answers.binary_2 || 0),
+      birthyear: (answers.birthyear || 0),
+      gender: (answers.gender || 0),
+      country: (answers.country || 0)
     });
 
   }
@@ -151,7 +153,7 @@ UNSAFE_componentWillReceiveProps(nextProps) {
 
 const mapStateToProps = state => ({
   answer: state.answer,
-  result: state.result,
+  compute: state.compute,
 });
 
-export default connect(mapStateToProps)(ResultSMC);
+export default connect(mapStateToProps)(ResultSC);

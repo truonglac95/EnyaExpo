@@ -2,14 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 //UI
-import { View, Text, TouchableOpacity, TextInput, ScrollView, Keyboard, Image, Dimensions } from 'react-native';
-import ProgressCircle from '../components/ProgressCircle';
+import { View, Text, TouchableOpacity, TextInput, 
+  ScrollView, Keyboard, Image, 
+  Dimensions, ActivityIndicator } from 'react-native';
+
 import Picker from 'react-native-picker-select';
 import BasicButton from '../components/BasicButton';
 import { mS } from '../constants/masterStyle';
 
 //redux
-import { giveAnswer, secureCompute } from '../redux/actions';
+import { giveAnswer, secureCompute, 
+  secureComputeSMC, secureComputeInvalidate } from '../redux/actions';
 
 const yearsList = [];
 for (var i = 1920; i <= (new Date()).getFullYear(); i++) {
@@ -59,7 +62,7 @@ class Questionnaire extends React.Component {
   static navigationOptions = ({ navigation }) => {
     return {
       headerTitle: () => (<Text style={mS.screenTitle}>{'Secure Compute'}</Text>),
-      headerRight: (<View></View>),
+      headerRight: (<View></View>)//
     }
   };
 
@@ -67,12 +70,14 @@ class Questionnaire extends React.Component {
 
     super(props);
 
-    const { answers, smc } = this.props.answer;
+    const { compute } = this.props;
+    const { answers } = this.props.answer;
+    const { account } = this.props.user;
 
     this.state = {
-
-      percentAnswered: (smc.percentAnswered || 0),
-      numberAnswered: (smc.numberAnswered || 0),
+      result: (compute.result || 0.0),
+      resultCurrent: (compute.current || false),
+      computing: (compute.computing || false),
 
       birthyear: (answers.birthyear || 0),
       country: (answers.country || 0),
@@ -81,16 +86,14 @@ class Questionnaire extends React.Component {
       weight: (answers.weight || 0),
       binary_1: (answers.binary_1 || 0),
       binary_2: (answers.binary_2 || 0),
+      percentAnswered: (answers.percentAnswered || 0),
+      numberAnswered: (answers.numberAnswered || 0),
+      answersCurrent: (answers.answersCurrent || 0),
 
-      result: (smc.result || 0.0),
-      current: (smc.current || false),
-      FHE_keys_ready: (smc.FHE_keys_ready || false),
-      SMC_compute_progress: (this.props.answer.SMC_compute_progress|| 0),
-      SMC_computing: (this.props.answer.SMC_computing || false),
-      
+      FHE_keys_ready: (account.FHE_keys_ready || false),
+
       recalculating: false,
-
-    };
+    }
     
     this.inputRefs = {
       birthyearInput: null,
@@ -100,7 +103,33 @@ class Questionnaire extends React.Component {
       weightInput: null,
       binary_1_Input: null,
       binary_2_Input: null,
-    };
+    }
+
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+
+    const { compute } = nextProps;
+    const { answers } = nextProps.answer;
+    const { account } = nextProps.user;
+
+    this.setState({
+      percentAnswered: (answers.percentAnswered || 0),
+      numberAnswered: (answers.numberAnswered || 0),
+      answersCurrent: (answers.current || 0),
+
+      result: (compute.result || 0.0),
+      resultCurrent: (compute.current || false),
+      computing: (compute.computing || false),
+
+      FHE_keys_ready: (account.FHE_keys_ready || false),
+    });
+
+    //go to fresh result once calculation is done
+    if ( this.state.recalculating && !this.state.computing ) {
+      this.setState({recalculating: false });
+      this.props.navigation.navigate('ResultSC');
+    }
 
   }
 
@@ -114,7 +143,7 @@ class Questionnaire extends React.Component {
       weightInput: null,
       binary_1_Input: null,
       binary_2_Input: null,
-    };
+    }
 
   }
 
@@ -147,71 +176,39 @@ class Questionnaire extends React.Component {
     let newAnswer = [{ question_id : key, answer : value }];
 
     dispatch(giveAnswer(newAnswer));
+    dispatch(secureComputeInvalidate());
 
   };
 
   handleSeeResult = () => {
-
-    this.props.navigation.navigate('ResultSMC');
-  
+    this.props.navigation.navigate('ResultSC');
   }
 
   handleSMCCalculate = () => {
-
-    const { dispatch } = this.props;
     const { answers } = this.props.answer;
-
-    dispatch( secureCompute(answers, 'smc') );
-
-    this.setState({recalculating: true });
-
+    this.props.dispatch(secureComputeSMC(answers));
+    this.setState({recalculating: true, computing: true});
   }
 
   handleFHECalculate = () => {
-
-    const { dispatch } = this.props;
     const { answers } = this.props.answer;
-
-    dispatch( secureCompute(answers, 'fhe') );
-
-    this.setState({recalculating: true });
-
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-
-    const { smc } = nextProps.answer;
-
-    this.setState({
-      percentAnswered: (smc.percentAnswered || 0),
-      numberAnswered: (smc.numberAnswered || 0),
-      result: (smc.result || 0.0),
-      current: (smc.current || false),
-      FHE_keys_ready: (smc.FHE_keys_ready || false),
-      SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
-      SMC_computing: (nextProps.answer.SMC_computing || false),
-    });
-
-    //go to fresh result once calculation is done
-    if ( this.state.recalculating && nextProps.answer.SMC_compute_progress === 100 ) {
-      this.setState({recalculating: false });
-      this.props.navigation.navigate('ResultSMC');
-    }
-
+    this.props.dispatch(secureCompute(answers, 'fhe'));
+    this.setState({recalculating: true, computing: true});
   }
 
   render() {
 
     const { birthyear, country, gender, height, weight, binary_1, binary_2,
-            result, current, percentAnswered, numberAnswered, 
-            SMC_computing, SMC_compute_progress, FHE_keys_ready } = this.state;
+            answersCurrent, result, resultCurrent, 
+            percentAnswered, numberAnswered, 
+            computing, FHE_keys_ready } = this.state;
 
     const pickerStyle = {
       done: {color: '#FB2E59'},
       icon: {display: 'none'},
-      inputIOS: {    fontSize: 18,color: '#404040',flex: 1,width:   0,height:  0},
+      inputIOS: {fontSize: 18,color: '#404040',flex: 1,width: 0,height: 0},
       inputAndroid: {fontSize: 18,color: '#404040',flex: 1,width: 270,height: 45},
-    };
+    }
 
     return (
 
@@ -224,7 +221,7 @@ class Questionnaire extends React.Component {
   ref={scrollView => this.scrollView = scrollView}
 >
 
-{!SMC_computing && (numberAnswered >= 7) && !current && 
+{!computing && (numberAnswered >= 7) && !resultCurrent && 
 <View style={mS.shadowBoxClear}>
   <BasicButton 
     width={200}
@@ -234,7 +231,7 @@ class Questionnaire extends React.Component {
   </View>
 }
 
-{!SMC_computing && (numberAnswered >= 7) && !current && 
+{!computing && (numberAnswered >= 7) && !resultCurrent && 
 <View style={mS.shadowBoxBelow}>
   <BasicButton 
     width={200}
@@ -245,7 +242,7 @@ class Questionnaire extends React.Component {
   </View>
 }
 
-{(numberAnswered >= 7) && current && 
+{(numberAnswered >= 7) && resultCurrent && 
 <View style={[mS.shadowBoxClear]}>
   <BasicButton
     width={200} 
@@ -256,29 +253,29 @@ class Questionnaire extends React.Component {
 }
 
 {/*show progress indicator when calculating risk*/}
-{SMC_computing && <View style={[mS.containerProgress, {marginTop: 100}]}>
-  <ProgressCircle percent={SMC_compute_progress} cog={true}/>
-  <View>
-    {(SMC_compute_progress   < 100) && <Text style={mS.progressText}>{'Computing'}</Text>}
-    {(SMC_compute_progress === 100) && <Text style={mS.progressText}>{'Done'}</Text>}
-  </View>
+{computing && 
+<View style={[mS.containerProgress, {marginTop: 100}]}>
+  <ActivityIndicator size="large" color='#33337F' />
+  <Text style={mS.progressText}>{'Computing'}</Text>
 </View>
 }
 
 {/*ask questions when not computing*/}
-{!SMC_computing && <View style={mS.shadowBoxQ}>
+{!computing && <View style={mS.shadowBoxQ}>
 
 {(numberAnswered < 7) && 
 <View style={[mS.rowQ,{height:90, paddingLeft:5, paddingRight:5, paddingBottom: 10}]}>
-  <Text style={[mS.smallGray,{fontSize:16, fontWeight: 'bold'}]}>{'Please answer the questions. ' + 
-  'All calculations use secure computation to ensure your privacy.'}</Text>
+  <Text style={[mS.smallGray,{fontSize:16,fontStyle:'italic'}]}>
+  {'Please answer the questions. All calculations use ' +
+  'secure computation to ensure your privacy.'}</Text>
 </View>
 }
 
-{(numberAnswered >= 7) && current && 
+{(numberAnswered >= 7) && resultCurrent && 
 <View style={[mS.rowQ,{height:90, paddingLeft:5, paddingRight:5, paddingBottom: 10}]}>
-  <Text style={[mS.smallGray,{fontSize:16, fontWeight: 'bold'}]}>{'If you would like to recompute your score ' +
-  'or try a different API, change one or more of the values below.'}</Text>
+  <Text style={[mS.smallGray,{fontSize:16,fontStyle:'italic'}]}>
+  {'To recompute your score or try a different API, ' +
+  'change one or more of the values below.'}</Text>
 </View>
 }
 
@@ -354,7 +351,7 @@ class Questionnaire extends React.Component {
 </View>
 }
 
-{Platform.OS == 'ios' &&
+{Platform.OS == 'ios' && //
 <TouchableOpacity onPress={()=>{this.inputRefs.genderInput.togglePicker()}}>
 <View style={mS.rowQ}>
 <View style={mS.labelQ}><Text style={mS.textQ}>{'Gender'}</Text></View>
@@ -389,7 +386,7 @@ class Questionnaire extends React.Component {
 </View>
 }
 
-{Platform.OS == 'ios' &&
+{Platform.OS == 'ios' && //
 <TouchableOpacity onPress={() => { 
   this.inputRefs.heightInput.togglePicker(); 
   this.state.height == 0 && this.setState({ height : heightList[45].value });
@@ -428,7 +425,7 @@ class Questionnaire extends React.Component {
 </View>
 }
 
-{Platform.OS == 'ios' &&
+{Platform.OS == 'ios' && //
 <TouchableOpacity onPress={() => { 
   this.inputRefs.weightInput.togglePicker(); 
   this.state.weight == 0 && this.setState({ weight : weightList[45].value });
@@ -455,7 +452,7 @@ class Questionnaire extends React.Component {
 </TouchableOpacity>
 }
 
-{Platform.OS == 'android' &&
+{Platform.OS == 'android' && //
 <View style={mS.rowQ}>
 <View style={mS.labelQ}><Text style={mS.textQ}>{'Weight'}</Text></View>
 <Picker
@@ -552,7 +549,7 @@ class Questionnaire extends React.Component {
 const mapStateToProps = state => ({
   user: state.user,
   answer: state.answer,
-  result: state.result,
+  compute: state.compute,
 });
 
 export default connect(mapStateToProps)(Questionnaire);

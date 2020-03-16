@@ -1,10 +1,15 @@
 import { combineReducers } from 'redux';
+
 import { user } from './reducerUser';
-import { answer } from './reducerAnswers';
+import { answer } from './reducerAnswer';
+import { compute } from './reducerCompute';
+import { fhe } from './reducerFHEKeyGen';
 
 const reducers = {
 	user,
-	answer
+	answer,
+  compute,
+  fhe
 };
 
 const appReducer = combineReducers(reducers);
@@ -14,15 +19,25 @@ const resetState = {
     error: null,
     loading: false,
     deleted: true,
-    account: {
-      loading: false, 
-    }
+    account: []
   },
   answer: {
     error: null,
     loading: false,
-    answers: [],
-    smc: []
+    answers: []
+  },
+  compute: {
+    error: null,
+    result: 0.0,
+    resultCurrent: false,
+    haveSC: false,
+    progress: 0,
+    computing: false, 
+  },
+  fhe: {
+    error: null,
+    loading: false,
+    progress: []
   }
 }
 
