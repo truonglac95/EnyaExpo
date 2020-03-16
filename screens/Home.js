@@ -218,6 +218,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
     text={'SMC Compute'}
     width="100%"
     onClick={this.handleSMCCalculate}
+    enable={!computing}
   />
 </View>
 <View style={{marginTop: 20}}>
@@ -225,6 +226,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
     text={'FHE_S Compute'}
     width="100%"
     onClick={this.handleFHECalculateS}
+    enable={!computing}
   />
 </View>
 <View style={{marginTop: 20}}>
@@ -232,7 +234,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
     text={'FHE_B Compute'}
     width="100%"
     onClick={this.handleFHECalculateB}
-    enable = {FHE_keys_ready}
+    enable={FHE_keys_ready && !computing}
   />
 </View>
 </View>
