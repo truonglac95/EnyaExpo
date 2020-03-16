@@ -31,7 +31,6 @@ const resetState = {
     result: 0.0,
     resultCurrent: false,
     haveSC: false,
-    progress: 0,
     computing: false, 
   },
   fhe: {

@@ -13,6 +13,8 @@ import {
 
 import {
 	secureComputeSMC,
+	secureComputeFHEBuffered,
+	secureComputeFHESimple,
 	secureCompute,
 	secureComputeProgress,
 	secureComputeInvalidate
@@ -43,6 +45,8 @@ export {
 	//compute functions
 	secureCompute,
 	secureComputeSMC,
+	secureComputeFHEBuffered,
+	secureComputeFHESimple,
 	secureComputeProgress,
 	secureComputeInvalidate
 };

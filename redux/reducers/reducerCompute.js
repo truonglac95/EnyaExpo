@@ -1,6 +1,5 @@
 import {
 	SECURE_COMPUTE,
-	SECURE_COMPUTE_SMC,
 	SECURE_COMPUTE_SUCCESS,
 	SECURE_COMPUTE_FAILURE,
 	SECURE_COMPUTE_PROGRESS,
@@ -14,12 +13,6 @@ export function compute(state = INITIAL_STATE, action = {}) {
 	
 	switch(action.type) {
 		case SECURE_COMPUTE:
-			return {
-				...state,
-				error: null,
-				current: false
-			}
-		case SECURE_COMPUTE_SMC:
 			return {
 				...state,
 				error: null,

@@ -10,7 +10,7 @@ import BasicButton from '../components/BasicButton';
 import {mS, mC} from '../constants/masterStyle';
 
 // Actions
-import { secureCompute, secureComputeSMC, getResults, getAnswers } from '../redux/actions';
+import { secureCompute, secureComputeSMC, secureComputeFHESimple, getResults, getAnswers } from '../redux/actions';
 
 class Home extends React.Component {  
 
@@ -94,9 +94,15 @@ class Home extends React.Component {
     this.setState({recalculating:true,computing:true});
   }
 
-  handleFHECalculate = () => {
+  handleFHECalculateS = () => {
     const { answers } = this.props.answer;
-    this.props.dispatch( secureCompute(answers, 'fhe') );
+    this.props.dispatch(secureComputeFHESimple(answers));
+    this.setState({recalculating:true,computing:true});
+  }
+
+  handleFHECalculateB = () => {
+    const { answers } = this.props.answer;
+    this.props.dispatch(secureComputeFHEBuffered(answers));
     this.setState({recalculating:true,computing:true});
   }
 
@@ -207,16 +213,23 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 <Text style={mS.smallGray}>{'All questions answered'}</Text>
 <View style={{marginTop: 20}}>
   <BasicButton 
-    text={'SMC Compute Score'}
+    text={'SMC Compute'}
     width="100%"
     onClick={this.handleSMCCalculate}
   />
 </View>
 <View style={{marginTop: 20}}>
   <BasicButton 
-    text={'FHE Compute Score'}
+    text={'FHE_S Compute'}
     width="100%"
-    onClick={this.handleFHECalculate}
+    onClick={this.handleFHECalculateS}
+  />
+</View>
+<View style={{marginTop: 20}}>
+  <BasicButton 
+    text={'FHE_B Compute'}
+    width="100%"
+    onClick={this.handleFHECalculateB}
     enable = {FHE_keys_ready}
   />
 </View>

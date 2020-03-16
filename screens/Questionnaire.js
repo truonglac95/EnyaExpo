@@ -11,8 +11,8 @@ import BasicButton from '../components/BasicButton';
 import { mS } from '../constants/masterStyle';
 
 //redux
-import { giveAnswer, secureCompute, 
-  secureComputeSMC, secureComputeInvalidate } from '../redux/actions';
+import { giveAnswer, secureComputeSMC, secureComputeFHESimple, 
+  secureComputeFHEBuffered, secureComputeInvalidate } from '../redux/actions';
 
 const yearsList = [];
 for (var i = 1920; i <= (new Date()).getFullYear(); i++) {
@@ -187,13 +187,19 @@ class Questionnaire extends React.Component {
   handleSMCCalculate = () => {
     const { answers } = this.props.answer;
     this.props.dispatch(secureComputeSMC(answers));
-    this.setState({recalculating: true, computing: true});
+    this.setState({recalculating:true,computing:true});
   }
 
-  handleFHECalculate = () => {
+  handleFHECalculateS = () => {
     const { answers } = this.props.answer;
-    this.props.dispatch(secureCompute(answers, 'fhe'));
-    this.setState({recalculating: true, computing: true});
+    this.props.dispatch(secureComputeFHESimple(answers));
+    this.setState({recalculating:true,computing:true});
+  }
+
+  handleFHECalculateB = () => {
+    const { answers } = this.props.answer;
+    this.props.dispatch(secureComputeFHEBuffered(answers));
+    this.setState({recalculating:true,computing:true});
   }
 
   render() {
@@ -222,24 +228,24 @@ class Questionnaire extends React.Component {
 >
 
 {!computing && (numberAnswered >= 7) && !resultCurrent && 
-<View style={mS.shadowBoxClear}>
-  <BasicButton 
+<View style={[mS.shadowBoxClear,{height:180}]}>
+  <BasicButton
     width={200}
     text={'SMC Secure Compute'} 
     onClick={this.handleSMCCalculate}
   />
-  </View>
-}
-
-{!computing && (numberAnswered >= 7) && !resultCurrent && 
-<View style={mS.shadowBoxBelow}>
   <BasicButton 
     width={200}
-    text={'FHE Secure Compute'} 
-    onClick={this.handleFHECalculate}
+    text={'FHE_S Secure Compute'} 
+    onClick={this.handleFHECalculateS}
+  />
+  <BasicButton 
+    width={200}
+    text={'FHE_B Secure Compute'} 
+    onClick={this.handleFHECalculateB}
     enable = {FHE_keys_ready}
   />
-  </View>
+</View>
 }
 
 {(numberAnswered >= 7) && resultCurrent && 
