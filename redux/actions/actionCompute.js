@@ -133,11 +133,11 @@ export const secureComputeFHESimple = (data) => async (dispatch) => {
 
     var dataC = Clean( data )
 
-    EnyaFHE.configure({
+    EnyaFHE.Configure({
       CLIENT_TOKEN: "f7edB8a8A4D7dff85d2CB7E5",
       algo_name: "sample_algo"
     })
-
+    console.log("input_data: ", Object.values(dataC))
     const model = await EnyaFHE.FHE(Object.values(dataC));
 
     result = (model / 100000).toFixed(2);
@@ -207,9 +207,9 @@ export const secureComputeFHEBuffered = (data) => async (dispatch) => {
     /* Delete the used FHE key */
     Key_id_update = Key_id_update.filter(Key_id_update => !random_id.includes(Key_id_update))
     account.Key_id = Key_id_update;
-
+    console.log(account.Key_id.length)
     if ( account.Key_id.length == 0 ) {
-      account.FHE_keys_ready = false;
+      dispatch( secureComputeProgress({FHE_keys_ready:false}));
     }
 
     await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account));
@@ -295,6 +295,7 @@ export const secureComputeFHEBuffered = (data) => async (dispatch) => {
         result = (text[0] / 100000).toFixed(2);
         current = true; 
         haveSC = true;
+        dispatch( secureComputeProgress({computing:false}) )
 
       } else {
         /* Computation failed */

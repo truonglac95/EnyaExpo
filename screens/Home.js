@@ -10,7 +10,7 @@ import BasicButton from '../components/BasicButton';
 import {mS, mC} from '../constants/masterStyle';
 
 // Actions
-import { secureCompute, secureComputeSMC, secureComputeFHESimple, getResults, getAnswers } from '../redux/actions';
+import { secureComputeSMC, secureComputeFHESimple, getAnswers, secureComputeFHEBuffered } from '../redux/actions';
 
 class Home extends React.Component {  
 
@@ -65,6 +65,7 @@ class Home extends React.Component {
     const { compute } = nextProps;
     const { answers } = nextProps.answer;
     const { progress } = nextProps.fhe;
+    const { account } = nextProps.user;
 
     this.setState({
 
@@ -75,8 +76,9 @@ class Home extends React.Component {
       computing: (compute.computing || false),
       
       FHE_key_inventory: (progress.FHE_key_inventory || 0),
-      FHE_keys_ready: (progress.FHE_keys_ready || false),
       FHE_key_computing: (progress.FHE_key_computing || false),
+
+      FHE_keys_ready: (account.FHE_keys_ready || false),
 
     });
 

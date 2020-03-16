@@ -30,16 +30,18 @@ class MainApp extends React.Component {
 
         var account = JSON.parse(result);
         if (__DEV__) console.log('MainApp: Previous account found:', account);
-        this.props.dispatch(setAccount(account));
 
         //update the number of keys in buffer
         var numberOfKeys = account.Key_id.length;
+        
+        account.FHE_keys_ready = numberOfKeys > 2;
+        this.props.dispatch(setAccount(account));
 
         this.props.dispatch( FHEKeyGenProgress({
           FHE_key_progress: 100,
           FHE_key_inventory: numberOfKeys,
           FHE_key_statusMSG: numberOfKeys > 2 ? 'Key store filled.' : 'Need to generate FHE keys.',
-          FHE_keys_ready: account.Key_id.length > 2,
+          FHE_keys_ready: numberOfKeys > 2,
           FHE_key_computing: false
         }))
 

@@ -234,17 +234,21 @@ class Questionnaire extends React.Component {
     text={'SMC Secure Compute'} 
     onClick={this.handleSMCCalculate}
   />
+  <View style={{marginTop: 20}}>
   <BasicButton 
     width={200}
     text={'FHE_S Secure Compute'} 
     onClick={this.handleFHECalculateS}
   />
+  </View>
+  <View style={{marginTop: 20}}>
   <BasicButton 
     width={200}
     text={'FHE_B Secure Compute'} 
     onClick={this.handleFHECalculateB}
     enable = {FHE_keys_ready}
   />
+  </View>
 </View>
 }
 
