@@ -25,8 +25,6 @@ export function user(state = INITIAL_STATE, action = {}) {
 			return {
 				...state,
 				error: null,
-				forgotPasswordError: null,
-				changePasswordError: null,
 				deleted: false,
 			}
 		case USER_SIGNIN_SUCCESS:

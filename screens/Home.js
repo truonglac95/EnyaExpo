@@ -10,7 +10,7 @@ import BasicButton from '../components/BasicButton';
 import {mS, mC} from '../constants/masterStyle';
 
 // Actions
-import { secureCompute, getResults, getAnswers } from '../redux/actions';
+import { secureComputeSMC, secureComputeFHESimple, getAnswers, secureComputeFHEBuffered } from '../redux/actions';
 
 class Home extends React.Component {  
 
@@ -24,16 +24,27 @@ class Home extends React.Component {
 
     super(props); 
 
-    const { smc } = this.props.answer;
+    const { compute } = this.props;
+    const { account } = this.props.user;
+    const { answers } = this.props.answer;
+    const { progress } = this.props.fhe;
 
     this.state = {
-      percentAnswered: (smc.percentAnswered || 0), //0 to 100
-      result: (smc.result || 0.0), //e.g. 14.5
-      current: (smc.current || false), //is the score valid/current?
-      FHE_key: (smc.FHE_key || false),
-      SMC_compute_progress: (this.props.answer.SMC_compute_progress || 0),
-      SMC_computing: (this.props.answer.SMC_computing || false),
+      
+      //answers
+      percentAnswered: (answers.percentAnswered || 0), //0 to 100
+      
+      //compute
+      result: (compute.result || 0.0), //e.g. 14.5
+      current: (compute.current || false), //is the score valid/current?
+      computing: (compute.computing || false),
 
+      //FHE key gen
+      FHE_key_inventory: (progress.FHE_key_inventory || 0),
+      FHE_keys_ready: (progress.FHE_keys_ready || false),
+      FHE_key_computing: (progress.FHE_key_computing || false),
+
+      //this screen
       recalculating: false,
 
     };
@@ -42,8 +53,8 @@ class Home extends React.Component {
 
   handleClickItem = (page) => {
 
-    if (page === 'RESULT_SMC') {
-      this.props.navigation.navigate('ResultSMC');
+    if (page === 'RESULT_SC') {
+      this.props.navigation.navigate('ResultSC');
     } else if (page === 'GIVE_ANSWERS') {
       this.props.navigation.navigate('Questionnaire');
     }
@@ -51,48 +62,59 @@ class Home extends React.Component {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
 
-    const { smc } = nextProps.answer;
+    const { compute } = nextProps;
+    const { answers } = nextProps.answer;
+    const { progress } = nextProps.fhe;
+    const { account } = nextProps.user;
 
     this.setState({
-      percentAnswered: (smc.percentAnswered || 0.0),
-      result: (smc.result || 0.0),
-      current: (smc.current || false),
-      FHE_key: (smc.FHE_key || false),
-      SMC_compute_progress: (nextProps.answer.SMC_compute_progress || 0),
-      SMC_computing: (nextProps.answer.SMC_computing || false),
+
+      percentAnswered: (answers.percentAnswered || 0.0),
+      
+      result: (compute.result || 0.0),
+      current: (compute.current || false),
+      computing: (compute.computing || false),
+      
+      FHE_key_inventory: (progress.FHE_key_inventory || 0),
+      FHE_key_computing: (progress.FHE_key_computing || false),
+
+      FHE_keys_ready: (progress.FHE_keys_ready || false),
 
     });
 
     //go to fresh result once calculation is done
-    if ( this.state.recalculating && nextProps.answer.SMC_compute_progress === 100 ) {
+    if ( this.state.recalculating && !this.state.computing ) {
       this.setState({recalculating: false});
-      this.props.navigation.navigate('ResultSMC');
+      this.props.navigation.navigate('ResultSC');
     }
 
   }
 
   handleSMCCalculate = () => {
-
-    const { dispatch } = this.props;
     const { answers } = this.props.answer;
-    dispatch( secureCompute(answers, 'smc') );
-    this.setState({recalculating: true});
-
+    this.props.dispatch( secureComputeSMC(answers) );
+    this.setState({recalculating:true,computing:true});
   }
 
-  handleFHECalculate = () => {
-
-    const { dispatch } = this.props;
+  handleFHECalculateS = () => {
     const { answers } = this.props.answer;
-    dispatch( secureCompute(answers, 'fhe') );
-    this.setState({recalculating: true});
+    this.props.dispatch(secureComputeFHESimple(answers));
+    this.setState({recalculating:true,computing:true});
+  }
 
+  handleFHECalculateB = () => {
+    const { answers } = this.props.answer;
+    this.props.dispatch(secureComputeFHEBuffered(answers));
+    this.setState({recalculating:true,computing:true});
   }
 
   render() {
 
-    const { current, percentAnswered, result, SMC_compute_progress, SMC_computing, FHE_key } = this.state;
-    
+    const { current, percentAnswered, result, 
+      computing, FHE_keys_ready,
+      FHE_key_inventory, FHE_key_computing 
+    } = this.state;
+
     var score = parseFloat(result).toFixed(1);
 
     return (
@@ -157,13 +179,13 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 <View style={{display: 'flex', flexDirection: 'row'}}>
 <View style={mS.smc}>
 
-{/*'there is an SMC result - allow people to view the result and to update their answers'*/}
+{/*'there is an SC result - allow people to view the result and to update their answers'*/}
 {current && 
 <View>
 <BasicButton 
   text={'View Result'}
   width="80%" 
-  onClick={()=>this.handleClickItem('RESULT_SMC')}
+  onClick={()=>this.handleClickItem('RESULT_SC')}
 />
 <TouchableOpacity 
   style={{marginTop: 20}}
@@ -193,17 +215,24 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 <Text style={mS.smallGray}>{'All questions answered'}</Text>
 <View style={{marginTop: 20}}>
   <BasicButton 
-    text={'SMC Compute Score'}
+    text={'SMC Compute'}
     width="100%"
     onClick={this.handleSMCCalculate}
   />
 </View>
 <View style={{marginTop: 20}}>
   <BasicButton 
-    text={'FHE Compute Score'}
+    text={'FHE_S Compute'}
     width="100%"
-    onClick={this.handleFHECalculate}
-    key_process = {!FHE_key}
+    onClick={this.handleFHECalculateS}
+  />
+</View>
+<View style={{marginTop: 20}}>
+  <BasicButton 
+    text={'FHE_B Compute'}
+    width="100%"
+    onClick={this.handleFHECalculateB}
+    enable = {FHE_keys_ready}
   />
 </View>
 </View>
@@ -223,7 +252,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 }
 
 {/*'not enough data - display progress answering questions'*/}
-{!current && !SMC_computing && 
+{!current && !computing && 
   <View style={mS.circleProgress}>
     <ProgressCircle percent={percentAnswered}>
       <Text style={mS.progressIcon}>{`${percentAnswered}%`}</Text>
@@ -234,14 +263,11 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
   </View>
 }
 
-{/*'show progress indicator when calculating score'*/}
-{SMC_computing && 
+{/*show progress indicator when calculating risk*/}
+{computing && 
   <View style={mS.circleProgress}>
-    <ProgressCircle percent={SMC_compute_progress} cog={true}/>
-    <View>
-      {(SMC_compute_progress   < 100) && <Text style={mS.progressText}>{'Computing'}</Text>}
-      {(SMC_compute_progress === 100) && <Text style={mS.progressText}>{'Done'}</Text>}
-    </View>
+    <ActivityIndicator size="large" color='#33337F' />
+    <Text style={mS.progressText}>{'Computing'}</Text>
   </View>
 }
 
@@ -257,7 +283,8 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 const mapStateToProps = state => ({
   user: state.user,
   answer: state.answer,
-  result: state.result,
+  compute: state.compute,
+  fhe: state.fhe,
 });
 
 export default connect(mapStateToProps)(Home);

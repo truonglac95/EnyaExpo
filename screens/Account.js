@@ -16,9 +16,7 @@ class Account extends React.Component {
   };
 
   constructor (props) {
-
     super(props);
-
   }
 
   render() {
@@ -60,7 +58,7 @@ class Account extends React.Component {
               <BasicButton 
                 text={'Wipe Account'} 
                 icon="ios-trash" 
-                onClick={()=>{this.props.navigation.navigate('AccountDelete')}} 
+                onClick={()=>{this.props.navigation.navigate('AccountDelete')}}
               />
             </View>
           </View>

@@ -3,14 +3,25 @@ const initialStore = {
 	user: {
 		error: null,
 		loading: false,
+		deleted: false,
 		account: [],
-		deleted: false
 	},
 	answer: {
 		error: null,
 		loading: false,
-		answers: [],
-		smc: []
+		answers: [] //the user's answers
+	},
+	compute: {
+		error: null,
+		result: 0.0,
+		resultCurrent: false,
+		haveSC: false,
+		computing: false,
+	},
+	fhe: {
+		error: null,
+		loading: false,
+		progress: []
 	}
 };
 

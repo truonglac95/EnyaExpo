@@ -23,24 +23,24 @@ export default class BasicButton extends Component {
   render() {
     
     const { text, onClick, leftEdge, topEdge, width, icon, 
-      size, todo, title, key_process } = this.props;
+      size, todo, title, enable } = this.props;
 
     const defaultWidth = Dimensions.get('window').width * 0.7;
-    
-    let iOS = true;
 
-    if (Platform.OS === 'android') {
-      iOS = false
-    } 
+    let iOS = true;
+    if (Platform.OS === 'android') iOS = false
+
+    let enabled = true;
+    if (enable === false) enabled = false
 
     return (
       <View>
         <TouchableOpacity 
           style={[styles.button, {
             width: (width || defaultWidth), 
-            backgroundColor: key_process ? mC.lightGray : mC.white,
-            borderColor: key_process ? mC.lightGray : mC.darkBlue}]} 
-            onPress={key_process ? () => this.handleAlert("To try FHE, you first need to generate your FHE keys. Please do so in the account tab.", "No FHE keys"): onClick}>
+            backgroundColor: enabled ? mC.white : mC.lightGray,
+            borderColor: enabled ? mC.darkBlue : mC.lightGray }]} 
+            onPress={!enabled ? () => this.handleAlert("To try FHE, you first need to generate your FHE keys. Please do so in the account tab.", "No FHE keys"): onClick}>
           <View style={styles.flex}> 
             {icon && iOS &&
               <View style={{marginRight: 10, marginTop: 3}}>
@@ -62,7 +62,7 @@ export default class BasicButton extends Component {
             }
             <Text style={[styles.buttonColorText, {
                 fontSize: size || 16,
-                color: key_process ? mC.darkGray : mC.darkBlue
+                color: enabled ? mC.darkBlue : mC.white
               }]}>{text}
             </Text>
           </View>

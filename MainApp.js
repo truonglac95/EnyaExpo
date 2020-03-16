@@ -8,17 +8,18 @@ import AppNavigator from './navigation/AppNavigator';
 import AccountDeleted from './screens/AccountDeleted';
 
 // Redux and Actions
-import { setAccount, resetError, getAnswers, FHEKeyGen } from './redux/actions';
-import * as SecureStore from 'expo-secure-store';
+import { setAccount, resetError, getAnswers, 
+         FHEKeyGen, FHEKeyGenProgress } from './redux/actions';
+
 import { SECURE_STORAGE_ACCOUNT } from './redux/constants';
+
+import * as SecureStore from 'expo-secure-store';
 import * as forge from 'node-forge';
 
 class MainApp extends React.Component {
 
   constructor (props) {
-
     super (props);
-
   }
 
   UNSAFE_componentWillMount() {
@@ -26,27 +27,36 @@ class MainApp extends React.Component {
     //load account settings, if any
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(result => {
       if (result) {
-        if (__DEV__) console.log('MainApp: Previous account found.');
+
         var account = JSON.parse(result);
-        account.FHE_indicator = false;
-        let updatedAccount = {
-          ...account,
-          loading: false,
-        };
-        this.props.dispatch(setAccount(updatedAccount));
+        if (__DEV__) console.log('MainApp: Previous account found:', account);
+
+        //update the number of keys in buffer
+        var numberOfKeys = account.Key_id.length;
+
+        this.props.dispatch(setAccount(account));
+
+        this.props.dispatch( FHEKeyGenProgress({
+          FHE_key_progress: 100,
+          FHE_key_inventory: numberOfKeys,
+          FHE_key_statusMSG: numberOfKeys > 2 ? 'Key store filled.' : 'Need to generate FHE keys.',
+          FHE_keys_ready: numberOfKeys > 2,
+          FHE_key_computing: false
+        }))
+
       } else {
+        
         //need to set up account
         if (__DEV__) console.log('MainApp: No account found - set up new account.');
         var aes_key = forge.random.getBytesSync(16);
-        let newAccount = {
+        let account = {
           aes_key,
-          fhe_ready: false, //no FHE keys stored yet
-          FHE_indicator: false,
           Key_id: [],
           loading: false,
         };
-        SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(newAccount));
-        this.props.dispatch(setAccount(newAccount));
+        if (__DEV__) console.log('MainApp: new account:', account)
+        SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account));
+        this.props.dispatch(setAccount(account));
         //In production app triggers flow through QR code, T&C, and password, etc.
       }
     }).catch(err => {
@@ -56,31 +66,10 @@ class MainApp extends React.Component {
   }
 
   componentDidMount() {
-
     //resets everything after app delete
     this.props.dispatch(resetError());
-    this.props.dispatch(getAnswers());
 
-    SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(res => {
-      if (res) {
-        var AccountInfo = JSON.parse(res);
-        AccountInfo.FHE_indicator = false;       
-        if (__DEV__) console.log('MainApp: Previous AES key found.')
-        SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(AccountInfo));
-        this.props.dispatch(setAccount(AccountInfo));
-       } else {
-         if (__DEV__) console.log('MainApp: Generating AES key')
-         var AccountInfo = res ? JSON.parse(res) : {};
-         AccountInfo.Key_id = [];
-         var aes_key = forge.random.getBytesSync(16);
-         let Account ={
-           ...AccountInfo,
-           aes_key,
-         }
-         SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(Account));
-       }
-     })
-  
+    this.props.dispatch(getAnswers());
   }
 
   render() {
@@ -108,7 +97,8 @@ class MainApp extends React.Component {
 
 const mapStateToProps = state => ({
   user: state.user,
-  result: state.result,
+  compute: state.compute,
+  answer: state.answer,
 });
 
 export default connect(mapStateToProps)(MainApp);

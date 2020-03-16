@@ -8,11 +8,23 @@ import {
 
 import {
 	getAnswers,
-	giveAnswer,
-	FHEKeyGen,
+	giveAnswer
+} from './actionAnswer';
+
+import {
+	secureComputeSMC,
+	secureComputeFHEBuffered,
+	secureComputeFHESimple,
 	secureCompute,
-	secureComputeProgress
-} from './actionAnswers';
+	secureComputeProgress,
+	secureComputeInvalidate
+} from './actionCompute';
+
+import {
+	FHEKeyGen,
+	FHEKeyGenProgress
+} from './actionFHEKeyGen';
+
 
 export {
 	//user account ops
@@ -25,7 +37,16 @@ export {
 	//questionaire functions
 	getAnswers,
 	giveAnswer,
+
+	//FHE prep
 	FHEKeyGen,
+	FHEKeyGenProgress,
+
+	//compute functions
 	secureCompute,
-	secureComputeProgress
+	secureComputeSMC,
+	secureComputeFHEBuffered,
+	secureComputeFHESimple,
+	secureComputeProgress,
+	secureComputeInvalidate
 };

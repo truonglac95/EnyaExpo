@@ -46,7 +46,7 @@ class AccountDelete extends React.Component {
         <View style={mS.marTop20}>
           <TouchableOpacity 
             onPress={()=>{this.props.navigation.goBack()}}>
-            <Text style={mS.forgot}>{'Cancel'}</Text>
+            <Text style={[mS.forgot,{fontWeight: 'bold'}]}>{'Cancel'}</Text>
           </TouchableOpacity>
         </View>
 

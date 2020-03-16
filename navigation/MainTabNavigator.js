@@ -13,7 +13,7 @@ import Home from '../screens/Home';
 import Questionnaire from '../screens/Questionnaire';
 
 /* Results */
-import ResultSMC from '../screens/ResultSMC';
+import ResultSC from '../screens/ResultSC';
 
 /* User actions */
 import Account from '../screens/Account';
@@ -47,7 +47,7 @@ const HomeStack = createStackNavigator(
   {
     Home: Home,
     Questionnaire: Questionnaire,
-    ResultSMC: ResultSMC
+    ResultSC: ResultSC
   }, 
   {
     defaultNavigationOptions: {
@@ -64,7 +64,7 @@ HomeStack.navigationOptions = ({ navigation }) => {
 
   if (routeName === 'Result') {
     tabBarVisible = false;
-  } else if (routeName === 'ResultSMC') {
+  } else if (routeName === 'ResultSC') {
     tabBarVisible = false;
   }
 

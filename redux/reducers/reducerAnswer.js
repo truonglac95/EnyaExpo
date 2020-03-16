@@ -5,11 +5,6 @@ import {
 	GIVE_ANSWER,
 	GIVE_ANSWER_SUCCESS,
 	GIVE_ANSWER_FAILURE,
-	GET_SMC_SUCCESS,
-	SECURE_COMPUTE,
-	SECURE_COMPUTE_SUCCESS,
-	SECURE_COMPUTE_FAILURE,
-	SECURE_COMPUTE_PROGRESS,
 } from '../constants';
 
 import initialState from '../initialState';
@@ -55,41 +50,6 @@ export function answer(state = INITIAL_STATE, action = {}) {
 				...state,
 				loading: false,
 				error: action.payload,
-			}
-		case GET_SMC_SUCCESS:
-			return {
-				...state,
-				loading: false,
-				error: null,
-				smc: action.payload,
-			}
-		case SECURE_COMPUTE:
-			return {
-				...state,
-				loading: true,
-				error: null,
-			}
-		case SECURE_COMPUTE_SUCCESS:
-			return {
-				...state,
-				loading: false,
-				error: null,
-				smc: action.payload,
-			}
-		case SECURE_COMPUTE_FAILURE:
-			return {
-				...state,
-				loading: false,
-				error: action.payload,
-			}
-		case SECURE_COMPUTE_PROGRESS:
-			return {
-				...state,
-				FHE_key_statusMSG: action.payload.FHE_key_statusMSG,
-				FHE_key_inventory: action.payload.FHE_key_inventory,
-				FHE_key_progress: action.payload.FHE_key_progress,
-				SMC_compute_progress: action.payload.SMC_compute_progress,
-				SMC_computing: action.payload.SMC_computing,
 			}
 		default:
 			return state;

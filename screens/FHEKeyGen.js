@@ -8,7 +8,7 @@ import { mS } from '../constants/masterStyle';
 import ProgressCircle from '../components/ProgressCircle';
 
 // Redux and Actions
-import { setAccount, FHEKeyGen as FHEKey} from '../redux/actions';
+import { FHEKeyGen as FHEKey} from '../redux/actions';
 import * as SecureStore from 'expo-secure-store';
 import { SECURE_STORAGE_ACCOUNT } from '../redux/constants';
 
@@ -17,46 +17,57 @@ class FHEKeyGen extends React.Component {
   constructor (props) {
 
     super(props);
-  
-    const { smc } = this.props.answer;
+
+    const { progress } = this.props.fhe;
 
     this.state = {
-      FHE_key_progress: (smc.FHE_key_progress || 0), //ranges from 0 to 100 and is a per key indicator 
-      FHE_key_inventory: (smc.FHE_key_inventory || 0),
-      FHE_key_statusMSG: (smc.FHE_key_statusMSG || 'no idea')
+      FHE_key_progress: (progress.FHE_key_progress || 0), //ranges from 0 to 100 and is a per key indicator 
+      FHE_key_inventory: (progress.FHE_key_inventory || 0),
+      FHE_key_statusMSG: (progress.FHE_key_statusMSG || 'Unknown'),
+      FHE_keys_ready: (progress.FHE_keys_ready || false),
+      FHE_key_computing: (progress.FHE_key_computing || false)
     }
 
   }
   
   UNSAFE_componentWillMount() {
 
+    const { FHE_keys_ready } = this.state;
+
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(res => {
       
       const account = JSON.parse(res);
 
-      if (( typeof(account.Key_id) == 'undefined' ) || 
-          ( account.Key_id.length < 3 )) {
+      if ( FHE_keys_ready == false || account.Key_id.length < 3 ) {
+        //if (( typeof(account.Key_id) == 'undefined' ) || ( account.Key_id.length < 3 )) {
           console.log('Generating more keys...')
           this.props.dispatch(FHEKey());
-      } else {
-        //we have enough keys!
-        this.setState({
-          FHE_key_progress: 100,
-          FHE_key_inventory: 3,
-          FHE_key_statusMSG: 'Key store filled.',
-        })
-      }
-
+        } else {
+          //we have enough keys...
+          console.log('Have enough keys...')
+          this.setState({
+            FHE_key_progress: 100,
+            FHE_key_inventory: 3,
+            FHE_key_statusMSG: 'Key store filled.',
+            FHE_keys_ready: true,
+            FHE_key_computing: false
+          })
+        }
+      //}
     })
-
+  
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
 
+    const { progress } = nextProps.fhe;
+
     this.setState({
-      FHE_key_progress: (nextProps.answer.FHE_key_progress || 0),
-      FHE_key_inventory: (nextProps.answer.FHE_key_inventory || 0),
-      FHE_key_statusMSG: (nextProps.answer.FHE_key_statusMSG || 'Unknown'),
+      FHE_key_progress: (progress.FHE_key_progress || 0),
+      FHE_key_inventory: (progress.FHE_key_inventory || 0),
+      FHE_key_statusMSG: (progress.FHE_key_statusMSG || 'Unknown'),
+      FHE_keys_ready: (progress.FHE_keys_ready || false),
+      FHE_key_computing: (progress.FHE_key_computing || false)
     })
 
   }
@@ -64,13 +75,17 @@ class FHEKeyGen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     return {
       headerTitle: () => (<Text style={mS.screenTitle}>{'FHE Key Generation'}</Text>),
-      headerRight: (<View></View>),
+      headerRight: (<View></View>) //
     }
   };
 
+  //
+
   render () {
 
-    const { FHE_key_progress, FHE_key_inventory, FHE_key_statusMSG } = this.state;
+    const { FHE_key_progress, FHE_key_inventory, 
+            FHE_key_statusMSG, FHE_key_computing, 
+            FHE_keys_ready } = this.state;
 
     return (
       <View style={mS.containerKAV}>
@@ -114,9 +129,5 @@ class FHEKeyGen extends React.Component {
 
 }
 
-const mapStateToProps = state => ({ 
-  user: state.user,
-  answer: state.answer,
-});
-
+const mapStateToProps = state => ({ fhe: state.fhe });
 export default connect(mapStateToProps)(FHEKeyGen);
