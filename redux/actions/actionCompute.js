@@ -24,7 +24,7 @@ import * as SecureStore from 'expo-secure-store'
 import * as  forge from 'node-forge';
 import { AsyncStorage } from 'react-native';
 
-const FHEKeyGenProgress = (data) => ({ type: FHE_KEYGEN_PROGRESS, payload: data });
+const FHEKeyGenProgress = (data) => ({ type: FHE_KEYGEN_PROGRESS, payload: data })
 
 const sc = {
   haveSC: false,
@@ -55,6 +55,7 @@ const CanCompute = function ( data ) {
 const Clean = function ( data ) {
 
   var dataR = {};
+  
   dataR.birthyear = data.birthyear;
   dataR.gender = data.gender;
   dataR.height = data.height;
@@ -62,6 +63,7 @@ const Clean = function ( data ) {
   dataR.binary_1 = data.binary_1;
   dataR.binary_2 = data.binary_2;
   dataR.country = data.country;
+
   return dataR;
 
 }
@@ -100,9 +102,9 @@ export const secureComputeSMC = (data) => async (dispatch) => {
     
     //------------Make sense of return -------------------
     if(model.status_code == 200) {
-      result = parseFloat(model.secure_result).toFixed(2);
-      current = true; //because we just recomputed
-      haveSC = true; //yes, we have result
+      result = parseFloat(model.secure_result).toFixed(2)
+      current = true //because we just recomputed
+      haveSC = true //yes, we have result
     } else {
       error = model.status_code;
     }
@@ -113,8 +115,8 @@ export const secureComputeSMC = (data) => async (dispatch) => {
 
   SecureStore.getItemAsync(SECURE_STORAGE_SC).then(res => {
     const sc = res ? JSON.parse(res) : {};
-    let updatedSC = {...sc,result,haveSC,current,error};
-    SecureStore.setItemAsync(SECURE_STORAGE_SC, JSON.stringify(updatedSC));
+    let updatedSC = {...sc,result,haveSC,current,error}
+    SecureStore.setItemAsync(SECURE_STORAGE_SC, JSON.stringify(updatedSC))
     if (!error) dispatch(secureComputeSuccess(updatedSC))
     else dispatch(secureComputeFailure({error}))
   })
@@ -123,8 +125,8 @@ export const secureComputeSMC = (data) => async (dispatch) => {
 
 export const secureComputeFHESimple = (data) => async (dispatch) => {
 
-  dispatch( secureComputeBegin() );
-  dispatch( secureComputeProgress({computing: true}));
+  dispatch( secureComputeBegin() )
+  dispatch( secureComputeProgress({computing: true}))
 
   var result = 0.0;
   var haveSC = false;
@@ -153,8 +155,8 @@ export const secureComputeFHESimple = (data) => async (dispatch) => {
       if (__DEV__) console.log(error)
     }
 
-
     dispatch( secureComputeProgress({computing:false}) )
+
   } else {
     if (__DEV__) console.log('Not enough data for secure computation');
   }
@@ -214,7 +216,7 @@ export const secureComputeFHEBuffered = (data) => async (dispatch) => {
     await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account));
     await AsyncStorage.removeItem(random_id)
 
-    /* aes decrypt FHE keys */
+    /* AES decrypt FHE keys */
     var aes_key = account.aes_key;
     var aes_iv = forge.util.hexToBytes(aes_iv_hex);
     var decipher = forge.cipher.createDecipher('AES-CBC', aes_key);
@@ -235,8 +237,8 @@ export const secureComputeFHEBuffered = (data) => async (dispatch) => {
     /* Encrypt the plaintext */
     var ciphertext_fhe = EnyaFHE.EncryptVector(
       plaintext,
-      publickey_fhe,
-    );
+      publickey_fhe
+    )
     
     /* Create JSON payload */
     var jsonpayload = EnyaFHE.JSONPayload(
@@ -244,7 +246,7 @@ export const secureComputeFHEBuffered = (data) => async (dispatch) => {
       multikey_fhe,
       rotakey_fhe,
       ciphertext_fhe
-    );
+    )
     
     /* Random String */
     var string_pcr = EnyaFHE.RandomPCR();
@@ -294,20 +296,23 @@ export const secureComputeFHEBuffered = (data) => async (dispatch) => {
         result = (text[0] / 100000).toFixed(2);
         current = true; 
         haveSC = true;
+
         dispatch( secureComputeProgress({computing:false}) )
 
       } else {
         /* Computation failed */
-        if (__DEV__) console.log("Error: ", status);
-        dispatch( secureComputeProgress({computing:false}));
+        if (__DEV__) console.log("Error: ", status)
+        dispatch( secureComputeProgress({computing:false}) )
+        //we will error out later
       }
     } else {
       /* Computation failed */
-      if (__DEV__) console.log("Failed to send encryption keys");
-      dispatch( secureComputeProgress({computing:false}));
+      if (__DEV__) console.log("Failed to send encryption keys")
+      dispatch( secureComputeProgress({computing:false}) )
+      //we will error out later
     }
   } else {
-    if (__DEV__) console.log('Not enough data for secure computation');
+    if (__DEV__) console.log('Not enough data for secure computation')
   }
 
   SecureStore.getItemAsync(SECURE_STORAGE_SC).then(res => {

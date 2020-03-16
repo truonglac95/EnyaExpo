@@ -178,9 +178,12 @@ class Questionnaire extends React.Component {
     let newAnswer = [{ question_id : key, answer : value }];
 
     dispatch(giveAnswer(newAnswer));
+
+    //this changes the result status from current to current == false,
+    //triggering dispaly of recompute options
     dispatch(secureComputeInvalidate());
 
-  };
+  }
 
   handleSeeResult = () => {
     this.props.navigation.navigate('ResultSC');
@@ -207,9 +210,9 @@ class Questionnaire extends React.Component {
   render() {
 
     const { birthyear, country, gender, height, weight, binary_1, binary_2,
-            answersCurrent, result, resultCurrent, 
-            percentAnswered, numberAnswered, 
-            computing, FHE_keys_ready } = this.state;
+      answersCurrent, percentAnswered, numberAnswered, 
+      result, resultCurrent, computing, FHE_keys_ready 
+    } = this.state;
 
     const pickerStyle = {
       done: {color: '#FB2E59'},
@@ -363,7 +366,7 @@ class Questionnaire extends React.Component {
 </View>
 }
 
-{Platform.OS == 'ios' && //
+{Platform.OS == 'ios' &&
 <TouchableOpacity onPress={()=>{this.inputRefs.genderInput.togglePicker()}}>
 <View style={mS.rowQ}>
 <View style={mS.labelQ}><Text style={mS.textQ}>{'Gender'}</Text></View>
@@ -398,7 +401,7 @@ class Questionnaire extends React.Component {
 </View>
 }
 
-{Platform.OS == 'ios' && //
+{Platform.OS == 'ios' &&
 <TouchableOpacity onPress={() => { 
   this.inputRefs.heightInput.togglePicker(); 
   this.state.height == 0 && this.setState({ height : heightList[45].value });
@@ -437,7 +440,7 @@ class Questionnaire extends React.Component {
 </View>
 }
 
-{Platform.OS == 'ios' && //
+{Platform.OS == 'ios' &&
 <TouchableOpacity onPress={() => { 
   this.inputRefs.weightInput.togglePicker(); 
   this.state.weight == 0 && this.setState({ weight : weightList[45].value });
@@ -464,7 +467,7 @@ class Questionnaire extends React.Component {
 </TouchableOpacity>
 }
 
-{Platform.OS == 'android' && //
+{Platform.OS == 'android' &&
 <View style={mS.rowQ}>
 <View style={mS.labelQ}><Text style={mS.textQ}>{'Weight'}</Text></View>
 <Picker

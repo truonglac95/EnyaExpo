@@ -113,8 +113,6 @@ export const FHEKeyGen = () => async(dispatch) => {
     //and write the new data to non-volatile storage
     await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account))
 
-    //console.log("Number of keys:", numberOfKeys)
-
     if(numberOfKeys >= 3) {
 
       dispatch( FHEKeyGenProgress({
