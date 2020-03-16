@@ -13,6 +13,8 @@ import {
   SECURE_STORAGE_SC,
   SECURE_STORAGE_ANSWERS,
   SECURE_STORAGE_ACCOUNT,
+  //fhe
+  FHE_KEYGEN_PROGRESS
 } from '../constants';
 
 import EnyaSMC from 'enyasmc'
@@ -21,6 +23,8 @@ import EnyaFHE from 'enyafhe'
 import * as SecureStore from 'expo-secure-store'
 import * as  forge from 'node-forge';
 import { AsyncStorage } from 'react-native';
+
+const FHEKeyGenProgress = (data) => ({ type: FHE_KEYGEN_PROGRESS, payload: data });
 
 const sc = {
   haveSC: false,
@@ -86,7 +90,7 @@ export const secureComputeSMC = (data) => async (dispatch) => {
     EnyaSMC.input(Object.values(dataC))
 
     //----------- Configure ------------------------------
-    EnyaSMC.configure({
+    EnyaSMC.Configure({
       CLIENT_TOKEN: "f7edB8a8A4D7dff85d2CB7E5",
       algo_name: "sample_algo"
     })
@@ -137,23 +141,18 @@ export const secureComputeFHESimple = (data) => async (dispatch) => {
       CLIENT_TOKEN: "f7edB8a8A4D7dff85d2CB7E5",
       algo_name: "sample_algo"
     })
-    console.log("input_data: ", Object.values(dataC))
+
     const model = await EnyaFHE.FHE(Object.values(dataC));
 
-    result = (model / 100000).toFixed(2);
-    current = true; //because we just recomputed it
-    haveSC = true; //yes, we have result
-
-    /* Boyuan - can you have a look?
-    //------------Make sense of return -------------------
     if(model.status_code == 200) {
-      result = parseFloat(model.secure_result).toFixed(2);
+      result = parseFloat(model.secure_result / 100000).toFixed(2);
       current = true; //because we just recomputed
       haveSC = true; //yes, we have result
     } else {
-      error = model.status_code;
+      error = model.error;
+      if (__DEV__) console.log(error)
     }
-    */
+
 
     dispatch( secureComputeProgress({computing:false}) )
   } else {
@@ -207,9 +206,9 @@ export const secureComputeFHEBuffered = (data) => async (dispatch) => {
     /* Delete the used FHE key */
     Key_id_update = Key_id_update.filter(Key_id_update => !random_id.includes(Key_id_update))
     account.Key_id = Key_id_update;
-    console.log(account.Key_id.length)
+
     if ( account.Key_id.length == 0 ) {
-      dispatch( secureComputeProgress({FHE_keys_ready:false}));
+      dispatch( FHEKeyGenProgress({FHE_keys_ready:false}));
     }
 
     await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account));

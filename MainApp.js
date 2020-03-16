@@ -33,8 +33,7 @@ class MainApp extends React.Component {
 
         //update the number of keys in buffer
         var numberOfKeys = account.Key_id.length;
-        
-        account.FHE_keys_ready = numberOfKeys > 2;
+
         this.props.dispatch(setAccount(account));
 
         this.props.dispatch( FHEKeyGenProgress({
@@ -52,7 +51,6 @@ class MainApp extends React.Component {
         var aes_key = forge.random.getBytesSync(16);
         let account = {
           aes_key,
-          FHE_keys_ready: false,
           Key_id: [],
           loading: false,
         };

@@ -73,6 +73,7 @@ class Questionnaire extends React.Component {
     const { compute } = this.props;
     const { answers } = this.props.answer;
     const { account } = this.props.user;
+    const { progress } = this.props.fhe;
 
     this.state = {
       result: (compute.result || 0.0),
@@ -90,7 +91,7 @@ class Questionnaire extends React.Component {
       numberAnswered: (answers.numberAnswered || 0),
       answersCurrent: (answers.answersCurrent || 0),
 
-      FHE_keys_ready: (account.FHE_keys_ready || false),
+      FHE_keys_ready: (progress.FHE_keys_ready || false),
 
       recalculating: false,
     }
@@ -112,6 +113,7 @@ class Questionnaire extends React.Component {
     const { compute } = nextProps;
     const { answers } = nextProps.answer;
     const { account } = nextProps.user;
+    const { progress } = nextProps.fhe;
 
     this.setState({
       percentAnswered: (answers.percentAnswered || 0),
@@ -122,7 +124,7 @@ class Questionnaire extends React.Component {
       resultCurrent: (compute.current || false),
       computing: (compute.computing || false),
 
-      FHE_keys_ready: (account.FHE_keys_ready || false),
+      FHE_keys_ready: (progress.FHE_keys_ready || false),
     });
 
     //go to fresh result once calculation is done
@@ -560,6 +562,7 @@ const mapStateToProps = state => ({
   user: state.user,
   answer: state.answer,
   compute: state.compute,
+  fhe: state.fhe,
 });
 
 export default connect(mapStateToProps)(Questionnaire);

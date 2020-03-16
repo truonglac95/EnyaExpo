@@ -110,11 +110,6 @@ export const FHEKeyGen = () => async(dispatch) => {
     //update the number of keys in buffer
     numberOfKeys = account.Key_id.length;
     
-    if(numberOfKeys >= 3)
-      account.FHE_keys_ready = true;
-    else 
-      account.FHE_keys_ready = false;
-    
     //and write the new data to non-volatile storage
     await SecureStore.setItemAsync(SECURE_STORAGE_ACCOUNT, JSON.stringify(account))
 

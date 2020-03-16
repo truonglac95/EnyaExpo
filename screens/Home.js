@@ -78,7 +78,7 @@ class Home extends React.Component {
       FHE_key_inventory: (progress.FHE_key_inventory || 0),
       FHE_key_computing: (progress.FHE_key_computing || false),
 
-      FHE_keys_ready: (account.FHE_keys_ready || false),
+      FHE_keys_ready: (progress.FHE_keys_ready || false),
 
     });
 

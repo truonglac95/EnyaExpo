@@ -32,13 +32,13 @@ class FHEKeyGen extends React.Component {
   
   UNSAFE_componentWillMount() {
 
+    const { FHE_keys_ready } = this.state;
+
     SecureStore.getItemAsync(SECURE_STORAGE_ACCOUNT).then(res => {
       
       const account = JSON.parse(res);
 
-      console.log('FHE keygen account:', account)
-
-      if ( account.FHE_keys_ready == false || account.Key_id.length < 3 ) {
+      if ( FHE_keys_ready == false || account.Key_id.length < 3 ) {
         //if (( typeof(account.Key_id) == 'undefined' ) || ( account.Key_id.length < 3 )) {
           console.log('Generating more keys...')
           this.props.dispatch(FHEKey());
