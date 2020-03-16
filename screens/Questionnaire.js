@@ -192,25 +192,25 @@ class Questionnaire extends React.Component {
   handleSMCCalculate = () => {
     const { answers } = this.props.answer;
     this.props.dispatch(secureComputeSMC(answers));
-    this.setState({recalculating:true,computing:true});
+    this.setState({recalculating:true,computing:true,API:"SMC"});
   }
 
   handleFHECalculateS = () => {
     const { answers } = this.props.answer;
     this.props.dispatch(secureComputeFHESimple(answers));
-    this.setState({recalculating:true,computing:true});
+    this.setState({recalculating:true,computing:true,API:"FHES"});
   }
 
   handleFHECalculateB = () => {
     const { answers } = this.props.answer;
     this.props.dispatch(secureComputeFHEBuffered(answers));
-    this.setState({recalculating:true,computing:true});
+    this.setState({recalculating:true,computing:true,API:"FHEB"});
   }
 
   render() {
 
     const { birthyear, country, gender, height, weight, binary_1, binary_2,
-      answersCurrent, percentAnswered, numberAnswered, 
+      answersCurrent, percentAnswered, numberAnswered, API,
       result, resultCurrent, computing, FHE_keys_ready 
     } = this.state;
 
@@ -268,7 +268,14 @@ class Questionnaire extends React.Component {
 }
 
 {/*show progress indicator when calculating risk*/}
-{computing && 
+{computing && (API == "FHES") &&
+<View style={[mS.containerProgress, {marginTop: 100}]}>
+  <ActivityIndicator size="large" color='#33337F' />
+  <Text style={mS.progressText}>{'Computing\nexpect an result in about one minute'}</Text>
+</View>
+}
+
+{computing && (API != "FHES") &&
 <View style={[mS.containerProgress, {marginTop: 100}]}>
   <ActivityIndicator size="large" color='#33337F' />
   <Text style={mS.progressText}>{'Computing'}</Text>

@@ -93,25 +93,25 @@ class Home extends React.Component {
   handleSMCCalculate = () => {
     const { answers } = this.props.answer;
     this.props.dispatch( secureComputeSMC(answers) );
-    this.setState({recalculating:true,computing:true});
+    this.setState({recalculating:true,computing:true,API:"SMC"});
   }
 
   handleFHECalculateS = () => {
     const { answers } = this.props.answer;
     this.props.dispatch(secureComputeFHESimple(answers));
-    this.setState({recalculating:true,computing:true});
+    this.setState({recalculating:true,computing:true,API:"FHES"});
   }
 
   handleFHECalculateB = () => {
     const { answers } = this.props.answer;
     this.props.dispatch(secureComputeFHEBuffered(answers));
-    this.setState({recalculating:true,computing:true});
+    this.setState({recalculating:true,computing:true,API:"FHEB"});
   }
 
   render() {
 
     const { current, percentAnswered, result, 
-      computing, FHE_keys_ready,
+      computing, FHE_keys_ready, API,
       FHE_key_inventory, FHE_key_computing 
     } = this.state;
 
@@ -264,10 +264,18 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 }
 
 {/*show progress indicator when calculating risk*/}
-{computing && 
+{computing && (API == "FHES") &&
   <View style={mS.circleProgress}>
     <ActivityIndicator size="large" color='#33337F' />
-    <Text style={mS.progressText}>{'Computing'}</Text>
+    <Text style={[mS.progressText, {height: 20}]}>{'Computing'}</Text>
+    <Text style={[mS.progressText, {marginTop: 0}]}>{'expect an result in about one minute'}</Text>
+  </View>
+}
+
+{computing && (API != "FHES") &&
+  <View style={mS.circleProgress}>
+    <ActivityIndicator size="large" color='#33337F' />
+    <Text style={[mS.progressText]}>{'Computing'}</Text>
   </View>
 }
 
