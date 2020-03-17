@@ -38,6 +38,7 @@ class Home extends React.Component {
       result: (compute.result || 0.0), //e.g. 14.5
       current: (compute.current || false), //is the score valid/current?
       computing: (compute.computing || false),
+      compute_type: (compute.compute_type || 'smc'),
 
       //FHE key gen
       FHE_key_inventory: (progress.FHE_key_inventory || 0),
@@ -68,19 +69,18 @@ class Home extends React.Component {
     const { account } = nextProps.user;
 
     this.setState({
-
       percentAnswered: (answers.percentAnswered || 0.0),
       
       result: (compute.result || 0.0),
       current: (compute.current || false),
       computing: (compute.computing || false),
+      compute_type: (compute.compute_type || 'smc'),
       
       FHE_key_inventory: (progress.FHE_key_inventory || 0),
       FHE_key_computing: (progress.FHE_key_computing || false),
 
       FHE_keys_ready: (progress.FHE_keys_ready || false),
-
-    });
+    })
 
     //go to fresh result once calculation is done
     if ( this.state.recalculating && !this.state.computing ) {
@@ -91,27 +91,27 @@ class Home extends React.Component {
   }
 
   handleSMCCalculate = () => {
-    const { answers } = this.props.answer;
+    const {answers} = this.props.answer;
     this.props.dispatch( secureComputeSMC(answers) );
-    this.setState({recalculating:true,computing:true,API:"SMC"});
+    this.setState({recalculating:true,computing:true});
   }
 
   handleFHECalculateS = () => {
-    const { answers } = this.props.answer;
+    const {answers} = this.props.answer;
     this.props.dispatch(secureComputeFHESimple(answers));
-    this.setState({recalculating:true,computing:true,API:"FHES"});
+    this.setState({recalculating:true,computing:true});
   }
 
   handleFHECalculateB = () => {
-    const { answers } = this.props.answer;
+    const {answers} = this.props.answer;
     this.props.dispatch(secureComputeFHEBuffered(answers));
-    this.setState({recalculating:true,computing:true,API:"FHEB"});
+    this.setState({recalculating:true,computing:true});
   }
 
   render() {
 
-    const { current, percentAnswered, result, 
-      computing, FHE_keys_ready, API,
+    const { current, percentAnswered, result,
+      computing, compute_type, FHE_keys_ready,
       FHE_key_inventory, FHE_key_computing 
     } = this.state;
 
@@ -167,7 +167,40 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 </View>
 
 {/********************************************
-      THE SECOND BOX - SMC
+      App info and status box 
+**********************************************/}
+
+{computing &&
+  <View style={mS.shadowBox}>
+
+  <ImageBackground source={require('../assets/images/id.png')} style={{width: '100%', height: 50}}>
+    <Text style={mS.boxTitle}>{'Status'}</Text>
+  </ImageBackground>
+
+  {(compute_type == 'fhes') &&
+    <View style={mS.textBlock}>
+      <Text style={mS.mediumDark}>{'Unbuffered FHE calculation.'}</Text>
+      <Text style={mS.smallGray}>{"This is the 'slowest' way to compute a result. Expect the result to arrive in about 1 minute."}</Text>
+    </View>
+  }
+  {(compute_type == 'fheb') &&
+    <View style={mS.textBlock}>
+      <Text style={mS.mediumDark}>{'Buffered FHE calculation.'}</Text>
+      <Text style={mS.smallGray}>{'This computation uses precomputed FHE keys to provide a better user experience.'}</Text>
+    </View>
+  }
+  {(compute_type == 'smc') &&
+    <View style={mS.textBlock}>
+      <Text style={mS.mediumDark}>{'Secure Multiparty Computation.'}</Text>
+      <Text style={mS.smallGray}>{'This is the fastest way to compute a result.'}</Text>
+    </View>
+  }
+
+  </View>
+}
+
+{/********************************************
+      THE THIRD BOX - SMC
 **********************************************/}
 
 <View style={mS.shadowBox}>
@@ -234,7 +267,8 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
     text={'FHE_B Compute'}
     width="100%"
     onClick={this.handleFHECalculateB}
-    enable={FHE_keys_ready && !computing}
+    enable={!computing}
+    keys_ready={FHE_keys_ready}
   />
 </View>
 </View>
@@ -266,15 +300,7 @@ consectetur adipiscing elit, sed do eiusmod tempor.'}</Text>
 }
 
 {/*show progress indicator when calculating risk*/}
-{computing && (API == "FHES") &&
-  <View style={mS.circleProgress}>
-    <ActivityIndicator size="large" color='#33337F' />
-    <Text style={[mS.progressText, {height: 20}]}>{'Computing'}</Text>
-    <Text style={[mS.progressText, {marginTop: 0}]}>{'expect an result in about one minute'}</Text>
-  </View>
-}
-
-{computing && (API != "FHES") &&
+{computing &&
   <View style={mS.circleProgress}>
     <ActivityIndicator size="large" color='#33337F' />
     <Text style={[mS.progressText]}>{'Computing'}</Text>

@@ -31,7 +31,8 @@ const resetState = {
     result: 0.0,
     resultCurrent: false,
     haveSC: false,
-    computing: false, 
+    computing: false,
+    compute_type: 'smc'
   },
   fhe: {
     error: null,

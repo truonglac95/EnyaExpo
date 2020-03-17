@@ -44,7 +44,7 @@ class Account extends React.Component {
             <Text style={mS.boxTitle}>{'Account Functions'}</Text>
           </ImageBackground>
           <View style={{marginLeft: 14, marginTop: 12}}>
-            <Text style={[mS.textUUID, {fontSize: 14}]}>{'To use FHE, you need to first generate various keys. Depending on your phone hardware, this could take several minutes. You only need to do this once.'}</Text>
+            <Text style={[mS.textUUID, {fontSize: 14}]}>{'To use Buffered FHE, you need to first generate several keys. Depending on your phone hardware, this could take several minutes. You only need to do this once.'}</Text>
           </View>
           <View style={{alignItems: 'center', justifyContent: 'flex-start'}}>
             <View style={{marginTop: 30, marginBottom: 10}}>

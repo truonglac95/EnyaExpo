@@ -23,7 +23,7 @@ export default class BasicButton extends Component {
   render() {
     
     const { text, onClick, leftEdge, topEdge, width, icon, 
-      size, todo, title, enable } = this.props;
+      size, todo, title, enable, keys_ready } = this.props;
 
     const defaultWidth = Dimensions.get('window').width * 0.7;
 
@@ -31,16 +31,30 @@ export default class BasicButton extends Component {
     if (Platform.OS === 'android') iOS = false
 
     let enabled = true;
-    if (enable === false) enabled = false
+    if (enable === false) {
+      enabled = false
+    }
+
+    let error_title = 'Computing'
+    let error_msg = 'Please wait until the current computation has finished.'
+
+    //there is second reason to disable button...
+    if (keys_ready === false) {
+      error_title = 'No FHE keys'
+      error_msg = 'To try Buffered FHE, you first need to generate several FHE keys. Please do so in the account tab.'
+      enabled = false
+    }
 
     return (
       <View>
         <TouchableOpacity 
           style={[styles.button, {
-            width: (width || defaultWidth), 
-            backgroundColor: enabled ? mC.white : mC.lightGray,
-            borderColor: enabled ? mC.darkBlue : mC.lightGray }]} 
-            onPress={!enabled ? () => this.handleAlert("To try FHE, you first need to generate your FHE keys. Please do so in the account tab.", "No FHE keys"): onClick}>
+              width: (width || defaultWidth), 
+              backgroundColor: enabled ? mC.white : mC.lightGray,
+              borderColor: enabled ? mC.darkBlue : mC.lightGray
+            }
+          ]}
+            onPress={!enabled ? () => this.handleAlert(error_msg, error_title) : onClick}>
           <View style={styles.flex}> 
             {icon && iOS &&
               <View style={{marginRight: 10, marginTop: 3}}>
