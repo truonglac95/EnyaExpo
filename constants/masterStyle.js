@@ -29,6 +29,8 @@ exports.mS = StyleSheet.create({
   containerKAV: {    flex: 1,flexDirection: 'column',alignItems: 'center',justifyContent: 'center'},
   containerCenter: { flex: 1,flexDirection: 'column',alignItems: 'center',justifyContent: 'center',backgroundColor: c.white},
   containerProgress:{flex: 1,                        alignItems: 'center',justifyContent: 'center',marginTop: 300,marginLeft: 50,marginRight: 50},
+  
+  cancelButton: {height: 40,backgroundColor: '#CCCCCC',borderRadius: 7,justifyContent: 'center',alignItems:'center',borderWidth: 0,borderColor:'#707070',paddingLeft: 15,paddingRight: 15},
 
   contentContainerSV: {alignItems: 'center'},
   circleProgress: {justifyContent: 'center',alignItems: 'center'},

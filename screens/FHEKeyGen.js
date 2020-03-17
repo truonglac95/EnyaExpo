@@ -93,8 +93,9 @@ class FHEKeyGen extends React.Component {
         <View style={[mS.marTop20, {width: '84%'}]}>
           { FHE_key_inventory < 3 &&
             <View>
-            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'Generating FHE keys - reduced app performance.'}</Text>
-            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'This may take several minutes.'}</Text>
+            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'Generating FHE keys...'}</Text>
+            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'Reduced app performance'}</Text>
+            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'This may take several minutes'}</Text>
             </View>
           }
           { FHE_key_inventory >= 3 &&
@@ -119,9 +120,9 @@ class FHEKeyGen extends React.Component {
           <View style={mS.circleProgress}>
             <ProgressCircle percent={FHE_key_progress} cog={true}/>
             <TouchableOpacity
-              style={{marginTop: 30}} 
+              style={[mS.cancelButton,{marginTop: 30}]} 
               onPress={()=>{this.props.navigation.goBack()}}>
-              <Text style={[mS.forgot,{fontWeight: 'bold'}]}>{'Cancel'}</Text>
+              <Text style={mS.forgot}>{'CANCEL'}</Text>
             </TouchableOpacity>
           </View>
         }
