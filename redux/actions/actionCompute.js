@@ -30,7 +30,8 @@ const sc = {
   haveSC: false,
   result: 0.0,
   current: false,
-  computing: false
+  computing: false,
+  compute_type: 'smc'
 };
 
 const CanCompute = function ( data ) {
@@ -77,12 +78,14 @@ export const secureComputeInvalidate = () => ({ type: SECURE_COMPUTE_INVALIDATE 
 export const secureComputeSMC = (data) => async (dispatch) => {
 
   dispatch( secureComputeBegin() );
-  dispatch( secureComputeProgress({computing:true}))
 
-  var result = 0.0;
-  var haveSC = false;
-  var current = false;
-  var error = null;
+  var compute_type = 'smc'
+  dispatch( secureComputeProgress({computing:true,compute_type}))
+
+  var result = 0.0
+  var haveSC = false
+  var current = false
+  var error = null
 
   if ( CanCompute( data ) ) {
 
@@ -126,12 +129,14 @@ export const secureComputeSMC = (data) => async (dispatch) => {
 export const secureComputeFHESimple = (data) => async (dispatch) => {
 
   dispatch( secureComputeBegin() )
-  dispatch( secureComputeProgress({computing: true}))
 
-  var result = 0.0;
-  var haveSC = false;
-  var current = false;
-  var error = null;
+  var compute_type = 'fhes'
+  dispatch( secureComputeProgress({computing:true,compute_type}))
+
+  var result = 0.0
+  var haveSC = false
+  var current = false
+  var error = null
 
   if ( CanCompute( data ) ) {
 
@@ -174,12 +179,14 @@ export const secureComputeFHESimple = (data) => async (dispatch) => {
 export const secureComputeFHEBuffered = (data) => async (dispatch) => {
 
   dispatch( secureComputeBegin() );
-  dispatch( secureComputeProgress({computing: true}));
 
-  var result = 0.0;
-  var haveSC = false;
-  var current = false;
-  var error = null;
+  var compute_type = 'fheb'
+  dispatch( secureComputeProgress({computing:true,compute_type}))
+
+  var result = 0.0
+  var haveSC = false
+  var current = false
+  var error = null
 
   if ( CanCompute( data ) ) {
 

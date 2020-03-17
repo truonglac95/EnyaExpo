@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 //UI
 import { View, Text, TouchableOpacity, TextInput, 
-  ScrollView, Keyboard, Image, 
-  Dimensions, ActivityIndicator } from 'react-native';
+  ScrollView, Keyboard, Image, Dimensions, ActivityIndicator, 
+  ImageBackground } from 'react-native';
 
 import Picker from 'react-native-picker-select';
 import BasicButton from '../components/BasicButton';
@@ -79,6 +79,7 @@ class Questionnaire extends React.Component {
       result: (compute.result || 0.0),
       resultCurrent: (compute.current || false),
       computing: (compute.computing || false),
+      compute_type: (compute.compute_type || 'smc'),
 
       birthyear: (answers.birthyear || 0),
       country: (answers.country || 0),
@@ -123,6 +124,7 @@ class Questionnaire extends React.Component {
       result: (compute.result || 0.0),
       resultCurrent: (compute.current || false),
       computing: (compute.computing || false),
+      compute_type: (compute.compute_type || 'smc'),
 
       FHE_keys_ready: (progress.FHE_keys_ready || false),
     });
@@ -180,7 +182,7 @@ class Questionnaire extends React.Component {
     dispatch(giveAnswer(newAnswer));
 
     //this changes the result status from current to current == false,
-    //triggering dispaly of recompute options
+    //triggering display of recompute options
     dispatch(secureComputeInvalidate());
 
   }
@@ -210,8 +212,8 @@ class Questionnaire extends React.Component {
   render() {
 
     const { birthyear, country, gender, height, weight, binary_1, binary_2,
-      answersCurrent, percentAnswered, numberAnswered, 
-      result, resultCurrent, computing, FHE_keys_ready 
+      answersCurrent, percentAnswered, numberAnswered, API,
+      result, resultCurrent, computing, compute_type, FHE_keys_ready 
     } = this.state;
 
     const pickerStyle = {
@@ -238,12 +240,14 @@ class Questionnaire extends React.Component {
     width={200}
     text={'SMC Secure Compute'} 
     onClick={this.handleSMCCalculate}
+    enable={!computing}
   />
   <View style={{marginTop: 20}}>
   <BasicButton 
     width={200}
     text={'FHE_S Secure Compute'} 
     onClick={this.handleFHECalculateS}
+    enable={!computing}
   />
   </View>
   <View style={{marginTop: 20}}>
@@ -251,7 +255,8 @@ class Questionnaire extends React.Component {
     width={200}
     text={'FHE_B Secure Compute'} 
     onClick={this.handleFHECalculateB}
-    enable = {FHE_keys_ready}
+    enable={!computing}
+    keys_ready={FHE_keys_ready}
   />
   </View>
 </View>
@@ -268,12 +273,46 @@ class Questionnaire extends React.Component {
 }
 
 {/*show progress indicator when calculating risk*/}
-{computing && 
+{computing &&
 <View style={[mS.containerProgress, {marginTop: 100}]}>
   <ActivityIndicator size="large" color='#33337F' />
   <Text style={mS.progressText}>{'Computing'}</Text>
 </View>
 }
+
+{/********************************************
+      App info and status box 
+**********************************************/}
+
+{computing &&
+  <View style={mS.shadowBox}>
+
+  <ImageBackground source={require('../assets/images/id.png')} style={{width: '100%', height: 50}}>
+    <Text style={mS.boxTitle}>{'Status'}</Text>
+  </ImageBackground>
+
+  {(compute_type == 'fhes') &&
+    <View style={mS.textBlock}>
+      <Text style={mS.mediumDark}>{'Unbuffered FHE calculation.'}</Text>
+      <Text style={mS.smallGray}>{"This is the 'slowest' way to compute a result. Expect the result to arrive in about 1 minute."}</Text>
+    </View>
+  }
+  {(compute_type == 'fheb') &&
+    <View style={mS.textBlock}>
+      <Text style={mS.mediumDark}>{'Buffered FHE calculation.'}</Text>
+      <Text style={mS.smallGray}>{'This computation uses precomputed FHE keys to provide a better user experience.'}</Text>
+    </View>
+  }
+  {(compute_type == 'smc') &&
+    <View style={mS.textBlock}>
+      <Text style={mS.mediumDark}>{'Secure Multiparty Computation.'}</Text>
+      <Text style={mS.smallGray}>{'This is the fastest way to compute a result.'}</Text>
+    </View>
+  }
+
+  </View>
+}
+
 
 {/*ask questions when not computing*/}
 {!computing && <View style={mS.shadowBoxQ}>

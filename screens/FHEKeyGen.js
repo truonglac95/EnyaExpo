@@ -92,7 +92,10 @@ class FHEKeyGen extends React.Component {
 
         <View style={[mS.marTop20, {width: '84%'}]}>
           { FHE_key_inventory < 3 &&
-            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'Generating FHE keys.\nThis may take several minutes.'}</Text>
+            <View>
+            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'Generating FHE keys - reduced app performance.'}</Text>
+            <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'This may take several minutes.'}</Text>
+            </View>
           }
           { FHE_key_inventory >= 3 &&
             <Text style={[mS.progressText,{fontWeight: 'bold'}]}>{'FHE keys generated.'}</Text>
@@ -129,5 +132,5 @@ class FHEKeyGen extends React.Component {
 
 }
 
-const mapStateToProps = state => ({ fhe: state.fhe });
+const mapStateToProps = state => ({fhe: state.fhe});
 export default connect(mapStateToProps)(FHEKeyGen);
